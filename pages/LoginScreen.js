@@ -11,7 +11,7 @@ const LoginScreen = ({ navigation }) => {
     .then((userCredential) => {
   
       const user = userCredential.user;
-     console.log("done")
+navigation.navigate('profile')
     })
     .catch((error) => {
       const errorCode = error.code;
