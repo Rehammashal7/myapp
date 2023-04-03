@@ -1,104 +1,56 @@
 import React from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
-import auth from '../firebase';
-const StyleProfileScreen = () => {
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import auth from '../firebase'
+const ProfileScreen = ({ navigation }) => {
+  const handleLogout = () => {
+    navigation.navigate('Login');
+  };
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require('../assets/photo2.png')}
-        style={styles.backgroundImage}
-      >
-        <View style={styles.profileInfo}>
-          <Text style={styles.name}>{auth.currentUser?.email}</Text>
-          <Text style={styles.location}>Los Angeles, CA</Text>
-        </View>
-      </ImageBackground>
-      <View style={styles.stats}>
-        <Text style={styles.stat}>23K Followers</Text>
-        <Text style={styles.stat}>3.2K Following</Text>
-        <Text style={styles.stat}>7.5K Likes</Text>
-      </View>
-      <View style={styles.buttons}>
-        <View style={[styles.button, styles.primaryButton]}>
-          <Text style={[styles.buttonText, styles.primaryButtonText]}>
-            Follow
-          </Text>
-        </View>
-        <View style={[styles.button, styles.secondaryButton]}>
-          <Text style={[styles.buttonText, styles.secondaryButtonText]}>
-            Message
-          </Text>
-        </View>
-      </View>
+      <Image
+        style={styles.profileImage}
+        source={{ uri: 'https://randomuser.me/api/portraits/women/68.jpg' }}
+      />
+      <Text style={styles.username}>{auth.currentUser?.email}</Text>
+  
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Text style={styles.buttonText}>Logout</Text>
+      </TouchableOpacity>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
-  },
-  backgroundImage: {
-    flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'flex-end',
-  },
-  profileInfo: {
-    padding: 20,
-  },
-  name: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  location: {
-    fontSize: 16,
-    color: '#fff',
-  },
-  stats: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#ff6600',
-  },
-  stat: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  buttons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 20,
-  },
-  button: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'black',
   },
-  primaryButton: {
-    backgroundColor: '#ff6600',
+  profileImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
   },
-  secondaryButton: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ff6600',
+  username: {
+    marginTop: 20,
+    fontSize: 20,
+    color: 'orange',
+  },
+  changePasswordButton: {
+    marginTop: 20,
+    backgroundColor: '#FF6D00',
+    padding: 10,
+    borderRadius: 5,
+  },
+  logoutButton: {
+    marginTop: 10,
+    backgroundColor: '#FF6D00',
+    padding: 10,
+    borderRadius: 5,
   },
   buttonText: {
-    fontSize: 16,
+    color: 'white',
     fontWeight: 'bold',
   },
-  primaryButtonText: {
-    color: '#000',
-  },
-  secondaryButtonText: {
-    color: '#ff6600',
-  },
 });
-
-export default StyleProfileScreen;
+export default ProfileScreen;
