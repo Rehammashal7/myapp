@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword ,sendPasswordResetEmail } from "firebase/auth";
 import auth from '../firebase'
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -21,6 +21,18 @@ navigation.navigate('profile')
 
   const handleSignUp = () => {
     navigation.navigate("SignUp");
+  };
+
+
+  const handleResetPassword = () => {
+    
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert('Password reset email sent successfully!');
+      })
+      .catch((error) => {
+        alert(error);
+      });
   };
 
   return (
@@ -47,6 +59,9 @@ navigation.navigate('profile')
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignUp}>
         <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleResetPassword}>
+        <Text  style={styles.signupText}>Forgot your password?</Text>
       </TouchableOpacity>
     </View>
   );
