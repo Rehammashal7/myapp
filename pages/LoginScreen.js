@@ -153,6 +153,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
+    backgroundColor:'#e6e1d5'
   },
   buttonlogin: {
     backgroundColor: 'black',

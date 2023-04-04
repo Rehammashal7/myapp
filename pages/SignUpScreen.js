@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { signInWithEmailAndPassword, signInWithPopup,
+import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
  
   import auth from '../firebase'
@@ -19,10 +19,12 @@ const SignUpScreen = ({ navigation }) => {
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
+      navigation.navigate('profile')
       console.log("Done");
       
       const user = userCredential.user;
       // ...
+     
     })
     .catch((error) => {
       const errorCode = error.code;
@@ -169,6 +171,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
+    backgroundColor:'#e6e1d5'
   },
   buttonsignup: {
     backgroundColor: 'black',
