@@ -3,7 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import auth from '../firebase'
 const ProfileScreen = ({ navigation }) => {
   const handleLogout = () => {
-    navigation.navigate('Login');
+    navigation.navigate('Home');
   };
   return (
     <View style={styles.container}>
