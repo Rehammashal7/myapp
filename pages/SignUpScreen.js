@@ -8,12 +8,17 @@ import auth from '../firebase'
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(false);
+
 
 
   const handleSignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
+      console.log("Done");
+      
       const user = userCredential.user;
       // ...
     })
@@ -22,6 +27,13 @@ const SignUpScreen = ({ navigation }) => {
       const errorMessage = error.message;
       // ..
     });
+
+    if (password === confirmPassword) {
+      setPasswordMatch(true);
+    } else {
+      setPasswordMatch(false);
+      alert('Passwords do not match');
+    }
   };
 
   const handleLogin = () => {
@@ -44,6 +56,19 @@ const SignUpScreen = ({ navigation }) => {
         placeholder="Password"
         style={styles.input}
       />
+      <TextInput
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry={true}
+        placeholder="Confirm Passwor"
+        style={styles.input}
+      />
+
+
+
+
+
+
     
       <TouchableOpacity
         onPress={handleSignUp}
