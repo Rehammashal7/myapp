@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider ,sendPasswordResetEmail } from "firebase/auth";
   import { getAuth } from "firebase/auth";
-  import provider from "../firebase";
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +25,7 @@ navigation.navigate('profile')
     navigation.navigate("SignUp");
   };
   const handleGoogle =()=>{
+    const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
@@ -106,19 +107,19 @@ navigation.navigate('profile')
       />
       <TouchableOpacity
         onPress={handleLogin}
-        style={styles.buttonContainer}
+        style={styles.buttonlogin}
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={handleGoogle}
-        style={styles.buttonContainer}
+        style={styles.buttongoogle}
       >
         <Text style={styles.buttonText}>Log in with Google</Text>
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={handleFace}
-        style={styles.buttonContainer}
+        style={styles.buttonface}
       >
         <Text style={styles.buttonText}>Log in with Facebook</Text>
       </TouchableOpacity>
@@ -135,7 +136,7 @@ navigation.navigate('profile')
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -153,8 +154,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
   },
-  buttonContainer: {
-    backgroundColor: '#FF6D00',
+  buttonlogin: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    padding: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop:10,
+  },
+  buttongoogle: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop:10,
+  },
+  buttonface: {
+    backgroundColor: 'blue',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -162,12 +179,12 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
   },
   signupText: {
-    color: '#FFFFFF',
+    color: 'black',
     fontSize: 16,
     marginTop: 10,
     textDecorationLine: 'underline',

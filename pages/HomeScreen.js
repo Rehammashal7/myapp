@@ -15,7 +15,7 @@ const HomeScreen = ({navigation}) => {
 return(
     <view>
     <ImageBackground 
-    source = {backGround}
+   
     style = {styles.backGroundimage} >
     <text style={styles.heading } >Welcome to myApp</text>
     
@@ -49,6 +49,7 @@ const styles = StyleSheet.create({
 
     },
     backGroundimage : {
+        backgroundColor:'while',
         width:390, 
         height : 844,
         alignItems: 'center',

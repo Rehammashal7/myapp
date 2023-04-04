@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
-  import provider from "../firebase";
+ 
   import auth from '../firebase'
 
 
@@ -30,6 +30,7 @@ const SignUpScreen = ({ navigation }) => {
     navigation.navigate('Login');
   };
   const handleGoogle =()=>{
+    const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
   .then((result) => {
     // This gives you a Google Access Token. You can use it to access the Google API.
@@ -100,21 +101,21 @@ const SignUpScreen = ({ navigation }) => {
     
       <TouchableOpacity
         onPress={handleSignUp}
-        style={styles.buttonContainer}
+        style={styles.buttonsignup}
       >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={handleGoogle}
-        style={styles.buttonContainer}
+        style={styles.buttongoogle}
       >
-        <Text style={styles.buttonText}>Log in with Google</Text>
+        <Text style={styles.buttonText}>Sign Up with Google</Text>
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={handleFace}
-        style={styles.buttonContainer}
+        style={styles.buttonface}
       >
-        <Text style={styles.buttonText}>Log in with Facebook</Text>
+        <Text style={styles.buttonText}>Sign Up with Facebook</Text>
       </TouchableOpacity>      
       <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.loginText}>Already have an account? Log in</Text>
@@ -126,7 +127,7 @@ const SignUpScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1E1E1E',
+    backgroundColor: 'white',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -144,8 +145,24 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
   },
-  buttonContainer: {
-    backgroundColor: '#FF6D00',
+  buttonsignup: {
+    backgroundColor: 'black',
+    borderRadius: 10,
+    padding: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop:10,
+  },
+  buttongoogle: {
+    backgroundColor: 'red',
+    borderRadius: 10,
+    padding: 10,
+    width: '100%',
+    alignItems: 'center',
+    marginTop:10,
+  },
+  buttonface: {
+    backgroundColor: 'blue',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -158,7 +175,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   loginText: {
-    color: '#FFFFFF',
+    color: 'black',
     fontSize: 16,
     marginTop: 10,
     textDecorationLine: 'underline',

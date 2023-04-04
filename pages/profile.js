@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'black',
+    backgroundColor: 'white',
   },
   profileImage: {
     width: 150,
@@ -34,17 +34,12 @@ const styles = StyleSheet.create({
   username: {
     marginTop: 20,
     fontSize: 20,
-    color: 'orange',
+    color: 'black',
   },
-  changePasswordButton: {
-    marginTop: 20,
-    backgroundColor: '#FF6D00',
-    padding: 10,
-    borderRadius: 5,
-  },
+ 
   logoutButton: {
     marginTop: 10,
-    backgroundColor: '#FF6D00',
+    backgroundColor: 'black',
     padding: 10,
     borderRadius: 5,
   },
