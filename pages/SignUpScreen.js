@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import {  createUserWithEmailAndPassword } from "firebase/auth";
-import auth from '../firebase'
+import { signInWithEmailAndPassword, signInWithPopup,
+  GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+  import provider from "../firebase";
+  import auth from '../firebase'
 
 
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
+  
 
   const handleSignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
@@ -27,7 +29,58 @@ const SignUpScreen = ({ navigation }) => {
   const handleLogin = () => {
     navigation.navigate('Login');
   };
-
+  const handleGoogle =()=>{
+    signInWithPopup(auth, provider)
+  .then((result) => {
+    // This gives you a Google Access Token. You can use it to access the Google API.
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential.accessToken;
+    // The signed-in user info.
+    const user = result.user.email;
+    navigation.navigate('profile')
+    window.alert("done log in");
+    console.log("done login in");
+    // IdP data available using getAdditionalUserInfo(result)
+    // ...
+  }).catch((error) => {
+    // Handle Errors here.
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // The email of the user's account used.
+    const email = error.customData.email;
+    // The AuthCredential type that was used.
+    const credential = GoogleAuthProvider.credentialFromError(error);
+    // ...
+  });
+  }
+  const handleFace =()=>{
+    const provider2 = new FacebookAuthProvider();
+    signInWithPopup(auth, provider2)
+    .then((result) => {
+      // The signed-in user info.
+      const user = result.user;
+  
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      const credential = FacebookAuthProvider.credentialFromResult(result);
+      const accessToken = credential.accessToken;
+      navigation.navigate('profile')
+      window.alert("done log in");
+      console.log(result);
+      // IdP data available using getAdditionalUserInfo(result)
+      // ...
+    })
+    .catch((error) => {
+      // Handle Errors here.
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // The email of the user's account used.
+      const email = error.customData.email;
+      // The AuthCredential type that was used.
+      const credential = FacebookAuthProvider.credentialFromError(error);
+  
+      // ...
+    });
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Sign Up</Text>
@@ -51,6 +104,18 @@ const SignUpScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        onPress={handleGoogle}
+        style={styles.buttonContainer}
+      >
+        <Text style={styles.buttonText}>Log in with Google</Text>
+      </TouchableOpacity>
+      <TouchableOpacity 
+        onPress={handleFace}
+        style={styles.buttonContainer}
+      >
+        <Text style={styles.buttonText}>Log in with Facebook</Text>
+      </TouchableOpacity>      
       <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
@@ -85,6 +150,7 @@ const styles = StyleSheet.create({
     padding: 10,
     width: '100%',
     alignItems: 'center',
+    marginTop:10,
   },
   buttonText: {
     color: '#FFFFFF',
