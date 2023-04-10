@@ -1,9 +1,19 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import auth from '../firebase'
+import { signOut } from "firebase/auth";
+import auth from '../firebase';
+import  { useState } from 'react';
+
 const ProfileScreen = ({ navigation }) => {
-  const handleLogout = () => {
-    navigation.navigate('Home');
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+
+  const handleLogOut = () => {
+    signOut(auth)
+      .then(() => {
+        setUserLoggedIn(false);
+        navigation.navigate('Home')
+      })
+      .catch((error) => console.log(error));
   };
   return (
     <View style={styles.container}>
@@ -13,7 +23,7 @@ const ProfileScreen = ({ navigation }) => {
       />
       <Text style={styles.username}>{auth.currentUser?.email}</Text>
   
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
     </View>
