@@ -132,20 +132,20 @@ navigation.navigate('profile')
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
   heading: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 10,
+    textAlign:'left',
   },
   input: {
     backgroundColor: '#FFFFFF',
@@ -153,10 +153,10 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
-    backgroundColor:'#e6e1d5'
+    backgroundColor:'#D3D3D3'
   },
   buttonlogin: {
-    backgroundColor: 'black',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttongoogle: {
-    backgroundColor: 'red',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttonface: {
-    backgroundColor: 'blue',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -180,13 +180,13 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttonText: {
-    color: 'white',
+    color: '#FFDE9B',
     fontSize: 18,
     fontWeight: 'bold',
   },
   signupText: {
-    color: 'black',
-    fontSize: 16,
+    color: '#0B0E21',
+    fontSize: 19,
     marginTop: 10,
     textDecorationLine: 'underline',
   },
