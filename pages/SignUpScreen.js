@@ -11,11 +11,15 @@ const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [passwordMatch, setPasswordMatch] = useState(false);
-
 
 
   const handleSignUp = () => {
+
+    if (password !== confirmPassword) {
+      alert('Passwords do not match!,please tty again');
+      
+      return;
+    }
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
@@ -32,12 +36,7 @@ const SignUpScreen = ({ navigation }) => {
       // ..
     });
 
-    if (password === confirmPassword) {
-      setPasswordMatch(true);
-    } else {
-      setPasswordMatch(false);
-      alert('Passwords do not match');
-    }
+   
   };
 
   const handleLogin = () => {
