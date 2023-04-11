@@ -111,10 +111,18 @@ navigation.navigate('profile')
       >
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={handleSignUp}>
+        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={handleResetPassword}>
+        <Text  style={styles.signupText}>Forgot your password?</Text>
+      </TouchableOpacity>
+        <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3>
       <TouchableOpacity
         onPress={handleGoogle}
         style={styles.buttongoogle}
       >
+        
         <Text style={styles.buttonText}>Log in with Google</Text>
       </TouchableOpacity>
       <TouchableOpacity 
@@ -123,12 +131,7 @@ navigation.navigate('profile')
       >
         <Text style={styles.buttonText}>Log in with Facebook</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={handleSignUp}>
-        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleResetPassword}>
-        <Text  style={styles.signupText}>Forgot your password?</Text>
-      </TouchableOpacity>
+    
     </View>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { ImageBackground } from 'react-native';
-import backGround from '../assets/backGround1.jpg';
+import backGround from '../assets/Pizza1.jpg';
 
 
 const HomeScreen = ({navigation}) => {
@@ -14,7 +14,7 @@ const HomeScreen = ({navigation}) => {
 
 return(
     <view>
-    <ImageBackground 
+    <ImageBackground  source = {backGround}
    
     style = {styles.backGroundimage} >
     <text style={styles.heading } >Welcome to myApp</text>
@@ -42,6 +42,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     },
     heading:{
+        color: "white",
         fontSize : 40 ,
         alignItems: 'center',
         fontWeight : 'bold',
@@ -56,7 +57,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center' ,   
     },
     buttonText: {
-        color: '#FFFFFF',
+        color: '#FFDE9B',
         fontSize: 20,
         fontWeight: 'bold',
     },
