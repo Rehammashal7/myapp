@@ -1,18 +1,11 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet ,input} from 'react-native';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { signOut } from "firebase/auth";
 import auth from '../firebase';
-import  { useState ,useEffect} from 'react';
-import { upload ,useAuth} from '../firebase';
-import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
+import  { useState } from 'react';
 
-
-const profile = ({ navigation }) => {
+const ProfileScreen = ({ navigation }) => {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
-  const currentUser = useAuth();
-  const [photo, setPhoto] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
 
   const handleLogOut = () => {
     signOut(auth)
@@ -21,14 +14,6 @@ const profile = ({ navigation }) => {
         navigation.navigate('Home')
       })
       .catch((error) => console.log(error));
-  };
-  function handleChange(e) {
-    if (e.target.files[0]) {
-      setPhoto(e.target.files[0])
-    }
-  };
-  function handleClick() {
-    upload(photo, currentUser, setLoading);
   };
   useEffect(() => {
     if (currentUser?.photoURL) {
@@ -48,16 +33,7 @@ const profile = ({ navigation }) => {
     
       />
       <Text style={styles.username}>{auth.currentUser?.email}</Text>
-
-     <input type="file" onChange={handleChange} />
-
-     {/* <TouchableOpacity style={styles.logoutButton}disabled={loading || !photo}
-     onPress={handleClick}>
-        <Text style={styles.buttonText}>Upload</Text>
-      </TouchableOpacity> */}
-
-     <button  disabled={loading || !photo} onClick={handleClick}>Upload</button>
-     
+  
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
         <Text style={styles.buttonText}>Logout</Text>
       </TouchableOpacity>
