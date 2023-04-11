@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
-  GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
- 
+  GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
   import auth from '../firebase'
 
 
@@ -119,12 +118,6 @@ const SignUpScreen = ({ navigation }) => {
         placeholder="Confirm Passwor"
         style={styles.input}
       />
-
-
-
-
-
-
     
       <TouchableOpacity
         onPress={handleSignUp}
@@ -132,10 +125,30 @@ const SignUpScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Sign Up</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={handleLogin}>
+        <Text style={styles.loginText}>Already have an account? Log in</Text>
+      </TouchableOpacity>
+      <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3>
+      {/* <TouchableOpacity>
+      onPress={handleGoogle}
+      <FontAwesomeIcon icon="fa-brands fa-square-facebook" />
+      </TouchableOpacity> */}
+      {/* <Button
+        mode="contained"
+        style={styles.button}
+        onPress={() => {
+          // Handle button press
+        }}
+      >
+        <Icon name="google" size={24} color="white" style={styles.icon} />
+      </Button> */}
+
       <TouchableOpacity
         onPress={handleGoogle}
         style={styles.buttongoogle}
       >
+              {/* <FontAwesomeIcon icon="fa-brands fa-square-facebook" /> */}
+
         <Text style={styles.buttonText}>Sign Up with Google</Text>
       </TouchableOpacity>
       <TouchableOpacity 
@@ -144,9 +157,7 @@ const SignUpScreen = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Sign Up with Facebook</Text>
       </TouchableOpacity>      
-      <TouchableOpacity onPress={handleLogin}>
-        <Text style={styles.loginText}>Already have an account? Log in</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 };
@@ -154,27 +165,43 @@ const SignUpScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: '#FBFAFF' ,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
   },
+  button: {
+    borderRadius: 50, // set the border radius to create a circular button
+    width: 50, // set the width and height to create a square container for the circular button
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'red', // set the background color for the button
+  },
+  icon: {
+    position: 'absolute', // position the icon in the center of the button
+  },
+
+  line:{
+    color : '#131A2',
+    width : '50%',
+  },
   heading: {
-    color: '#FFFFFF',
+    color: '#0B0E21',
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 20,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    Color: '#FFFFFF',
     width: '100%',
     padding: 10,
     borderRadius: 10,
     marginBottom: 20,
-    backgroundColor:'#e6e1d5'
+    backgroundColor: '#D3D3D3',
   },
   buttonsignup: {
-    backgroundColor: 'black',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -182,7 +209,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttongoogle: {
-    backgroundColor: 'red',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -190,7 +217,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttonface: {
-    backgroundColor: 'blue',
+    backgroundColor: '#131A2C',
     borderRadius: 10,
     padding: 10,
     width: '100%',
@@ -198,7 +225,7 @@ const styles = StyleSheet.create({
     marginTop:10,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#FFDE9B',
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -207,6 +234,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginTop: 10,
     textDecorationLine: 'underline',
+  },
+  Icon :{
+    width : '50%',
+    height : '50%',
   },
 });
 
