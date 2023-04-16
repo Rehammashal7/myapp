@@ -3,7 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
   import auth from '../firebase'
-
+  import { Image } from 'react-native';
+  import googleicon from "../assets/iconn.png";
+  import faceicon from '../assets/fac.png';
 
 
 const SignUpScreen = ({ navigation }) => {
@@ -127,35 +129,22 @@ const SignUpScreen = ({ navigation }) => {
       <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
-      <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3>
-      {/* <TouchableOpacity>
-      onPress={handleGoogle}
-      <FontAwesomeIcon icon="fa-brands fa-square-facebook" />
-      </TouchableOpacity> */}
-      {/* <Button
-        mode="contained"
-        style={styles.button}
-        onPress={() => {
-          // Handle button press
-        }}
-      >
-        <Icon name="google" size={24} color="white" style={styles.icon} />
-      </Button> */}
+      {/* <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3> */}
+      
+
 
       <TouchableOpacity
         onPress={handleGoogle}
-        style={styles.buttongoogle}
       >
               {/* <FontAwesomeIcon icon="fa-brands fa-square-facebook" /> */}
 
-        <Text style={styles.buttonText}>Sign Up with Google</Text>
+              <Image source={googleicon} style={styles.gicon} />
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={handleFace}
-        style={styles.buttonface}
       >
-        <Text style={styles.buttonText}>Sign Up with Facebook</Text>
-      </TouchableOpacity>      
+          <Image source={faceicon} style={styles.ficon} />     
+      </TouchableOpacity>        
       
     </View>
   );
@@ -182,7 +171,7 @@ const styles = StyleSheet.create({
   },
 
   line:{
-    color : '#131A2',
+    color : '#D3D3D3',
     width : '50%',
   },
   heading: {
@@ -234,9 +223,24 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textDecorationLine: 'underline',
   },
-  Icon :{
-    width : '50%',
-    height : '50%',
+  
+  gicon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    right:70,
+    top:14 ,
+    width: 48,
+    height: 48,
+  },
+  ficon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems:'center',
+    left:40,
+    top:-35 ,
+    width: 50,
+    height: 50,
   },
 });
 
