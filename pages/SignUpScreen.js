@@ -129,24 +129,24 @@ const SignUpScreen = ({ navigation }) => {
       <TouchableOpacity onPress={handleLogin}>
         <Text style={styles.loginText}>Already have an account? Log in</Text>
       </TouchableOpacity>
-      <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3>
+      {/* <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3> */}
       
       
 
       <TouchableOpacity
         onPress={handleGoogle}
-        style={styles.buttongoogle}
+        //style={styles.buttongoogle}
       >
-              {/* <FontAwesomeIcon icon="fa-brands fa-square-facebook" /> */}
-
-        <Text style={styles.buttonText}>Sign Up with Google</Text>
+        
+        <Image source={googleicon} style={styles.gicon} />
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={handleFace}
-        style={styles.buttonface}
+        //style={styles.buttonface}
       >
-        <Text style={styles.buttonText}>Sign Up with Facebook</Text>
-      </TouchableOpacity>      
+        <Image source={faceicon} style={styles.ficon} />
+
+      </TouchableOpacity>    
       
     </View>
   );
@@ -225,9 +225,23 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textDecorationLine: 'underline',
   },
-  Icon :{
-    width : '50%',
-    height : '50%',
+  gicon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    right:70,
+    top:14 ,
+    width: 48,
+    height: 48,
+  },
+  ficon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems:'center',
+    left:40,
+    top:-35 ,
+    width: 50,
+    height: 50,
   },
 });
 
