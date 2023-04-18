@@ -10,13 +10,16 @@ const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  
 
   const handleSignUp = () => {
 
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters long!');
+      return;
+    }
     if (password !== confirmPassword) {
       alert('Passwords do not match!,please tty again');
-      
       return;
     }
     createUserWithEmailAndPassword(auth, email, password)
@@ -94,6 +97,9 @@ const SignUpScreen = ({ navigation }) => {
       // ...
     });
   }
+
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Sign Up</Text>

@@ -1,14 +1,45 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider ,sendPasswordResetEmail } from "firebase/auth";
   import { getAuth } from "firebase/auth";
+  import { Image } from 'react-native';
+  import googleicon from "../assets/iconn.png";
+  import faceicon from '../assets/fac.png';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   const auth = getAuth();
+  
+  function validateForm(email, password, setError) {
+    if (!email) {
+      setError('Please enter your email address.');
+      return false;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return false;
+    }
+    return true;
+  }
+  
+   
   const handleLogin = () => {
+
+      if (validateForm(email, password, setError)) {
+       
+      }
+    
+    
+  //   if (!email || !password) {
+  //    setError('Please enter your email and password');
+  //   return;
+  // }
+
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
   
@@ -16,8 +47,14 @@ const LoginScreen = ({ navigation }) => {
 navigation.navigate('profile')
     })
     .catch((error) => {
+      console.log(error);
       const errorCode = error.code;
       const errorMessage = error.message;
+        if (errorCode === 'wrong-password') {
+        alert('Incorrect Password');
+      } else {
+        alert(errorMessage);
+      }
     });
   };
 
@@ -91,7 +128,7 @@ navigation.navigate('profile')
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Login</Text>
+      <Text style={styles.heading}>Log In</Text>
       <TextInput
         value={email}
         onChangeText={setEmail}
@@ -109,7 +146,7 @@ navigation.navigate('profile')
         onPress={handleLogin}
         style={styles.buttonlogin}
       >
-        <Text style={styles.buttonText}>Login</Text>
+        <Text style={styles.buttonText}> Log In</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleSignUp}>
         <Text style={styles.signupText}>Don't have an account? Sign up</Text>
@@ -117,19 +154,20 @@ navigation.navigate('profile')
       <TouchableOpacity onPress={handleResetPassword}>
         <Text  style={styles.signupText}>Forgot your password?</Text>
       </TouchableOpacity>
-        <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3>
+        {/* <h3 style={styles.line}> - - - - - - - or - - - - - - - </h3> */}
       <TouchableOpacity
         onPress={handleGoogle}
-        style={styles.buttongoogle}
+        //style={styles.buttongoogle}
       >
         
-        <Text style={styles.buttonText}>Log in with Google</Text>
+        <Image source={googleicon} style={styles.gicon} />
       </TouchableOpacity>
       <TouchableOpacity 
         onPress={handleFace}
-        style={styles.buttonface}
+        //style={styles.buttonface}
       >
-        <Text style={styles.buttonText}>Log in with Facebook</Text>
+        <Image source={faceicon} style={styles.ficon} />
+
       </TouchableOpacity>
     
     </View>
@@ -138,7 +176,7 @@ navigation.navigate('profile')
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#FBFAFF',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -166,22 +204,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop:10,
   },
-  buttongoogle: {
-    backgroundColor: '#131A2C',
-    borderRadius: 10,
-    padding: 10,
-    width: '100%',
-    alignItems: 'center',
-    marginTop:10,
-  },
-  buttonface: {
-    backgroundColor: '#131A2C',
-    borderRadius: 10,
-    padding: 10,
-    width: '100%',
-    alignItems: 'center',
-    marginTop:10,
-  },
+ 
   buttonText: {
     color: '#FFDE9B',
     fontSize: 18,
@@ -192,6 +215,24 @@ const styles = StyleSheet.create({
     fontSize: 19,
     marginTop: 10,
     textDecorationLine: 'underline',
+  },
+  gicon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    right:70,
+    top:14 ,
+    width: 48,
+    height: 48,
+  },
+  ficon: {
+    borderRadius: 10,
+    padding: 10,
+    alignItems:'center',
+    left:40,
+    top:-35 ,
+    width: 50,
+    height: 50,
   },
 });
 
