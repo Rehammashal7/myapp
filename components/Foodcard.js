@@ -1,10 +1,10 @@
 import React from 'react';
-import {Text,View,TouchableOpacity,Image,StyleSheet,Dimensions} from 'react-native';
+import {Text,View,TouchableOpacity,Image,StyleSheet,Pressable} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 
-
-
+let iconcolor='gray'
 
 const Foodcard =({
    
@@ -31,10 +31,13 @@ const Foodcard =({
 
                     
 
-                    <View style ={{flex:9, flexDirection:"row"}}>
+                    <View style ={{flex:9, flexDirection:"row" }}>
                         <Text style ={styles.price}>{price}</Text>
+                        <Pressable onPress={iconcolor='red'} style={styles.iconBehave} >
+                       <Icon name="heart" size={30} color={iconcolor}/>;
+                   </Pressable>
                     </View>
-
+              
                 </View>
             </View>
 
@@ -47,6 +50,7 @@ const Foodcard =({
 const styles = StyleSheet.create({
         cardView:{
             marginHorizontal:9,
+            marginBottom:10,
             borderTopRightRadius:5,
             borderTopLeftRadius:5,
             borderWidth:1,
@@ -107,9 +111,13 @@ const styles = StyleSheet.create({
          },
          numberOfReview :{
             color:"white", 
-            fontSize:13,
+            fontSize:15,
             marginRight:0,
             marginLeft:0
-         }
+         },
+         iconBehave:{
+            
+            marginLeft:60
+         },
 })
 export default Foodcard;

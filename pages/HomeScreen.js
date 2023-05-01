@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Pressable, ScrollView } from 'react-native';
 import data from '../data';
 import FoodCard from '../components/Foodcard';
-import Bar from '../components/bar';
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Generate required css
@@ -35,7 +35,11 @@ const HomeScreen = ({navigation}) => {
                                restaurantName={item.restaurantName}
                                price={item.price} />
                        </View>
+
                    )} />
+                 <View style ={styles.bottoms}>
+             
+                 </View>
            </ScrollView>
  
            <View style={styles.NavContainer} >
@@ -52,9 +56,7 @@ const HomeScreen = ({navigation}) => {
                </View>
            </View>
 
-           {/* <View>
-           <Bar/>
-           </View> */}
+         
          
        </View>
    );
@@ -76,9 +78,14 @@ const styles = StyleSheet.create({
     header :{
         flexDirection:"row",
         backgroundColor:"#FBFAFF",
-        height:'15%',
+        height:'10%',
     },
-
+    bottoms :{
+        flexDirection:"row",
+        backgroundColor:"#FBFAFF",
+        height:50,
+        bottom:20
+    },
     headerText:{
         color:"#0B0E21",
         fontSize:40,
@@ -95,7 +102,9 @@ const styles = StyleSheet.create({
      NavContainer: {
         position:'absolute',
         alignItems:'center',
-        bottom:20, 
+        bottom:10, 
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
      },
      Navbar: {
         flexDirection: 'row',
