@@ -25,5 +25,10 @@ const data = [
     coordinates : {lat: -26.1891648, lng: 28.2441808},
     discount:20,deliveryTime:30,collectTime:10, foodType:"Chicken,Chicken wings... ",
     id:4},
+    {restaurantName:"margrit", farAway:"12.7",price:"50.0",
+    images:'https://www.sbs.com.au/food/sites/sbs.com.au.food/files/2022-04-29-tcu-s3-rx011-aussie-italian-adam-liaw-classic-margherita-pizza-l_50.jpg',
+    coordinates : {lat: -26.1891648, lng: 28.2441808},
+    discount:20,deliveryTime:30,collectTime:10, foodType:"Chicken,Chicken wings... ",
+    id:5},    
 ]
 export default data;

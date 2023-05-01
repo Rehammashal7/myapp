@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 
-const favorite = ({navigation}) => {
+const Favorite = ({navigation}) => {
 return(
 
     <view style={styles.container } >
-        <text style={styles.heading } >Welcome to myApp</text>
+        <text style={styles.heading } >Welcome to favorite </text>
     </view>
 )};
 const styles = StyleSheet.create({
     container: {
     flex: 1,
-    backgroundColor: '#FFE4E1',
+    backgroundColor: '#FBFAFF',
     alignItems: 'center',
     justifyContent: 'center',
     },
     heading:{
-        color: "white",
+        color: "black",
         fontSize : 40 ,
         alignItems: 'center',
         fontWeight : 'bold',
@@ -25,4 +25,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default favorite;
+export default Favorite;
