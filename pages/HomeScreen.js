@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Pressable } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Pressable, ScrollView } from 'react-native';
 import data from '../data';
 import FoodCard from '../components/Foodcard';
 import Bar from '../components/bar';
@@ -11,14 +11,15 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 // Inject stylesheet
 
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
      
    return(
     <View style={styles.container}>
+
            <View style={styles.header}>
                <Text style={styles.headerText}> Fast Food </Text>
            </View>
-           <View>
+           <ScrollView>
                <FlatList
                    style={{ marginTop: 10, marginBottom: 10 }}
                    vertical={true}
@@ -35,23 +36,25 @@ const HomeScreen = () => {
                                price={item.price} />
                        </View>
                    )} />
-           </View>
-           {/* <View style={styles.NavContainer} >
+           </ScrollView>
+ 
+           <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="gray" />;
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                   <Pressable onPress={() => navigation.navigate("Profile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />;
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("home")} style={styles.iconBehave} >
+                   <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                        <Icon name="home" size={30} color="gray" />;
                    </Pressable>
                </View>
-           </View> */}
-           <View>
-           <Bar/>
            </View>
+
+           {/* <View>
+           <Bar/>
+           </View> */}
          
        </View>
    );
@@ -92,19 +95,20 @@ const styles = StyleSheet.create({
      NavContainer: {
         position:'absolute',
         alignItems:'center',
-        bottom:20
+        bottom:20, 
      },
      Navbar: {
         flexDirection: 'row',
         backgroundColor:'#131A2C',
-        width:'95%',
+        width:370,
         justifyContent:'space-evenly',
         borderRadius:40,
-        height:'10%'
+        height:50
         
      },
      iconBehave:{
-        padding:44
+        padding:44,
+        bottom:35
      },
 });
 export default HomeScreen;
