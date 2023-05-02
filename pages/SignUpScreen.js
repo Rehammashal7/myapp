@@ -13,6 +13,24 @@ const SignUpScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
+  const [validationEmail , setValidationEmail] = useState('');
+  const handleCheckEmail = () => {
+    let isvalid = true ;
+    let re = /\S+@\S+\.\S+/; 
+    if (email.trim()=== ""){
+      setValidationEmail("Invalid Email");
+      isvalid = false;
+    }
+    else if (!/\S+@\S+\.\S+/.test(email)){
+      setValidationEmail("Wrong Email");
+      isvalid = false ;
+    }
+    // else if ()
+    if(isvalid){
+      handleSignUp();
+    }
+  };
+  
 
   const handleSignUp = () => {
 
@@ -105,6 +123,10 @@ const SignUpScreen = ({ navigation }) => {
         placeholder="Email"
         style={styles.input}
       />
+      {validationEmail ? 
+        (<Text style = {styles.error}>{validationEmail}</Text>)
+      :null
+      }
       <TextInput
         value={password}
         onChangeText={setPassword}
@@ -121,7 +143,7 @@ const SignUpScreen = ({ navigation }) => {
       />
     
       <TouchableOpacity
-        onPress={handleSignUp}
+        onPress={handleCheckEmail}
         style={styles.buttonsignup}
       >
         <Text style={styles.buttonText}>Sign Up</Text>
