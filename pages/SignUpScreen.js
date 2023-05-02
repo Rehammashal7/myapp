@@ -53,7 +53,7 @@ const SignUpScreen = ({ navigation }) => {
       const user = userCredential.user;
       console.log("Done");
       adduserTodata();
-      navigation.navigate('profile')
+      navigation.navigate('Home')
       
       // ...
      
@@ -92,7 +92,7 @@ const SignUpScreen = ({ navigation }) => {
     // The signed-in user info.
     const user = result.user.email;
     adduserTodata();
-    navigation.navigate('profile')
+    navigation.navigate('Home')
     window.alert("done log in");
     console.log("done login in");
     // IdP data available using getAdditionalUserInfo(result)
@@ -118,7 +118,7 @@ const SignUpScreen = ({ navigation }) => {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
       const credential = FacebookAuthProvider.credentialFromResult(result);
       const accessToken = credential.accessToken;
-      navigation.navigate('profile')
+      navigation.navigate('Home')
       window.alert("done log in");
       
       console.log(result);

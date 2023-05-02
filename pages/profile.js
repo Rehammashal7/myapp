@@ -132,7 +132,7 @@ const Profile = ({navigation}) => {
     signOut(auth)
       .then(() => {
         setUserLoggedIn(false);
-        navigation.navigate('Home')
+        navigation.navigate('Welcome')
       })
       .catch((error) => console.log(error));
   };

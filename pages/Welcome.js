@@ -12,23 +12,23 @@ const Welcome = ({navigation}) => {
         navigation.navigate("SignUp");
     };
 return(
-    <view>
+    <View>
     <ImageBackground  source = {backGround}
    
     style = {styles.backGroundimage} >
-    <text style={styles.heading } >Welcome to myApp</text>
+    <Text style={styles.heading } >Welcome to myApp</Text>
     <TouchableOpacity
         onPress={handleSignIn}
         style={styles.buttonContainer}>
-        <text style={styles.buttonText}> sign in </text>
+        <Text style={styles.buttonText}> sign in </Text>
     </TouchableOpacity>
     <TouchableOpacity
         onPress={handleSignUp}
         style={styles.buttonContainer}>
-        <text style={styles.buttonText}> sign up </text>
+        <Text style={styles.buttonText}> sign up </Text>
     </TouchableOpacity>
     </ImageBackground>
-    </view>
+    </View>
 );
 };
 

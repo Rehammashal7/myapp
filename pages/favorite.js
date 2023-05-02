@@ -4,9 +4,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList } from 'r
 const Favorite = ({navigation}) => {
 return(
 
-    <view style={styles.container } >
+    <View style={styles.container } >
         <text style={styles.heading } >Welcome to favorite </text>
-    </view>
+    </View>
 )};
 const styles = StyleSheet.create({
     container: {

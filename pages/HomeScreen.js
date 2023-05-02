@@ -47,7 +47,7 @@ const HomeScreen = ({navigation}) => {
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="gray" />;
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("Profile")} style={styles.iconBehave}>
+                   <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />;
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
