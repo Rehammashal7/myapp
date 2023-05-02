@@ -104,11 +104,11 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,input} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 
@@ -293,10 +293,10 @@ if (docSnap.exists()) {
             <Text style={styles.value2} >{birthDate}
             </Text>
           </View>
-
-          <TouchableOpacity style={styles.logoutButton} onPress={handleEdit}>
+          <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
         <Text style={styles.buttonText}>Edit</Text>
-      </TouchableOpacity>
+      </TouchableOpacity></View>
+          
           {/* <Button  title="Edit" onPress={handleEdit} /> */}
         </>
       )}
@@ -339,17 +339,37 @@ if (docSnap.exists()) {
             <TextInput style={styles.input} value={birthDate} onChangeText={setBirthDate} 
             />
           </View>
-          <TouchableOpacity style={styles.logoutButton} onPress={handleSave}>
+          <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
-      </TouchableOpacity>
+      </TouchableOpacity></View>
+          
           {/* <Button title="Save" onPress={handleSave} /> */}
         </>
       )}
 
-<TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-        <Text style={styles.buttonText}>Logout</Text>
-      </TouchableOpacity>
+
+<View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
+        <Text style={styles.buttonTextLoggout}>Logout</Text>
+      </TouchableOpacity></View>
+
+
+      <View style={styles.NavContainer} >
+               <View style={styles.Navbar} >
+                   <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
+                       <Icon name="heart" size={30} color='#FFDE9B' />
+                   </Pressable>
+                   <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                       <Icon name="user" size={30} color='#FFDE9B' />
+                   </Pressable>
+                   <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                       <Icon name="home" size={30} color='#FFDE9B' />
+                   </Pressable>
+               </View>
+           </View>
     </View>
+
+    
+    
   );
 };
 
@@ -404,19 +424,70 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderStyle: 'outset',
   },
-    logoutButton: {
+  containerButton:{
+    // display: flex,
+    flexDirection: 'row',
+  //  flex:1,
+  //   alignItems: 'center',
+  //margin:3,
+    justifyContent: 'space-between',
+  },
+    logoutEdit: {
+      flex:1,
     backgroundColor: '#131A2C',
-    borderRadius: 10,
-    padding: 10,
+    borderRadius: 35,
+    padding: 5,
     width: '100%',
+    height: 40,
     alignItems: 'center',
-    marginTop:10,
+    margin:5,
+   // marginVertical: 0,
+   // marginBottom:50,
+  },
+  logoutButton: {
+    flex:1,
+    backgroundColor: '#FFDE9B',
+    borderRadius: 35,
+    padding: 5,
+    width: '100%',
+    height: 40,
+    alignItems: 'center',
+    //marginTop:10,
+    //marginVertical: 10
+    margin:5,
   },
   buttonText: {
     color: '#FFDE9B',
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
   },
+  buttonTextLoggout: {
+    color: '#131A2C',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  NavContainer: {
+    // position:'absolute',
+    // alignItems:'center',
+    // bottom:10, 
+    // borderBottomLeftRadius: 20,
+    // borderBottomRightRadius: 20,
+    padding :10,
+    marginTop :5
+ },
+ iconBehave:{
+  padding:44,
+  bottom:35
+},
+Navbar: {
+  flexDirection: 'row',
+  backgroundColor:'#131A2C',
+  width:370,
+  justifyContent:'space-evenly',
+  borderRadius:40,
+  height:50
+  
+},
 
 });
 export default Profile;
