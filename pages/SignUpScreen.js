@@ -2,16 +2,24 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
-  import auth from '../firebase'
+
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
+  import { auth , db}  from '../firebase';
+  import { doc, setDoc } from "firebase/firestore";
+  
 
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordMatch, setPasswordMatch] = useState(false);
+  const [fristName, setFristName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [birthDate, setBirthDate] = useState('');
 
   const [validationEmail , setValidationEmail] = useState('');
   const handleCheckEmail = () => {
@@ -42,10 +50,11 @@ const SignUpScreen = ({ navigation }) => {
     createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       // Signed in 
-      navigation.navigate('profile')
-      console.log("Done");
-      
       const user = userCredential.user;
+      console.log("Done");
+      adduserTodata();
+      navigation.navigate('profile')
+      
       // ...
      
     })
@@ -56,6 +65,18 @@ const SignUpScreen = ({ navigation }) => {
     });
 
    
+  };
+
+  const adduserTodata = async()=>{
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
+      email: email,
+      fName:fristName,
+      lName:lastName,
+      phone:phone,
+      birthDate:birthDate,
+    });
+    
+
   };
 
   const handleLogin = () => {
@@ -70,6 +91,7 @@ const SignUpScreen = ({ navigation }) => {
     const token = credential.accessToken;
     // The signed-in user info.
     const user = result.user.email;
+    adduserTodata();
     navigation.navigate('profile')
     window.alert("done log in");
     console.log("done login in");
@@ -92,12 +114,13 @@ const SignUpScreen = ({ navigation }) => {
     .then((result) => {
       // The signed-in user info.
       const user = result.user;
-  
+      adduserTodata();
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
       const credential = FacebookAuthProvider.credentialFromResult(result);
       const accessToken = credential.accessToken;
       navigation.navigate('profile')
       window.alert("done log in");
+      
       console.log(result);
       // IdP data available using getAdditionalUserInfo(result)
       // ...
@@ -127,6 +150,18 @@ const SignUpScreen = ({ navigation }) => {
         (<Text style = {styles.error}>{validationEmail}</Text>)
       :null
       }
+       <TextInput
+        value={fristName}
+        onChangeText={setFristName}
+        placeholder="Frit Name "
+        style={styles.input}
+      />
+       <TextInput
+        value={lastName}
+        onChangeText={setLastName}
+        placeholder="Last Name"
+        style={styles.input}
+      />
       <TextInput
         value={password}
         onChangeText={setPassword}

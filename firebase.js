@@ -6,6 +6,8 @@ import { useState,useEffect } from "react";
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/compat/firestore';
+import { getFirestore } from "firebase/firestore";
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -23,30 +25,31 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const storage = getStorage();
-export default auth;
+const storage = getStorage(app);
+const db = getFirestore(app);
+export {auth,db ,storage} ;
 
-export function useAuth() {
-  const [currentUser, setCurrentUser] = useState('');
+// export function useAuth() {
+//   const [currentUser, setCurrentUser] = useState('');
 
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, user => setCurrentUser(user));
-    return unsub;
-  }, [])
+//   useEffect(() => {
+//     const unsub = onAuthStateChanged(auth, user => setCurrentUser(user));
+//     return unsub;
+//   }, [])
 
-  return currentUser;
-}
+//   return currentUser;
+// }
 
-export async function upload(file, currentUser, setLoading) {
-  const fileRef = ref(storage, currentUser.uid + '.png');
+// export async function upload(file, currentUser, setLoading) {
+//   const fileRef = ref(storage, currentUser.uid + '.png');
 
-  setLoading(true);
+//   setLoading(true);
   
-  const snapshot = await uploadBytes(fileRef, file);
-  const photoURL = await getDownloadURL(fileRef);
+//   const snapshot = await uploadBytes(fileRef, file);
+//   const photoURL = await getDownloadURL(fileRef);
 
-  updateProfile(currentUser, {photoURL});
+//   updateProfile(currentUser, {photoURL});
   
-  setLoading(false);
-  alert("Uploaded file!");
-}
+//   setLoading(false);
+//   alert("Uploaded file!");
+// }
