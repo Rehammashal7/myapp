@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Pressable, ScrollView } from 'react-native';
 import data from '../data';
 import FoodCard from '../components/Foodcard';
-
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+
 
 // Generate required css
 
@@ -12,6 +13,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const HomeScreen = ({navigation}) => {
+    const [searchQuery, setSearchQuery] = useState('');
+
+const handleSearch = (text) => {
+    setSearchQuery(text);
+  };
      
    return(
     <View style={styles.container}>
@@ -19,6 +25,15 @@ const HomeScreen = ({navigation}) => {
            <View style={styles.header}>
                <Text style={styles.headerText}> Fast Food </Text>
            </View>
+           <View style={styles.searchContainer}>
+  <Icon name="search" size={20} color="#808080" style={styles.searchIcon} />
+  <TextInput
+    style={styles.searchInput}
+    placeholder="Search"
+    onChangeText={handleSearch}
+    value={searchQuery}
+  />
+</View>
            <ScrollView>
                <FlatList
                    style={{ marginTop: 10, marginBottom: 10 }}
@@ -119,5 +134,23 @@ const styles = StyleSheet.create({
         padding:44,
         bottom:35
      },
+     searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderColor: 'gray',
+        borderWidth: 1,
+        borderRadius: 10,
+        margin: 10,
+        padding: 5,
+      },
+      searchIcon: {
+        marginRight: 10,
+      },
+      searchInput: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#333333',
+      },
 });
 export default HomeScreen;
