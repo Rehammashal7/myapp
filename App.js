@@ -8,18 +8,23 @@ import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import profile from './pages/profile'
 import Favorite from './pages/Favorite';
-
+import AddProductForm from './pages/AddProductForm';
+import{ProductsListPizza,PizzaDetails} from './pages/ProductsListPizza'
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="ProductsListPizza">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Favorite" component={Favorite} />
         <Stack.Screen name ="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="profile" component={profile}  />
+        <Stack.Screen name="AddProductForm" component={AddProductForm} />
+        <Stack.Screen name="PizzaDetails" component={PizzaDetails}  />
+        <Stack.Screen name="ProductsListPizza" component={ProductsListPizza} />
+
        
       </Stack.Navigator>
     </NavigationContainer>
