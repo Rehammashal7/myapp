@@ -356,13 +356,13 @@ if (docSnap.exists()) {
       <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                       <Icon name="heart" size={30} color='#FFDE9B' />
+                       <Icon name="heart" size={30} color='gray' />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color='#FFDE9B' />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                       <Icon name="home" size={30} color='#FFDE9B' />
+                       <Icon name="home" size={30} color='gray' />
                    </Pressable>
                </View>
            </View>
@@ -467,27 +467,27 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   NavContainer: {
-    // position:'absolute',
-    // alignItems:'center',
-    // bottom:10, 
-    // borderBottomLeftRadius: 20,
-    // borderBottomRightRadius: 20,
-    padding :10,
-    marginTop :5
+    position:'absolute',
+    alignItems:'center',
+    bottom:10,
+    padding:10,
+   
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+ },
+ Navbar: {
+    flexDirection: 'row',
+    backgroundColor:'#131A2C',
+    width:350,
+    justifyContent:'space-evenly',
+    borderRadius:40,
+    height:50
+    
  },
  iconBehave:{
-  padding:44,
-  bottom:35
-},
-Navbar: {
-  flexDirection: 'row',
-  backgroundColor:'#131A2C',
-  width:370,
-  justifyContent:'space-evenly',
-  borderRadius:40,
-  height:50
-  
-},
+    padding:44,
+    bottom:35
+ },
 
 });
 export default Profile;

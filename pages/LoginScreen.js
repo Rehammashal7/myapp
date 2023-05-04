@@ -1,18 +1,48 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider ,sendPasswordResetEmail } from "firebase/auth";
   import { getAuth } from "firebase/auth";
-
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
 
+
+
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
   const auth = getAuth();
+  
+  function validateForm(email, password, setError) {
+    if (!email) {
+      setError('Please enter your email address.');
+      return false;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return false;
+    }
+    return true;
+  }
+  
+   
   const handleLogin = () => {
+
+      if (validateForm(email, password, setError)) {
+       
+      }
+    
+    
+  //   if (!email || !password) {
+  //    setError('Please enter your email and password');
+  //   return;
+  // }
+
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
   
@@ -20,8 +50,14 @@ const LoginScreen = ({ navigation }) => {
 navigation.navigate('Home')
     })
     .catch((error) => {
+      console.log(error);
       const errorCode = error.code;
       const errorMessage = error.message;
+        if (errorCode === 'wrong-password') {
+        alert('Incorrect Password');
+      } else {
+        alert(errorMessage);
+      }
     });
   };
 

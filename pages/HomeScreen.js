@@ -60,14 +60,13 @@ const handleSearch = (text) => {
            <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                       <Icon name="heart" size={30} color="gray" />;
+                       <Icon name="heart" size={30} color="gray" />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                       <Icon name="user" size={30} color="gray" />;
+                       <Icon name="user" size={30} color="gray" />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                       <Icon name="home" size={30} color="gray" />;
-                   </Pressable>
+                       <Icon name="home" size={30} color="#FFDE9B" />                   </Pressable>
                </View>
            </View>
 
@@ -117,7 +116,8 @@ const styles = StyleSheet.create({
      NavContainer: {
         position:'absolute',
         alignItems:'center',
-        bottom:10, 
+        bottom:10,
+        padding:10, 
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
      },
