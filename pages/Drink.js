@@ -178,46 +178,8 @@ const CoffeeDetails = ({ route, navigation }) => {
 
                 <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
             </View>
-            <View style={{backgroundColor:COLORS.background,flex:1}}>
-            <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={option}
-                            keyExtractor={(item) => item.id}
-
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.8}
-                                    onPress={() => setSelectedOptionIndex(index)}>
-                                    <View
-                                        style={{
-                                            backgroundColor:
-                                                selectedOptionIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
-                                            ...styles.size,
-                                            marginBottom:5,
-                                            marginLeft:20,
-                                            marginTop:20
-                                        }}>
-                                        <Text
-                                            style={{
-                                                fontSize: 15,
-                                                fontWeight: 'bold',
-                                              
-                                                marginTop:5,
-                                                color:
-                                                    selectedOptionIndex == index
-                                                        ? COLORS.white
-                                                        : COLORS.darkblue,
-                                            }}>
-                                            {item.Name}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        />
+            <View style={styles.bottoms}>
+            
           <View style={{marginLeft:50}}> 
             <PrimaryButton
             title='Add to cart' 
