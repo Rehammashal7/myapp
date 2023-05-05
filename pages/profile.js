@@ -111,7 +111,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
-
+import COLORS from "../Consts/Color";
 
 const Profile = ({navigation}) => {
   const currentUser = useAuth();
@@ -354,18 +354,21 @@ if (docSnap.exists()) {
 
 
       <View style={styles.NavContainer} >
-               <View style={styles.Navbar} >
-                   <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                       <Icon name="heart" size={30} color='#FFDE9B' />
-                   </Pressable>
-                   <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                       <Icon name="user" size={30} color='#FFDE9B' />
-                   </Pressable>
-                   <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                       <Icon name="home" size={30} color='#FFDE9B' />
-                   </Pressable>
-               </View>
-           </View>
+                <View style={styles.Navbar} >
+                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                        <Icon name="user" size={25} color={COLORS.yellow}/>
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                        <Icon name="home" size={25} color={COLORS.grey}/>
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
+                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
+                    </Pressable>
+                </View>
+            </View>
     </View>
 
     
@@ -467,27 +470,24 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   NavContainer: {
-    // position:'absolute',
-    // alignItems:'center',
-    // bottom:10, 
-    // borderBottomLeftRadius: 20,
-    // borderBottomRightRadius: 20,
-    padding :10,
-    marginTop :5
- },
- iconBehave:{
-  padding:44,
-  bottom:35
+    position: 'absolute',
+    alignItems: 'center',
+    bottom: 5,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
 },
 Navbar: {
-  flexDirection: 'row',
-  backgroundColor:'#131A2C',
-  width:370,
-  justifyContent:'space-evenly',
-  borderRadius:40,
-  height:50
-  
-},
+    flexDirection: 'row',
+    backgroundColor: COLORS.darkblue,
+    width: 370,
+    justifyContent: 'space-evenly',
+    borderRadius: 30,
+    height: 40
 
+},
+iconBehave: {
+    padding: 35,
+    bottom: 30
+},
 });
 export default Profile;

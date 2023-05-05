@@ -10,7 +10,7 @@ return(
         <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
                     <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.yellow}/>
+                        <Icon name="heart" size={25} color={COLORS.grey}/>
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
@@ -19,7 +19,7 @@ return(
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
+                        <Icon name="shopping-cart" size={25} color={COLORS.yellow} />
                     </Pressable>
                 </View>
             </View>

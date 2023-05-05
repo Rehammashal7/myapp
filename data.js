@@ -209,3 +209,31 @@ export const Offer =[
         images: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfIpi7KnV0R2wWCu1hrgcBc0ylDAgcM4c_UfvbY9EK0AwK9r7ZMY1Zy_BlTdKNnj2R_N4&usqp=CAU',
     }, 
 ];
+export const size=[
+    {
+        Name:'Small',
+    },
+    {
+        Name:'Medium'
+    },
+    {
+        Name:'Larg'
+    }
+];
+export const option =[
+    {
+        Name:'cheese'
+    },
+    {
+        Name:'onion'
+    },
+    {
+        Name:'mushroom'
+    },
+    {
+        Name:'pepper'
+    },
+    {
+        Name:'No Option'
+    }
+];
