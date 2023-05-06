@@ -14,16 +14,15 @@ const AddProductForm = () => {
     e.preventDefault();
 
     // Upload image to Storage
-    const imageRef = ref(storage, 'pizza/' + image.name);
+    const imageRef = ref(storage, 'products/' + image.name);
     await uploadBytes(imageRef, image);
     //const imageUrl = await imageRef.getDownloadURL();
     const imageUrl = await getDownloadURL(imageRef);
 
     // Add product document to Firestore
-    await addDoc(collection(db, 'pizza'), {
+    await addDoc(collection(db, 'products'), {
       name: name,
       description: description,
-      price: price,
       imageUrl: imageUrl,
     });
 
@@ -47,10 +46,6 @@ const AddProductForm = () => {
       <div>
         <label htmlFor="description">Description:</label>
         <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
-      </div>
-      <div>
-        <label htmlFor="price">price:</label>
-        <textarea id="price" value={price} onChange={(e) => setPrice(e.target.value)}></textarea>
       </div>
       <div>
         <label htmlFor="image">Image:</label>

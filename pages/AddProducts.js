@@ -9,32 +9,16 @@ const AddProducts = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [image, setImage] = useState(null);
-  const addProducts = async (coffee) => {
+  const addProducts = async (products) => {
     try {
-      const promises = coffee.map(async (product) => {
-        //const imageRef = ref(storage, 'products/' + product.image.name);
-        //await uploadBytes(imageRef, product.image);
-        //const imageUrl = await getDownloadURL(imageRef);
+      const promises = products.map(async (product) => {
+        const imageRef = ref(storage, 'products/' + product.image.name);
+        await uploadBytes(imageRef, product.image);
+        const imageUrl = await getDownloadURL(imageRef);
   
-        let imageRef, imageUrl;
-        
-        if (product.image.startsWith('http')) {
-          // use URL as image source
-          imageRef = ref(storage, 'offer/' + encodeURIComponent(product.name) + '.jpg');
-          imageUrl = product.image;
-        } else {
-          // use local image file
-          imageRef = ref(storage, 'offer/' + product.image.name);
-          await uploadBytes(imageRef, product.image);
-          imageUrl = await getDownloadURL(imageRef);
-        }
-
-
-
-        const docRef = await addDoc(collection(db, 'offer'), {
+        const docRef = await addDoc(collection(db, 'products'), {
           name: product.name,
-          description:product.description,
-          price:product.price,
+          description: product.description,
           imageUrl: imageUrl,
         });
   
@@ -50,31 +34,18 @@ const AddProducts = () => {
   
   // Usage:
   const products = [
-      {
-          name: 'buy 1 get 1 Free',
-          price: '50$',
-          description: 'buy one checken git one pizza free',
-          image: 'https://eg.arabiccoupon.com/sites/default/files/styles/free/public/offers/2019-06-june-_-pizzahut-arabiccoupon-offer-deal-buy1get1free-en_0.jpg',
-      },  
-      {
-          name: 'Wednesday Offer ',
-          price: '30$',
-          description: 'offer 50% for all pizza',
-          image: 'https://indianoffers.in/images/product/detail/thumb/1575103385pizza-hut-offers-coupon-today-34.jpg',
-      }, 
-      {
-          name: 'offer 20%',
-          price: '100$',
-          description: 'buy 2 burger git offer 20% and 2 cola',
-          image: 'https://s3-eu-west-1.amazonaws.com/elmenusv5-stg/Normal/f461ea0e-450b-4308-8bf3-667f2a2b27d3.jpg',
-      }, 
-      {
-          name: 'for 2 days',
-          price: '111$',
-          description: 'buy 1 buger 1 pizza 1 cola 111$ only ',
-          image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQfIpi7KnV0R2wWCu1hrgcBc0ylDAgcM4c_UfvbY9EK0AwK9r7ZMY1Zy_BlTdKNnj2R_N4&usqp=CAU',
-      }, 
-
+    {
+      name: 'Product 11',
+      description: 'Product 1 description',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqtH3cs44ChyTAH5VwSsCU9UMvO3LBA1MZt1iXrgeiztBlql3LiFIOwKRjvKWiqY0WQFc&usqp=CAU',
+    },
+    {
+      name: 'Product 22',
+      description: 'Product 2 description',
+      image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSqtH3cs44ChyTAH5VwSsCU9UMvO3LBA1MZt1iXrgeiztBlql3LiFIOwKRjvKWiqY0WQFc&usqp=CAU',
+    },
+    
+    
     // Add more products here...
   ];
   
