@@ -9,8 +9,8 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import profile from './pages/profile'
 import Favorite from './pages/Favorite';
 
-import  { BurgerDetails, ProductsListBurger } from '../React-native-project/pages/Burgers';
-import  { CoffeeDetails, ProductsListCoffee } from '../React-native-project/pages/Drink';
+import  { BurgerDetails, ProductsListBurger } from './pages/Burgers'
+import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './pages/AddProductForm';
