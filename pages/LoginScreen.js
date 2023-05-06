@@ -35,13 +35,13 @@ const LoginScreen = ({ navigation }) => {
 const docSnap = await getDoc(docRef);
 
 if (docSnap.exists()) {
-  console.log("Document data:", docSnap.data());
+
   const data =docSnap.data();
   if(data.isAdmin==true)
   
-  navigation.navigate('profile')
+  navigation.navigate('adminHome');
 }else
-navigation.navigate('Home')
+navigation.navigate('Home');
 
   };
 
