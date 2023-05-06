@@ -20,7 +20,7 @@ const SignUpScreen = ({ navigation }) => {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
-
+  const [isAdmin, setIsAdmin] = useState(false);
   const [validationEmail , setValidationEmail] = useState('');
   const handleCheckEmail = () => {
     let isvalid = true ;
@@ -77,6 +77,7 @@ const SignUpScreen = ({ navigation }) => {
       lName:lastName,
       phone:phone,
       birthDate:birthDate,
+         isAdmin:false,
     });
     
 

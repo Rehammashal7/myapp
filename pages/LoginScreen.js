@@ -9,6 +9,8 @@ import { signInWithEmailAndPassword, signInWithPopup,
 
 
 
+  import { doc, updateDoc ,getDoc } from "firebase/firestore";
+  import { auth , db , storage}  from '../firebase';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -16,7 +18,35 @@ const LoginScreen = ({ navigation }) => {
   const [error, setError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
+
+
+
   const auth = getAuth();
+
+
+
+
+
+
+
+
+  const getUser = async() => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+const docSnap = await getDoc(docRef);
+
+if (docSnap.exists()) {
+  console.log("Document data:", docSnap.data());
+  const data =docSnap.data();
+  if(data.isAdmin==true)
+  
+  navigation.navigate('profile')
+}else
+navigation.navigate('Home')
+
+  };
+
+
+
   
   function validateForm(email, password, setError) {
     if (!email) {
@@ -30,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
     return true;
   }
   
-   
+  
   const handleLogin = () => {
 
       if (validateForm(email, password, setError)) {
@@ -45,9 +75,9 @@ const LoginScreen = ({ navigation }) => {
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-  
       const user = userCredential.user;
-navigation.navigate('Home')
+    getUser();
+
     })
     .catch((error) => {
       console.log(error);

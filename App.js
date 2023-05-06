@@ -6,8 +6,8 @@ import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import profile from './pages/profile'
-import Favorite from './pages/Favorite';
+import profile from './pages/profile';
+import Favorite from './pages/favorite';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
