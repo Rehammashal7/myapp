@@ -36,12 +36,6 @@ const LoginScreen = ({ navigation }) => {
       if (validateForm(email, password, setError)) {
        
       }
-    
-    
-  //   if (!email || !password) {
-  //    setError('Please enter your email and password');
-  //   return;
-  // }
 
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
