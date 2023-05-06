@@ -73,7 +73,7 @@ const SignUpScreen = ({ navigation }) => {
   const adduserTodata = async()=>{
     await setDoc(doc(db, "users", auth.currentUser.uid), {
       email: email,
-      fName:fristName,
+      fName:firstName,
       lName:lastName,
       phone:phone,
       birthDate:birthDate,
@@ -159,7 +159,7 @@ const SignUpScreen = ({ navigation }) => {
        <TextInput
         value={fristName}
         onChangeText={setFristName}
-        placeholder="Frit Name "
+        placeholder="First Name "
         style={styles.input}
       />
        <TextInput

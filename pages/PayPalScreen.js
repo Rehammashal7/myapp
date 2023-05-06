@@ -5,7 +5,7 @@ import { PayPalButtons } from '@paypal/react-paypal-js';
 
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import PayPalScreen from './PayPalScreen'; 
+//import PayPalScreen from './PayPalScreen'; 
 
 
 const PayPalScreen = ({navigation}) =>{

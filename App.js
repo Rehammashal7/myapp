@@ -8,7 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import profile from './pages/profile'
 import Favorite from './pages/favorite';
- import PayPalScreen from './pages/PayPalScreen' ;
+import PayPalScreen from './pages/PayPalScreen' ;
 
 const Stack = createNativeStackNavigator();
 export default function App() {
