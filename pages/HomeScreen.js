@@ -3,9 +3,11 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList, Pressabl
 import data from '../data';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 
 
+const PAYPAL_CLIENT_ID = 'AX8P_k3dNT8FJcVSr_qqFFxbUuRSO6C1W6XJ_eOylME1W8aCvRltDO0AWFAOgA-srgbpw9rHeWtFZ9Pd';
 // Generate required css
 
 
@@ -20,6 +22,7 @@ const handleSearch = (text) => {
   };
      
    return(
+    <PayPalScriptProvider options={{ 'client-id': 'AX8P_k3dNT8FJcVSr_qqFFxbUuRSO6C1W6XJ_eOylME1W8aCvRltDO0AWFAOgA-srgbpw9rHeWtFZ9Pd'}}>
     <View style={styles.container}>
 
            <View style={styles.header}>
@@ -52,6 +55,22 @@ const handleSearch = (text) => {
                        </View>
 
                    )} />
+                    <PayPalButtons
+            style={{ layout: 'horizontal' }}
+            createOrder={(data, actions) => {
+              // This function is called when the button is clicked
+              // You can customize the order details here
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: {
+                      value: '0.01', // Example amount, should be replaced with actual value
+                    },
+                  },
+                ],
+              });
+            }}
+          />
                  <View style ={styles.bottoms}>
              
                  </View>
@@ -59,6 +78,9 @@ const handleSearch = (text) => {
  
            <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
+               <Pressable onPress={() => navigation.navigate("PayPalScreen")} style={styles.iconBehave} >
+                       <Icon name="cube" size={20} color="gray" />
+                   </Pressable>
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="gray" />
                    </Pressable>
@@ -73,6 +95,7 @@ const handleSearch = (text) => {
          
          
        </View>
+       </PayPalScriptProvider>
    );
 }
 
