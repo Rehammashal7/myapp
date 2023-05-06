@@ -1,57 +1,78 @@
-import React, { useState } from 'react';
+
+import React from 'react';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import {NavigationContainer} from '@react-navigation/native';
+import COLORS from '../Consts/Color';
+import {View} from 'react-native';
 import HomeScreen from '../pages/HomeScreen';
-import Profile from '../pages/Profile';
-import Favorite from '../pages/Favorite';
-
-
-
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-
+import CartScreen from '../pages/CartScreen'
 
 const Tab = createBottomTabNavigator();
 
-const bar =() =>{
+const BottomNavigator = () => {
   return (
-    <NavigationContainer
-    independent={true}>
-        <Tab.Navigator
-          initialRouteName='Home'
-          screenOptions={({ route }) => ({
-            tabBarIcon: ({ focused, color, size }) => {
-              let iconName;
-              let rn = route.name;
-  
-              if (rn ==='Home') {
-                iconName = focused ? 'Home' : 'Home-outline';
-  
-              } else if (rn === 'Profile') {
-                iconName = focused ? 'user' : 'user-outline';
-  
-              } else if (rn === 'Favorite') {
-                iconName = focused ? 'heart' : 'Heart-outline';
-              }
-  
-              // You can return any component that you like here!
-              return <Icon name={iconName} size={size} color={color} />;
-              
-            },
-          })}
-          tabBarOptions={{
-            activeTintColor: 'tomato',
-            inactiveTintColor: 'grey',
-            labelStyle: { paddingBottom: 10, fontSize: 10 },
-            style: { padding: 10, height: 70},
-          
-          }}
-        >   
-
-            <Tab.Screen name='Home' component={HomeScreen}/>
-            <Tab.Screen name='Profile' component={Profile}/>
-            <Tab.Screen name='Favorite' component={Favorite}/>
-        </Tab.Navigator>
-    </NavigationContainer>
+    <Tab.Navigator
+      tabBarOptions={{
+        style: {
+          height: 55,
+          borderTopWidth: 0,
+          elevation: 0,
+        },
+        showLabel: false,
+        activeTintColor: COLORS.yellow,
+      }}>
+      <Tab.Screen
+        name="HomeScreen"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon name="home" color={color} size={28} />
+          ),
+        }}
+      />
+      {/* <Tab.Screen
+        name="Search"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <View
+              style={{
+                height: 60,
+                width: 60,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: COLORS.white,
+                borderColor: COLORS.primary,
+                borderWidth: 2,
+                borderRadius: 30,
+                top: -25,
+                elevation: 5,
+              }}>
+              <Icon name="search" color={COLORS.primary} size={28} />
+            </View>
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Favorite"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon name="heart" color={color} size={28} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="CartScreen"
+        component={CartScreen}
+        options={{
+          tabBarIcon: ({color}) => (
+            <Icon name="shopping-cart" color={color} size={28} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
   );
-}
-export default bar;
+};
+
+export default BottomNavigator;
