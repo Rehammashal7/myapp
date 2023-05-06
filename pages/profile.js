@@ -355,6 +355,9 @@ if (docSnap.exists()) {
 
       <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
+               <Pressable onPress={() => navigation.navigate("PayPalScreen")} style={styles.iconBehave} >
+                       <Icon name="cube" size={30} color="gray" />
+                   </Pressable>
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color='gray' />
                    </Pressable>
@@ -471,16 +474,17 @@ const styles = StyleSheet.create({
     alignItems:'center',
     bottom:10,
     padding:10,
+  left:-7,
    
-    borderBottomLeftRadius: 20,
-    borderBottomRightRadius: 20,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 10,
  },
  Navbar: {
     flexDirection: 'row',
     backgroundColor:'#131A2C',
-    width:350,
+    width:400,
     justifyContent:'space-evenly',
-    borderRadius:40,
+    borderRadius:20,
     height:50
     
  },

@@ -11,6 +11,9 @@ return(
         </View>
         <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
+               <Pressable onPress={() => navigation.navigate("PayPalScreen")} style={styles.iconBehave} >
+                       <Icon name="cube" size={30} color="gray" />
+                   </Pressable>
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="#FFDE9B" />
                    </Pressable>
@@ -50,9 +53,9 @@ const styles = StyleSheet.create({
      Navbar: {
         flexDirection: 'row',
         backgroundColor:'#131A2C',
-        width:370,
+        width:395,
         justifyContent:'space-evenly',
-        borderRadius:40,
+        borderRadius:30,
         height:50
         
      },

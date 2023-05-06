@@ -2,15 +2,11 @@ import React, { useEffect,useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, FlatList,Pressable } from 'react-native';
 import { PayPalScriptProvider } from '@paypal/react-paypal-js';
 import { PayPalButtons } from '@paypal/react-paypal-js';
-
-import { createStackNavigator } from '@react-navigation/stack';
-import { NavigationContainer } from '@react-navigation/native';
-//import PayPalScreen from './PayPalScreen'; 
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const PayPalScreen = ({navigation}) =>{
 
-  const [amount, setAmount] = useState('');
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -22,18 +18,18 @@ const PayPalScreen = ({navigation}) =>{
     document.body.appendChild(script);
   }, []);
 
-  const createOrder = (data, actions) => {
-    return actions.order.create({
-      purchase_units: [
-        {
-          amount: {
-            currency_code: 'USD',
-            value: amount,
-          },
-        },
-      ],
-    });
-  };
+  // const createOrder = (data, actions) => {
+  //   return actions.order.create({
+  //     purchase_units: [
+  //       {
+  //         amount: {
+  //           currency_code: 'USD',
+  //           value: amount,
+  //         },
+  //       },
+  //     ],
+  //   });
+  // };
 
   const onApprove = (data, actions) => {
     return actions.order.capture().then((details) => {
@@ -55,33 +51,33 @@ const PayPalScreen = ({navigation}) =>{
 
   return (
     <View style={styles.container}>
-      <TextInput
+      {/* <TextInput
         style={styles.input}
         placeholder="Enter Amount"
         keyboardType="decimal-pad"
         onChangeText={setAmount}
         value={amount}
-      />
+      /> */}
       {error && <Text style={styles.error}>{error}</Text>}
       <PayPalScriptProvider
         options={{ "client-id": "AX8P_k3dNT8FJcVSr_qqFFxbUuRSO6C1W6XJ_eOylME1W8aCvRltDO0AWFAOgA-srgbpw9rHeWtFZ9Pd" }}
       >
         <PayPalButtons
-          createOrder={createOrder}
+          // createOrder={createOrder}
           onApprove={onApprove}
           onError={onError}
         />
       </PayPalScriptProvider>
-      <View style={styles.paypalContainer}>
+      {/* <View style={styles.paypalContainer}>
         <View style={styles.paypalButton} id="paypal-button"></View>
-      </View>
+      </View> */}
       <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
                <Pressable onPress={() => navigation.navigate("PayPalScreen")} style={styles.iconBehave} >
-                       <Icon name="cube" size={20} color="gray" />
+                       <Icon name="cube" size={30} color="#FFDE9B" />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                       <Icon name="heart" size={30} color="#FFDE9B" />
+                       <Icon name="heart" size={30} color="gray" />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />
@@ -131,6 +127,15 @@ const PayPalScreen = ({navigation}) =>{
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
      },
+     Navbar: {
+      flexDirection: 'row',
+      backgroundColor:'#131A2C',
+      width:395,
+      justifyContent:'space-evenly',
+      borderRadius:30,
+      height:50
+      
+   },
      iconBehave:{
       padding:44,
       bottom:35

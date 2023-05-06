@@ -57,19 +57,19 @@ const handleSearch = (text) => {
                    )} />
                     <PayPalButtons
             style={{ layout: 'horizontal' }}
-            createOrder={(data, actions) => {
-              // This function is called when the button is clicked
-              // You can customize the order details here
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: '0.01', // Example amount, should be replaced with actual value
-                    },
-                  },
-                ],
-              });
-            }}
+            // createOrder={(data, actions) => {
+            //   // This function is called when the button is clicked
+            //   // You can customize the order details here
+            //   return actions.order.create({
+            //     purchase_units: [
+            //       {
+            //         amount: {
+            //           value: '0.01', // Example amount, should be replaced with actual value
+            //         },
+            //       },
+            //     ],
+            //   });
+            // }}
           />
                  <View style ={styles.bottoms}>
              
@@ -79,7 +79,7 @@ const handleSearch = (text) => {
            <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
                <Pressable onPress={() => navigation.navigate("PayPalScreen")} style={styles.iconBehave} >
-                       <Icon name="cube" size={20} color="gray" />
+                       <Icon name="cube" size={30} color="gray" />
                    </Pressable>
                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="gray" />
@@ -147,9 +147,9 @@ const styles = StyleSheet.create({
      Navbar: {
         flexDirection: 'row',
         backgroundColor:'#131A2C',
-        width:370,
+        width:388,
         justifyContent:'space-evenly',
-        borderRadius:40,
+        borderRadius:30,
         height:50
         
      },
