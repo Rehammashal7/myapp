@@ -8,6 +8,8 @@ import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
 import PrimaryButton from '../components/Button';
+import {  query, where, doc, deleteDoc } from 'firebase/firestore';
+
 const {width} = Dimensions.get('screen');
 const cardwidth = width/2-20;
 let iconcolor 
@@ -25,7 +27,7 @@ const adminProductsListBurger = ({ navigation }) => {
     }, []);
 
     const handleProductPress = (product) => {
-        navigation.navigate('BurgerDetails', { product });
+        navigation.navigate('adminBurgerDetails', { product });
     };
 
     const renderProduct = ({ item }) => (
@@ -104,6 +106,20 @@ const adminBurgerDetails = ({ route, navigation }) => {
     const { product } = route.params;
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
+    const [products, setProducts] = useState([]);
+
+    const handleDelete = async (item) => {
+        // Get the Firestore document ID for the pizza with the selected name
+        const querySnapshot = await getDocs(query(collection(db, 'burger'), 
+        where('name', '==', product.name)));
+        const docId = querySnapshot.docs[0].id;
+      
+        // Delete the pizza document from Firestore
+        await deleteDoc(doc(db, 'burger', docId));c
+        const newProducts = products.filter((product) => product.name !== item.label);
+        setProducts(newProducts);
+        
+      };
     return (
 
 
@@ -136,7 +152,7 @@ const adminBurgerDetails = ({ route, navigation }) => {
                     <FlatList
                             Vertical={true}
                             showsVerticalScrollIndicator={false}
-                            data={size}
+                            data={products}
                             keyExtractor={(item) => item.id}
 
                             renderItem={({ item, index }) => (
@@ -220,8 +236,8 @@ const adminBurgerDetails = ({ route, navigation }) => {
             
             <View style={{marginLeft:50}}> 
             <PrimaryButton
-            title='Add to cart' 
-            onPress={() => navigation.navigate('CartScreen')}/>
+            title='Delete' 
+            onPress={() => handleDelete ()}/>
             </View>
             </View>
             {/* display other product details */}

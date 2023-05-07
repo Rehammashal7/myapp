@@ -50,7 +50,7 @@ const adminHomeScreen = ({ navigation }) => {
                         extraData={indexCheck}
                         renderItem={({ item, index }) => (
                             <Pressable
-                                onPress={() => navigation.navigate(item.name)}
+                                onPress={() => navigation.navigate('admin'+item.name)}
                             >
                                 <View style={indexCheck === item.id ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
                                     <Image
