@@ -26,7 +26,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   useEffect(() => {
   const script = document.createElement("script");
-script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyCtGDSb9fhScS4MYwoX6mY-9iDjWBWF7h4";
+script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyAg_OCpvTnPsWbcdiiNJUcGVmmRoFrrCT8";
 script.defer = true;
 document.head.appendChild(script);
   }, []);
