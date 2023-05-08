@@ -11,6 +11,10 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Food, { Offer, filterData } from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
+import Mapscreen from './Mapscreen'; 
+import MapIcon from '../assets/MapIcon.png';
+//import MapView from 'react-native-maps';
+
 const {width} = Dimensions.get('screen');
 const cardwidth = width-20;
 
@@ -223,7 +227,32 @@ const HomeScreen = ({ navigation }) => {
                 </View>
             </View>
 
+   <View style = {styles.floatButton}>
+    <TouchableOpacity>
+    <Pressable
+         onPress = { ()=>{
+              navigation.navigate("Mapscreen")
+         }}>
 
+       {/* <Icon
+       name ="place"
+       type ="material"
+       size = {32}
+       color = {COLORS.buttons}
+        /> */}
+
+   {/* <Text style = {{color:COLORS.grey}}> Map </Text> */}
+
+
+<Image source={MapIcon} style={{ width: 40, height: 40, top: 6, borderRadius: 25,justifyContent: 'center',
+      alignItems: 'center' }} />
+      </Pressable>
+        
+    </TouchableOpacity>
+   </View>
+   
+
+    
 
         </View>
     );
@@ -392,7 +421,7 @@ const styles = StyleSheet.create({
         width: 60, height: 60,
         borderRadius: 30,
         alignItems: 'center'
-    }
+    },
 
 
 });
