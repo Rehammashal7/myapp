@@ -86,7 +86,7 @@ const ProductsListOfferAdmin= ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate("plusbuttoeditn")} style={styles.iconBehave} >
                         <Icon name="plus" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
