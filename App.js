@@ -8,7 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
 import Favorite from './pages/favorite';
-
+import profile from'./pages/profile';
 import  { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
@@ -30,7 +30,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="adminHome">
+      <Stack.Navigator initialRouteName="Home">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Burgers" component={ProductsListBurger} />
@@ -60,6 +60,7 @@ export default function App() {
         <Stack.Screen name="adminCoffee" component={ ProductsListCoffeeAdmin }/>
         <Stack.Screen name="EditCoffeePage" component={ EditCoffeePage }/>
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
+        <Stack.Screen name="profile" component={ profile }/>
 
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
