@@ -76,9 +76,7 @@ const ProductsListPizza = ({ navigation }) => {
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}$</Text>
-                    <View style={styles.HeartIcone}>
-                        <Icon name="heart" size={30} color={COLORS.grey} />
-                    </View>
+                   
                 </View>
             </View>
         </TouchableOpacity>
@@ -234,9 +232,7 @@ const PizzaDetails = ({ route, navigation }) => {
                     <View style={styles.titlesWrapper}>
                         <Text style={styles.Name2}>{product.name}</Text>
                     </View>
-                    <View style={styles.headerRight}>
-                        <Icon name='heart' size={25} color={COLORS.heart} />
-                    </View>
+                   
 
                 </View>
                 <View style={styles.container2}>
@@ -566,7 +562,7 @@ const styles = StyleSheet.create({
     Navbar: {
         flexDirection: 'row',
         backgroundColor: COLORS.darkblue,
-        width: 370,
+        width: width,
         justifyContent: 'space-evenly',
         borderRadius: 30,
         height: 40

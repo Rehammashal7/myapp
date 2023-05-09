@@ -104,7 +104,7 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input, Dimensions} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -113,7 +113,7 @@ import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 import * as ImagePicker from 'expo-image-picker';
-
+const {width} = Dimensions.get('screen');
 const Profile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
 Navbar: {
     flexDirection: 'row',
     backgroundColor: COLORS.darkblue,
-    width: 370,
+    width: width,
     justifyContent: 'space-evenly',
     borderRadius: 30,
     height: 40

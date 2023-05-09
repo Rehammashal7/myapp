@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView,Dimensions, Pressable } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { db } from '../firebase';
 import COLORS from '../Consts/Color';
 import { doc, collection, updateDoc, getDocs, getDoc } from "firebase/firestore";
@@ -11,9 +11,9 @@ import Food, { filterData, option, size } from '../data';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PrimaryButton from '../components/Button';
-const {width} = Dimensions.get('screen');
-const cardwidth = width-20;
-let iconcolor 
+const { width } = Dimensions.get('screen');
+const cardwidth = width - 20;
+let iconcolor
 const ProductsListOffer = ({ navigation }) => {
     const [products, setProducts] = useState([]);
     const [userId, setUserId] = useState('');
@@ -70,9 +70,9 @@ const ProductsListOffer = ({ navigation }) => {
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop:10,marginHorizontal:10,justifyContent:'space-between'}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.price}$</Text>
-                  
+                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}$</Text>
+
                 </View>
             </View>
         </TouchableOpacity>
@@ -106,24 +106,24 @@ const ProductsListOffer = ({ navigation }) => {
                 />
             </View>
             <ScrollView>
-            <FlatList
-            
-                data={products}
-                renderItem={renderProduct}
-                keyExtractor={(item) => item.id}
-            />
-            <View style={styles.bottoms}></View>
+                <FlatList
+
+                    data={products}
+                    renderItem={renderProduct}
+                    keyExtractor={(item) => item.id}
+                />
+                <View style={styles.bottoms}></View>
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                   
+
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable  onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
                     </Pressable>
                 </View>
@@ -209,7 +209,7 @@ const OfferDetails = ({ route, navigation }) => {
 
 
     return (
-<View style={styles.container}>
+        <View style={styles.container}>
             <Header
                 title={'FoodApp'}
                 icon={require('../assets/cart.png')}
@@ -219,31 +219,31 @@ const OfferDetails = ({ route, navigation }) => {
                 }}
             />
 
-        <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-            <View style={styles.headerWrapper}>
-                <View style={styles.titlesWrapper}>
-                    <Text style={styles.Name2}>{product.name}</Text>
+            <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+                <View style={styles.headerWrapper}>
+                    <View style={styles.titlesWrapper}>
+                        <Text style={styles.Name2}>{product.name}</Text>
+                    </View>
+
+
                 </View>
-                
-
-            </View>
-            <View style={styles.container2}>
+                <View style={styles.container2}>
 
 
-                <View style={styles.container}>
+                    <View style={styles.container}>
 
-                    <View style={styles.priceWrapper}>
-                        <Text style={styles.price}> price : {product.price}$</Text>
-                    </View>
-                    <Text style={{fontSize:20,color:COLORS.grey ,marginBottom:10,marginLeft:20}}>rate</Text>
-                    <View style={{ flexDirection: 'row', marginLeft: 20,marginBottom:10 }}>
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                    </View>
-                    <FlatList
+                        <View style={styles.priceWrapper}>
+                            <Text style={styles.price}> price : {product.price}$</Text>
+                        </View>
+                        <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
+                        <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                        </View>
+                        <FlatList
                             Vertical={true}
                             showsVerticalScrollIndicator={false}
                             data={size}
@@ -261,15 +261,15 @@ const OfferDetails = ({ route, navigation }) => {
                                                     ? COLORS.darkblue
                                                     : COLORS.yellow,
                                             ...styles.size,
-                                            marginBottom:5,
-                                            marginLeft:20
+                                            marginBottom: 5,
+                                            marginLeft: 20
                                         }}>
                                         <Text
                                             style={{
                                                 fontSize: 15,
                                                 fontWeight: 'bold',
                                                 marginLeft: 10,
-                                                marginTop:5,
+                                                marginTop: 5,
                                                 color:
                                                     selectedSizeIndex == index
                                                         ? COLORS.white
@@ -281,79 +281,80 @@ const OfferDetails = ({ route, navigation }) => {
                                 </TouchableOpacity>
                             )}
                         />
-                  
+
+                    </View>
+
+                    <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
                 </View>
+                <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+                    
+                    <FlatList
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        data={option}
+                        keyExtractor={(item) => item.id}
 
-                <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
-            </View>
-            <View style={{backgroundColor:COLORS.background,flex:1}}>
-            <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={option}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity
+                                key={index}
+                                activeOpacity={0.8}
+                                onPress={() => setSelectedOptionIndex(index)}>
+                                <View
+                                    style={{
+                                        backgroundColor:
+                                            selectedOptionIndex == index
+                                                ? COLORS.darkblue
+                                                : COLORS.yellow,
+                                        ...styles.size,
+                                        marginBottom: 5,
+                                        marginLeft: 20,
+                                        marginTop: 20
+                                    }}>
+                                    <Text
+                                        style={{
+                                            fontSize: 15,
+                                            fontWeight: 'bold',
+
+                                            marginTop: 5,
+                                            color:
+                                                selectedOptionIndex == index
+                                                    ? COLORS.white
+                                                    : COLORS.darkblue,
+                                        }}>
+                                        {item.Name}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                    />
+                    <Text style={{ fontSize: 20, marginBottom: 20 }}> discription : {product.description}</Text>
+                    <View style={{ marginLeft: 50 }}>
+                        <FlatList
+
+                            data={productt}
                             keyExtractor={(item) => item.id}
-
                             renderItem={({ item, index }) => (
                                 <TouchableOpacity
                                     key={index}
                                     activeOpacity={0.8}
-                                    onPress={() => setSelectedOptionIndex(index)}>
-                                    <View
-                                        style={{
-                                            backgroundColor:
-                                                selectedOptionIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
-                                            ...styles.size,
-                                            marginBottom:5,
-                                            marginLeft:20,
-                                            marginTop:20
-                                        }}>
-                                        <Text
-                                            style={{
-                                                fontSize: 15,
-                                                fontWeight: 'bold',
-                                              
-                                                marginTop:5,
-                                                color:
-                                                    selectedOptionIndex == index
-                                                        ? COLORS.white
-                                                        : COLORS.darkblue,
-                                            }}>
-                                            {item.Name}
-                                        </Text>
-                                    </View>
+
+                                    onPress={() => setSelectedOptionIndex(index)}
+                                >
+
+                                    <PrimaryButton
+                                        title="Add to Order"
+                                        style={styles.addToCartBtn}
+                                        onPress={() => {
+                                            onAddToCart(item, index);
+                                        }}
+                                    />
                                 </TouchableOpacity>
                             )}
                         />
-            <Text style={{fontSize:20,marginBottom:20}}> discription : {product.description}</Text>
-            <View style={{marginLeft:50}}> 
-            <FlatList
-
-data={productt}
-keyExtractor={(item) => item.id}
-renderItem={({ item, index }) => (
-    <TouchableOpacity
-        key={index}
-        activeOpacity={0.8}
-
-        onPress={() => setSelectedOptionIndex(index)}
-    >
-
-        <PrimaryButton
-            title="Add to Order"
-            style={styles.addToCartBtn}
-            onPress={() => {
-                onAddToCart(item, index);
-            }}
-        />
-    </TouchableOpacity>
-)}
-/>
+                    </View>
+                </View>
+                {/* display other product details */}
             </View>
-            </View>
-            {/* display other product details */}
-        </View>
         </View>
     );
 }
@@ -548,7 +549,7 @@ const styles = StyleSheet.create({
     Navbar: {
         flexDirection: 'row',
         backgroundColor: COLORS.darkblue,
-        width: 370,
+        width: width,
         justifyContent: 'space-evenly',
         borderRadius: 30,
         height: 40
