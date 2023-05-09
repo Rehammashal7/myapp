@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
     ScrollView, Dimensions, TouchableWithoutFeedback, Modal, Keyboard
@@ -8,25 +8,67 @@ import COLORS from '../Consts/Color';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { filterData } from '../data';
 import filter from 'lodash/filter'
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../firebase';
+import { useNavigation } from '@react-navigation/native';
 
 const Search = () => {
-    const [data, setData] = useState([...filterData])
+    const navigation  = useNavigation();
+    const [data, setData] = useState([])
     const [modalVisible, setModalVisible] = useState(false)
     const [textInputFossued, setTextInputFossued] = useState(true)
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState([]);
+    const [products, setProducts] = useState([]);
     const textInput = useRef(0)
+
     const contains = ({ name }, query) => {
         if (name.includes(query)) {
             return true
         }
         return false
-    }
-    const handleSearch = text => {
-        const dataS = filter(filterData, userSearch => {
-            return contains(userSearch, text)
-        })
+    } 
 
+    useEffect(() => {
+        const getProducts = async () => {
+            const productsCollection = collection(db, 'pizza');
+            const productsSnapshot = await getDocs(productsCollection);
+            const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setData(productsData);
+        };
+        getProducts();
+    }, []);
+    
+    
+    const handleProductPress = (product) => {
+        navigation.navigate('PizzaDetails', { product })
+        setModalVisible(false)
+        setTextInputFossued(true)
+    }
+    const renderItem = ({ item }) => (
+       <TouchableOpacity  onPress={() => handleProductPress(item)}>
+        <View style={styles.view2}>
+          <Text>{item.name}</Text>
+        </View>
+        </TouchableOpacity>
+      );
+      
+  
+    
+    
+    const handleSearch = text =>{
+        const dataS = filter(data, userSearch =>{
+            return contains(userSearch,text)
+        })
+    
         setData([...dataS])
     }
+    // const handleSearch = async text => {
+    //    //setSearchQuery(text);
+    //     let querySnapshot = await getDocs(query(collection(db, 'pizza'), 
+    //     where('searchQuery', '==', 'Margrita')));
+    //     setSearchResults(querySnapshot);
+    //   };
     return (
         <View style={{ alignItems: "center" }}>
             <TouchableWithoutFeedback
@@ -52,13 +94,14 @@ const Search = () => {
                         <View style={styles.TextInput}>
                             <Animatable.View
                                 animation={textInputFossued ? "fadeInRight" : "fadeInLeft"}
-                                duration={400}
+                                duration={100}
                             >
                                 <Icon name={textInputFossued ? "arrow-left" : "search"}
                                     onPress={() => {
-                                        if (textInputFossued)
+                                        if (textInputFossued){
                                             setModalVisible(false)
                                         setTextInputFossued(true)
+                                        }
                                     }}
                                     style={styles.icon2}
 
@@ -66,10 +109,12 @@ const Search = () => {
                                 />
                             </Animatable.View>
                             <TextInput
-                                style={{ width: "80%", borderColor: COLORS.grey }}
-                                placeholder=""
-                                autoFocus={false}
+                                style={{width:'80%'}}
                                 ref={textInput}
+                                autoFocus = {false}
+                                placeholder="Search"
+                                onChangeText ={handleSearch}
+                                
 
                                 onFocus={() => {
                                     setTextInputFossued(true)
@@ -79,43 +124,33 @@ const Search = () => {
                                     setTextInputFossued(false)
                                 }}
 
-                                onChangeText={handleSearch}
+                                
                             />
 
                             <Animatable.View
                                 animation={textInputFossued ? "fadeInLeft" : ""}
                                 duration={400}
                             >
+                                <TouchableOpacity  onPress={() => {
+                                        textInput.current.clear()
+                                        // handleSearch()          
+                                    }}>
                                 <Icon
                                     name={textInputFossued ? "times-circle" : null}
                                 
-                                    
+                                    size={25}
                                     style={{ marginRight: -10,color:COLORS.grey }}
-                                    onPress={() => {
-                                        textInput.current.clear()
-                                        // handleSearch()          
-                                    }}
+                                   
                                 />
+                                </TouchableOpacity>
                             </Animatable.View>
                         </View>
                     </View>
          <FlatList
-            data={data}
-            renderItem={({ item }) => (
-              <TouchableOpacity 
-                       onPress = {() =>{
-
-                            Keyboard.dismiss
-                             navigation.navigate("Pizza",{item:item.name})
-                            setModalVisible(false)
-                            setTextInputFossued(true)
-                                }} >
-                    <View style={styles.view2}>
-                        <Text style={{color:COLORS.grey, fontSize:15 }}>{item.name}</Text>
-                    </View>
-              </TouchableOpacity>
-                )}
-            keyExtractor={item => item.id}
+             
+             data={data}
+             renderItem={renderItem}
+             keyExtractor={item => item.id}
 
              />           
 
@@ -123,16 +158,20 @@ const Search = () => {
                 </View>
                 <View style={styles.NavContainer} >
                     <View style={styles.Navbar} >
-                        <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                            <Icon name="heart" size={25} color="gray" />
-                        </Pressable>
-                        <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                        
+                        <Pressable onPress={() =>{ navigation.navigate("profile") 
+                            setModalVisible(false)
+                            setTextInputFossued(true)}} style={styles.iconBehave}>
                             <Icon name="user" size={25} color="gray" />
                         </Pressable>
-                        <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                        <Pressable onPress={() =>{ navigation.navigate("Home")  
+                            setModalVisible(false)
+                            setTextInputFossued(true) }} style={styles.iconBehave} >
                             <Icon name="home" size={25} color={COLORS.grey} />
                         </Pressable>
-                        <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
+                        <Pressable onPress={() => {navigation.navigate("CartScreen") 
+                              setModalVisible(false)
+                              setTextInputFossued(true)}} style={styles.iconBehave} >
                             <Icon name="shopping-cart" size={25} color={COLORS.grey} />
                         </Pressable>
                     </View>

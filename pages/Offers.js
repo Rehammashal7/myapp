@@ -116,9 +116,7 @@ const ProductsListOffer = ({ navigation }) => {
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey}/>
-                    </Pressable>
+                   
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
@@ -226,9 +224,7 @@ const OfferDetails = ({ route, navigation }) => {
                 <View style={styles.titlesWrapper}>
                     <Text style={styles.Name2}>{product.name}</Text>
                 </View>
-                <View style={styles.headerRight}>
-                    <Icon name='heart' size={25} color={COLORS.heart} />
-                </View>
+                
 
             </View>
             <View style={styles.container2}>

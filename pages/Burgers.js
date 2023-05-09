@@ -122,9 +122,7 @@ const ProductsListBurger = ({ navigation }) => {
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey} />
-                    </Pressable>
+                   
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey}/>
                     </Pressable>
@@ -232,9 +230,7 @@ const BurgerDetails = ({ route, navigation }) => {
                 <View style={styles.titlesWrapper}>
                     <Text style={styles.Name2}>{product.name}</Text>
                 </View>
-                <View style={styles.headerRight}>
-                    <Icon name='heart' size={25} color={COLORS.heart} />
-                </View>
+
 
             </View>
             <View style={styles.container2}>
@@ -410,7 +406,7 @@ const styles = StyleSheet.create({
         color: "#131A2C",
         marginTop: 5,
         marginLeft: 10,
-        marginBottom: 10,
+        marginBottom: 5,
         left: 200
     },
     titlesWrapper: {
@@ -481,7 +477,7 @@ const styles = StyleSheet.create({
     bottoms: {
         flexDirection: "row",
         backgroundColor: "#FBFAFF",
-        height: 30,
+        height: 35,
         bottom: 20
     },
     headerText: {
