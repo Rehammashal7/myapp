@@ -12,8 +12,6 @@ import Favorite from './pages/favorite';
 import  { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
-import  { BurgerDetails, ProductsListBurger } from './pages/Burgers'
-import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/adminPizza';
 
