@@ -12,7 +12,9 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   import faceicon from '../assets/fac.png';
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
+
 const addAdmin = ({navigation}) => {
+    
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -52,7 +54,7 @@ return(
     <View style={styles.container } >
         
         <View style={styles.container}>
-      <Text style={styles.heading}>Log In</Text>
+      <Text style={styles.heading}>Add Admin</Text>
       <TextInput
        value={email}
        onChangeText={setEmail}
@@ -70,18 +72,21 @@ return(
        onPress={handleLogin}
         style={styles.buttonlogin}
       >
-        <Text style={styles.buttonText}> Log In</Text>
+        <Text style={styles.buttonText}> Add</Text>
       </TouchableOpacity>
       </View>
         <View style={styles.NavContainer} >
                <View style={styles.Navbar} >
-                   <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
+                   {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                        <Icon name="heart" size={30} color="#FFDE9B" />
-                   </Pressable>
-                   <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                   </Pressable> */}
+                   <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                   <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                        <Icon name="plus" size={25} color={COLORS.grey} />
+                    </Pressable>
+                   <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                        <Icon name="home" size={30} color="gray" />
                    </Pressable>
                </View>

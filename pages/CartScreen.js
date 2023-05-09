@@ -9,18 +9,18 @@ return(
         <text style={styles.heading } >Welcome to favorite </text>
         <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
+                    {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                         <Icon name="heart" size={25} color={COLORS.grey}/>
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                    </Pressable> */}
+                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
+                    {/* <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.yellow} />
-                    </Pressable>
+                    </Pressable> */}
                 </View>
             </View>
     </View>

@@ -198,12 +198,14 @@ const HomeScreen = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color="gray" />
                     </Pressable>
+
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color="#FFDE9B" />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
                     </Pressable>
+
                 </View>
             </View>
 
@@ -340,7 +342,7 @@ const styles = StyleSheet.create({
         width: 60, height: 60,
         borderRadius: 30,
         alignItems: 'center'
-    }
+    },
 
 
 });

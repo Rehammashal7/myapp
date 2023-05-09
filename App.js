@@ -6,7 +6,7 @@ import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import profile from './pages/profile';
+import adminprofile from './adminPages/adminprofile';
 import Favorite from './pages/favorite';
 
 import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
@@ -22,6 +22,10 @@ import { OfferDetails, ProductsListOffer } from './pages/Offers';
 import { OfferDetailsAdmin, ProductsListOfferAdmin ,EditOfferPage} from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
+import addadmin from './adminPages/addAdmin' ;
+import plusbutton from './adminPages/plusbutton';
+
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -43,7 +47,7 @@ export default function App() {
         <Stack.Screen name="Favorite" component={Favorite} />
         <Stack.Screen name ="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="profile" component={profile}  />
+        <Stack.Screen name="adminprofile" component={adminprofile}  />
         <Stack.Screen name="products" component={products}  />
         <Stack.Screen name="CartScreen" component={CartScreen} />
         <Stack.Screen name="AddProductForm " component={AddProductForm } /> 
@@ -60,10 +64,9 @@ export default function App() {
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzPage" component={ EditPizzaPage }/>
 
+        <Stack.Screen name="addadmin" component={ addadmin }/>
+        <Stack.Screen name="plusbutton" component={ plusbutton }/>
 
-   
-
-      
       </Stack.Navigator>
     </NavigationContainer>
   );

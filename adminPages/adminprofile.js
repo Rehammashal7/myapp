@@ -113,7 +113,7 @@ import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 
-const Profile = ({navigation}) => {
+const adminProfile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -358,10 +358,13 @@ if (docSnap.exists()) {
                     {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                         <Icon name="heart" size={25} color={COLORS.grey} />
                     </Pressable> */}
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.yellow}/>
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate("plusbutton ")} style={styles.iconBehave} >
+                        <Icon name="plus" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey}/>
                     </Pressable>
                     {/* <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
@@ -490,4 +493,4 @@ iconBehave: {
     bottom: 30
 },
 });
-export default Profile;
+export default adminProfile;
