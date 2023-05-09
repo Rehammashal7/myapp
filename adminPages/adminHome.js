@@ -6,6 +6,7 @@ import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Food, { Offer, filterData } from '../data';
 import COLORS from '../Consts/Color';
+import Search from '../components/search';
 
 
 
@@ -31,16 +32,10 @@ const adminHomeScreen = ({ navigation }) => {
             </View>
 
             <ScrollView>
-                <View style={styles.searchContainer}>
-                    <Icon name="search" size={20} color="#808080" style={styles.searchIcon} />
-                    <TextInput
-                        style={styles.searchInput}
-                        placeholder="Search"
-                        onChangeText={handleSearch}
-                        value={searchQuery}
-                    />
-                </View>
-
+                
+            <View  style = {{marginBottom:10,paddingTop:10}}>
+       <Search/>
+</View>
                 <View>
                     <FlatList
                         horizontal={true}
