@@ -26,7 +26,7 @@ const addadmin = ({navigation}) => {
           const user = userCredential.user;
           console.log("Done");
           adduserTodata();
-          navigation.navigate('Home')
+          navigation.navigate('adminHome')
           
           // ...
          
