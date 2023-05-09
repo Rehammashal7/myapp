@@ -106,6 +106,7 @@ const ProductsListCoffeeAdmin = ({ navigation }) => {
 
 const CoffeeDetailsAdmin = ({ route, navigation }) => {
     const { product } = route.params;
+    const [products, setProducts] = useState([]);
 
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
@@ -239,7 +240,7 @@ const CoffeeDetailsAdmin = ({ route, navigation }) => {
             <View style={{marginLeft:50}}> 
             <PrimaryButton
             title='Ddit' 
-            onPress={() => navigation.navigate('EditCoffeeage', { product })}/>
+            onPress={() => navigation.navigate('EditCoffeePage', { product })}/>
             <PrimaryButton
             title='Delete' 
             onPress={() => handleDelete ()}/>

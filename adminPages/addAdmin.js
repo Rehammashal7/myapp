@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
+  import COLORS from '../Consts/Color';
 
   import {FlatList, Pressable, ScrollView } from 'react-native';
   import data from '../data';
@@ -13,7 +14,7 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
 
-const addAdmin = ({navigation}) => {
+const addadmin = ({navigation}) => {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -154,4 +155,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default addAdmin;
+export default addadmin;

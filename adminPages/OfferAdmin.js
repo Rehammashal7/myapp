@@ -25,7 +25,7 @@ const ProductsListOfferAdmin= ({ navigation }) => {
     }, []);
 
     const handleProductPress = (product) => {
-        navigation.navigate('OfferDetails', { product });
+        navigation.navigate('OfferDetailsAdmin', { product });
     };
 
     const renderProduct = ({ item }) => (
@@ -103,6 +103,7 @@ const ProductsListOfferAdmin= ({ navigation }) => {
 
 const OfferDetailsAdmin = ({ route, navigation }) => {
     const { product } = route.params;
+    const [products, setProducts] = useState([]);
 
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);

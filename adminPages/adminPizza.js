@@ -107,6 +107,8 @@ const PizzaDetailsAdmin = ({ route, navigation }) => {
     const { product } = route.params;
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
+    const [products, setProducts] = useState([]);
+
     const handleDelete = async (item) => {
         // Get the Firestore document ID for the pizza with the selected name
         const querySnapshot = await getDocs(query(collection(db, 'pizza'), 

@@ -30,7 +30,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome ">
+      <Stack.Navigator initialRouteName="adminHome">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Burgers" component={ProductsListBurger} />
@@ -54,15 +54,15 @@ export default function App() {
         <Stack.Screen name="adminHome" component={ adminHome }/>
         <Stack.Screen name="EditProductPage" component={ EditProductPage }/>
         <Stack.Screen name="OfferDetailsAdmin" component={ OfferDetailsAdmin }/>
-        <Stack.Screen name="adminOffers" component={ ProductsListOfferAdmin }/>
+        <Stack.Screen name="adminOffer" component={ ProductsListOfferAdmin }/>
         <Stack.Screen name="EditOfferPage" component={ EditOfferPage }/>
         <Stack.Screen name="CoffeeDetailsAdmin" component={ CoffeeDetailsAdmin }/>
         <Stack.Screen name="adminCoffee" component={ ProductsListCoffeeAdmin }/>
-        <Stack.Screen name="EditCoffePage" component={ EditCoffeePage }/>
+        <Stack.Screen name="EditCoffeePage" component={ EditCoffeePage }/>
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
 
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
-        <Stack.Screen name="EditPizzPage" component={ EditPizzaPage }/>
+        <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
 
         <Stack.Screen name="addadmin" component={ addadmin }/>
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
