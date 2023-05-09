@@ -81,7 +81,7 @@ navigation.navigate('Home');
       //navigation.navigate('Profile');
        AsyncStorage.setItem('USERID', id);
       //const user = userCredential.user;
-navigation.navigate('Home')
+      getUser();
     })
     .catch((error) => {
       console.log(error);
