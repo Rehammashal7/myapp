@@ -205,10 +205,10 @@ const CartScreen = ({navigation}) => {
                 {/* <Text style={styles.descText}>{item.data.description}</Text> */}
                 <View style={styles.priceView}>
                   <Text style={styles.priceText}>
-                    {'$' + item.data.price}
+                    {'LE' + item.data.price}
                   </Text>
                   <Text style={styles.discountText}>
-                    {'$' + item.data.discountPrice}
+                    {'LE' + item.data.discountPrice}
                   </Text>
                 </View>
               </View>

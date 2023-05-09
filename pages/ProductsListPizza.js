@@ -75,7 +75,7 @@ const ProductsListPizza = ({ navigation }) => {
 
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}$</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
                    
                 </View>
             </View>
@@ -241,7 +241,7 @@ const PizzaDetails = ({ route, navigation }) => {
                     <View style={styles.container}>
 
                         <View style={styles.priceWrapper}>
-                            <Text style={styles.price}> price : {product.price}$</Text>
+                            <Text style={styles.price}> price : {product.price}LE</Text>
                         </View>
                         <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
                         <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>

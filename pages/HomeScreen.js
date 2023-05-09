@@ -58,7 +58,7 @@ const HomeScreen = ({ navigation }) => {
 
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}$</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
                    
                 </View>
             </View>
@@ -68,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <Text style={styles.Text}> Fast Food </Text>
+                <Text style={styles.Text}> Male Mate </Text>
             </View>
 
             <ScrollView>
