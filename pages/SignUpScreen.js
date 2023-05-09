@@ -21,7 +21,7 @@ const SignUpScreen = ({ navigation }) => {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
-
+  const [isAdmin, setIsAdmin] = useState(false);
   const [validationEmail , setValidationEmail] = useState('');
   const handleCheckEmail = () => {
     let isvalid = true ;
@@ -43,9 +43,12 @@ const SignUpScreen = ({ navigation }) => {
 
   const handleSignUp = () => {
 
+    if (password.length < 8) {
+      alert('Password must be at least 8 characters long!');
+      return;
+    }
     if (password !== confirmPassword) {
       alert('Passwords do not match!,please tty again');
-      
       return;
     }
     createUserWithEmailAndPassword(auth, email, password)
@@ -77,6 +80,7 @@ const SignUpScreen = ({ navigation }) => {
       birthDate:birthDate,
       userId:userId ,
       cart: [],
+         isAdmin:false,
     });
     
 
@@ -140,6 +144,9 @@ const SignUpScreen = ({ navigation }) => {
       // ...
     });
   }
+
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Sign Up</Text>

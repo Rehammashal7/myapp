@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider ,sendPasswordResetEmail } from "firebase/auth";
   import { getAuth } from "firebase/auth";
@@ -8,11 +8,72 @@ import { signInWithEmailAndPassword, signInWithPopup,
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
 
+
+
+  import { doc, updateDoc ,getDoc } from "firebase/firestore";
+  import { auth , db , storage}  from '../firebase';
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+
+
+
   const auth = getAuth();
+
+
+
+
+
+
+
+
+  const getUser = async() => {
+    const docRef = doc(db, "users", auth.currentUser.uid);
+const docSnap = await getDoc(docRef);
+
+if (docSnap.exists()) {
+
+  const data =docSnap.data();
+  if(data.isAdmin==true)
+  
+  navigation.navigate('adminHome');
+}else
+navigation.navigate('Home');
+
+  };
+
+
+
+  
+  function validateForm(email, password, setError) {
+    if (!email) {
+      setError('Please enter your email address.');
+      return false;
+    }
+    if (!password) {
+      setError('Please enter your password.');
+      return false;
+    }
+    return true;
+  }
+  
+  
   const handleLogin = () => {
+
+      if (validateForm(email, password, setError)) {
+       
+      }
+    
+    
+  //   if (!email || !password) {
+  //    setError('Please enter your email and password');
+  //   return;
+  // }
+
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const userId = userCredential.user;
@@ -23,8 +84,14 @@ const LoginScreen = ({ navigation }) => {
 navigation.navigate('Home')
     })
     .catch((error) => {
+      console.log(error);
       const errorCode = error.code;
       const errorMessage = error.message;
+        if (errorCode === 'wrong-password') {
+        alert('Incorrect Password');
+      } else {
+        alert(errorMessage);
+      }
     });
   };
 

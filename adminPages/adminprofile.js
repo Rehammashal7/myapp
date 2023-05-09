@@ -104,7 +104,7 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input, Dimensions} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -112,9 +112,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
-import * as ImagePicker from 'expo-image-picker';
-const {width} = Dimensions.get('screen');
-const Profile = ({navigation}) => {
+
+const adminProfile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -127,24 +126,6 @@ const Profile = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
-  //const [profilePhoto, setProfilePhoto] = useState(null);
-
-  const handleChoosePhoto = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
-      return;
-    }
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setPhotoURL(result.uri);
-    }
-  };
 
   
   const handleLogOut = () => {
@@ -220,6 +201,12 @@ if (docSnap.exists()) {
 
   };
 
+  useEffect(() => {
+    if (currentUser?.photoURL) {
+      setPhotoURL(currentUser.photoURL);
+    }
+  }, [currentUser]);
+
   function useAuth() {
     const [currentUser, setCurrentUser] = useState('');
   
@@ -230,13 +217,7 @@ if (docSnap.exists()) {
   
     return currentUser;
   }
-  useEffect(() => {
-    if (currentUser?.photoURL) {
-      setPhotoURL(currentUser.photoURL);
-    }
-  }, [currentUser]);
 
- 
   async function upload(file, currentUser, setLoading) {
     const storage = getStorage();
 
@@ -260,10 +241,8 @@ if (docSnap.exists()) {
  
   return (
   <View style={styles.container}>
-    
-   <TouchableOpacity onPress={handleChoosePhoto} >
-    <View >
-   
+
+    <View  >
       <Image
         style={styles.profileImage}
         source={photoURL}
@@ -277,7 +256,7 @@ if (docSnap.exists()) {
       */}
     </View>
 
-    </TouchableOpacity>
+
     
 
 
@@ -326,10 +305,7 @@ if (docSnap.exists()) {
         <>
         <View style={styles.field}>
         <Feather name="file" color="#333333" size={20} />
-        <TouchableOpacity onPress={handleChoosePhoto}            >
-
-       <input type="file" onChange={handleChange}   />
-       </TouchableOpacity>
+       <input type="file" onChange={handleChange} />
         </View>
      
           <View style={styles.field}>
@@ -379,16 +355,17 @@ if (docSnap.exists()) {
 
       <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                  
+                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.yellow}/>
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                      <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                        <Icon name="plus" size={25} color={COLORS.grey} />
+                      </Pressable>
+                   <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey}/>
-                    </Pressable>
-                    {/* <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable> */}
+                   </Pressable>
+                 
                 </View>
             </View>
     </View>
@@ -418,7 +395,6 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5,
   },
- 
   label: {
     flex: 1,
     fontWeight: 'bold',
@@ -441,9 +417,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
     profileImage: {
-      
-    width: 170,
-    height: 170,
+    width: 150,
+    height: 150,
     borderRadius: 75,
     verticalAlign: 'middle',
     borderRadius: '50%',
@@ -503,7 +478,7 @@ const styles = StyleSheet.create({
 Navbar: {
     flexDirection: 'row',
     backgroundColor: COLORS.darkblue,
-    width: width,
+    width: 370,
     justifyContent: 'space-evenly',
     borderRadius: 30,
     height: 40
@@ -514,72 +489,4 @@ iconBehave: {
     bottom: 30
 },
 });
-export default Profile;
-
-
-
-// import React, { useState } from 'react';
-// import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-// import * as ImagePicker from 'expo-image-picker';
-
-// export default function ProfilePage() {
-//   const [profilePhoto, setProfilePhoto] = useState(null);
-
-//   const handleChoosePhoto = async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//     if (status !== 'granted') {
-//       alert('Sorry, we need camera roll permissions to make this work!');
-//       return;
-//     }
-//     let result = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.All,
-//       allowsEditing: true,
-//       aspect: [4, 3],
-//       quality: 1,
-//     });
-//     if (!result.cancelled) {
-//       setProfilePhoto(result.uri);
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity onPress={handleChoosePhoto}>
-//         {profilePhoto ? (
-//           <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
-//         ) : (
-//           <View style={styles.placeholder}>
-//             <Text style={styles.placeholderText}>Add a photo</Text>
-//           </View>
-//         )}
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#fff',
-//   },
-//   profilePhoto: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//   },
-//   placeholder: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     backgroundColor: '#eee',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   placeholderText: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#aaa',
-//   },
-// });
+export default adminProfile;
