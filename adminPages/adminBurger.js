@@ -58,7 +58,7 @@ const adminProductsListBurger = ({ navigation }) => {
 
                     renderItem={({ item, index }) => (
                         <Pressable
-                            onPress={() => navigation.navigate(item.name)}
+                            onPress={() => navigation.navigate('admin'+item.name)}
                         >
                             <View style={item.name === 'Burgers' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
                                 <Image

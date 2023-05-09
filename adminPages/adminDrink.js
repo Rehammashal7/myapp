@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
+import {  query, where, doc, deleteDoc,updateDoc } from 'firebase/firestore';
 
 import Food, { filterData, option, size } from '../data';
 import FoodCard from '../components/Foodcard';
@@ -56,7 +57,7 @@ const ProductsListCoffeeAdmin = ({ navigation }) => {
 
                     renderItem={({ item, index }) => (
                         <Pressable
-                            onPress={() => navigation.navigate(item.name)}
+                            onPress={() => navigation.navigate('admin'+item.name)}
                         >
                             <View style={item.name === 'Coffee' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
                                 <Image
