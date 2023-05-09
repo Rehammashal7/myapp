@@ -34,12 +34,11 @@ const ProductsListPizza = ({ navigation }) => {
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}</Text>
-                    <View style={styles.HeartIcone}>
-                        <Icon name="heart" size={30} color={COLORS.grey} />
-                    </View>
-                </View>
+                {/* <View style={{ flexDirection: "row", marginTop:10,marginHorizontal:20,justifyContent:'space-between'}}> */}
+                <Text style={{fontSize: 18, fontWeight: 'bold',marginHorizontal:20}}>{item.price}</Text>
+                   
+                  
+                   {/* </View> */}
             </View>
         </TouchableOpacity>
     );
@@ -82,9 +81,7 @@ const ProductsListPizza = ({ navigation }) => {
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey} />
-                    </Pressable>
+                   
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
@@ -112,9 +109,7 @@ const PizzaDetails = ({ route, navigation }) => {
                 <View style={styles.titlesWrapper}>
                     <Text style={styles.Name2}>{product.name}</Text>
                 </View>
-                <View style={styles.headerRight}>
-                    <Icon name='heart' size={25} color={COLORS.heart} />
-                </View>
+                
 
             </View>
             <View style={styles.container2}>
@@ -202,8 +197,7 @@ const PizzaDetails = ({ route, navigation }) => {
                                         <Text
                                             style={{
                                                 fontSize: 15,
-                                                fontWeight: 'bold',
-                                              
+                                                fontWeight: 'bold',                                              
                                                 marginTop:5,
                                                 color:
                                                     selectedOptionIndex == index
@@ -340,7 +334,7 @@ const styles = StyleSheet.create({
     bottoms: {
         flexDirection: "row",
         backgroundColor: "#FBFAFF",
-        height: 30,
+        height: 35,
         bottom: 20
     },
     headerText: {
