@@ -1,19 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView,Dimensions, Pressable } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { doc, collection, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
-
 import Food, { filterData, option, size } from '../data';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
 import PrimaryButton from '../components/Button';
+import Header from './Header';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+
 const {width} = Dimensions.get('screen');
 const cardwidth = width/2-20;
 let iconcolor 
 const ProductsListBurger = ({ navigation }) => {
     const [products, setProducts] = useState([]);
-
+    const [userId, setUserId] = useState('');
+    const isFocused = useIsFocused();
     useEffect(() => {
         const getProducts = async () => {
             const productsCollection = collection(db, 'burger');
@@ -22,6 +28,40 @@ const ProductsListBurger = ({ navigation }) => {
             setProducts(productsData);
         };
         getProducts();
+    }, []);
+
+   
+
+
+    useEffect(() => {
+        const fetchItems = async () => {
+            const querySnapshot = await getDocs(collection(db, 'pizza'));
+            console.log('Total products: ', querySnapshot.size);
+            let tempData = [];
+            querySnapshot.forEach((documentSnapshot) => {
+                console.log(
+                    'product ID: ',
+                    documentSnapshot.id,
+                    documentSnapshot.data(),
+                );
+                tempData.push({
+                    id: documentSnapshot.id,
+                    data: documentSnapshot.data(),
+                });
+            });
+            setProducts(tempData);
+        };
+        //fetchItems();
+    }, []);
+
+
+    useEffect(() => {
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem('USERID');
+            setUserId(id);
+            console.log(id);
+        };
+        getUserId();
     }, []);
 
     const handleProductPress = (product) => {
@@ -35,7 +75,7 @@ const ProductsListBurger = ({ navigation }) => {
 
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop:10,marginHorizontal:20,justifyContent:'space-between'}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.price}</Text>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.price}$</Text>
                     <View style={styles.HeartIcone}>
                         <Icon name="heart" size={30} color={COLORS.grey} />
                     </View>
@@ -91,7 +131,7 @@ const ProductsListBurger = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })}style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
                     </Pressable>
                 </View>
@@ -99,13 +139,93 @@ const ProductsListBurger = ({ navigation }) => {
         </View>
     );
 };
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 const BurgerDetails = ({ route, navigation }) => {
     const { product } = route.params;
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
-    return (
+    const [productt, setProductt] = React.useState([]);
 
+    const [cartCount, setCartCount] = useState(0);
+    // const navigation = useNavigation();
+    const [userId, setUserId] = useState('');
+    const isFocused = useIsFocused();
+    const product_id = product.id;
+
+
+    useEffect(() => {
+
+        const fetchItem = async (product_id) => {
+            const documentSnapshot = await getDoc(doc(db, 'burger', product_id));
+            console.log('product ID: ', documentSnapshot.id, documentSnapshot.data());
+            let tempData = [];
+            tempData.push({
+                id: documentSnapshot.id,
+                data: documentSnapshot.data(),
+            });
+            setProductt(tempData);
+        };
+        fetchItem(product_id);
+
+    }, []);
+
+
+
+    useEffect(() => {
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem('USERID');
+            setUserId(id);
+            console.log(id);
+        };
+        getUserId();
+    }, []);
+
+
+
+
+    const getCartItems = async () => {
+
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.cart?.length ?? 0;
+
+        setCartCount(cartCount);
+    };
+
+    useEffect(() => {
+        if (userId) {
+            getCartItems();
+        }
+    }, [userId]);
+
+    const onAddToCart = async (item, index) => {
+
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { cart = [] } = userSnap.data() ?? {};
+        let existingItem = cart.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { cart });
+        getCartItems();
+    };
+
+
+    return (
+        <View style={styles.container}>
+        <Header
+            title={'FoodApp'}
+            icon={require('../assets/cart.png')}
+            count={cartCount}
+            onClickIcon={() => {
+                navigation.navigate('CartScreen', { userId: userId });
+            }}
+        />
 
         <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
             <View style={styles.headerWrapper}>
@@ -123,7 +243,7 @@ const BurgerDetails = ({ route, navigation }) => {
                 <View style={styles.container}>
 
                     <View style={styles.priceWrapper}>
-                        <Text style={styles.price}> price : {product.price}</Text>
+                        <Text style={styles.price}> price : {product.price}$</Text>
                     </View>
                     <Text style={{fontSize:20,color:COLORS.grey ,marginBottom:10,marginLeft:20}}>rate</Text>
                     <View style={{ flexDirection: 'row', marginLeft: 20,marginBottom:10 }}>
@@ -219,12 +339,32 @@ const BurgerDetails = ({ route, navigation }) => {
             <Text style={{fontSize:20,marginBottom:5}}> discription : {product.description}</Text>
             
             <View style={{marginLeft:50}}> 
-            <PrimaryButton
-            title='Add to cart' 
-            onPress={() => navigation.navigate('CartScreen')}/>
+            <FlatList
+
+data={productt}
+keyExtractor={(item) => item.id}
+renderItem={({ item, index }) => (
+    <TouchableOpacity
+        key={index}
+        activeOpacity={0.8}
+
+        onPress={() => setSelectedOptionIndex(index)}
+    >
+
+        <PrimaryButton
+            title="Add to Order"
+            style={styles.addToCartBtn}
+            onPress={() => {
+                onAddToCart(item, index);
+            }}
+        />
+    </TouchableOpacity>
+)}
+/>
             </View>
             </View>
             {/* display other product details */}
+        </View>
         </View>
     );
 }

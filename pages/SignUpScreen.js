@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
+  import uuid from 'react-native-uuid';
 
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
@@ -66,7 +67,7 @@ const SignUpScreen = ({ navigation }) => {
 
    
   };
-
+  const userId = uuid.v4();
   const adduserTodata = async()=>{
     await setDoc(doc(db, "users", auth.currentUser.uid), {
       email: email,
@@ -74,6 +75,8 @@ const SignUpScreen = ({ navigation }) => {
       lName:lastName,
       phone:phone,
       birthDate:birthDate,
+      userId:userId ,
+      cart: [],
     });
     
 

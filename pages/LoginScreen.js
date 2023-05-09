@@ -3,7 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider ,sendPasswordResetEmail } from "firebase/auth";
   import { getAuth } from "firebase/auth";
-
+  import AsyncStorage from '@react-native-async-storage/async-storage';
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
@@ -15,8 +15,11 @@ const LoginScreen = ({ navigation }) => {
   const handleLogin = () => {
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-  
-      const user = userCredential.user;
+      const userId = userCredential.user;
+      const id =auth.currentUser.uid;
+      //navigation.navigate('Profile');
+       AsyncStorage.setItem('USERID', id);
+      //const user = userCredential.user;
 navigation.navigate('Home')
     })
     .catch((error) => {

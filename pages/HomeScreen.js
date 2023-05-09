@@ -9,6 +9,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Food, { Offer, filterData } from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 const {width} = Dimensions.get('screen');
 const cardwidth = width-20;
 
@@ -23,6 +25,8 @@ const HomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [indexCheck, setIndexCheck] = useState("0")
     const [products, setProducts] = useState([]);
+    const [userId, setUserId] = useState('');
+
 
     useEffect(() => {
         const getProducts = async () => {
@@ -34,6 +38,14 @@ const HomeScreen = ({ navigation }) => {
         getProducts();
     }, []);
 
+    useEffect(() => {
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem('USERID');
+            setUserId(id);
+            console.log(id);
+        };
+        getUserId();
+    }, []);
 
     const handleProductPress = (product) => {
         navigation.navigate('OfferDetails', { product });
@@ -46,7 +58,7 @@ const HomeScreen = ({ navigation }) => {
 
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}$</Text>
                    
                 </View>
             </View>
@@ -215,7 +227,7 @@ const HomeScreen = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color="#FFDE9B" />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("CartScreen")} style={styles.iconBehave} >
+                    <Pressable onPress={() =>  navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
                     </Pressable>
                 </View>
