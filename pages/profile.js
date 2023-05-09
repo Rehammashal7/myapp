@@ -112,6 +112,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
+import * as ImagePicker from 'expo-image-picker';
 
 const Profile = ({navigation}) => {
   const currentUser = useAuth();
@@ -126,6 +127,24 @@ const Profile = ({navigation}) => {
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
+  //const [profilePhoto, setProfilePhoto] = useState(null);
+
+  const handleChoosePhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled) {
+      setPhotoURL(result.uri);
+    }
+  };
 
   
   const handleLogOut = () => {
@@ -201,12 +220,6 @@ if (docSnap.exists()) {
 
   };
 
-  useEffect(() => {
-    if (currentUser?.photoURL) {
-      setPhotoURL(currentUser.photoURL);
-    }
-  }, [currentUser]);
-
   function useAuth() {
     const [currentUser, setCurrentUser] = useState('');
   
@@ -218,6 +231,13 @@ if (docSnap.exists()) {
     return currentUser;
   }
 
+  useEffect(() => {
+    if (currentUser?.photoURL) {
+      setPhotoURL(currentUser.photoURL);
+    }
+  }, [currentUser]);
+
+ 
   async function upload(file, currentUser, setLoading) {
     const storage = getStorage();
 
@@ -241,8 +261,10 @@ if (docSnap.exists()) {
  
   return (
   <View style={styles.container}>
-
-    <View  >
+    
+   <TouchableOpacity onPress={handleChoosePhoto} >
+    <View >
+   
       <Image
         style={styles.profileImage}
         source={photoURL}
@@ -256,7 +278,7 @@ if (docSnap.exists()) {
       */}
     </View>
 
-
+    </TouchableOpacity>
     
 
 
@@ -305,7 +327,10 @@ if (docSnap.exists()) {
         <>
         <View style={styles.field}>
         <Feather name="file" color="#333333" size={20} />
-       <input type="file" onChange={handleChange} />
+        <TouchableOpacity onPress={handleChoosePhoto}            >
+
+       <input type="file" onChange={handleChange}   />
+       </TouchableOpacity>
         </View>
      
           <View style={styles.field}>
@@ -396,6 +421,7 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5,
   },
+ 
   label: {
     flex: 1,
     fontWeight: 'bold',
@@ -418,8 +444,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
     profileImage: {
-    width: 150,
-    height: 150,
+      
+    width: 170,
+    height: 170,
     borderRadius: 75,
     verticalAlign: 'middle',
     borderRadius: '50%',
@@ -491,3 +518,71 @@ iconBehave: {
 },
 });
 export default Profile;
+
+
+
+// import React, { useState } from 'react';
+// import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
+// import * as ImagePicker from 'expo-image-picker';
+
+// export default function ProfilePage() {
+//   const [profilePhoto, setProfilePhoto] = useState(null);
+
+//   const handleChoosePhoto = async () => {
+//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+//     if (status !== 'granted') {
+//       alert('Sorry, we need camera roll permissions to make this work!');
+//       return;
+//     }
+//     let result = await ImagePicker.launchImageLibraryAsync({
+//       mediaTypes: ImagePicker.MediaTypeOptions.All,
+//       allowsEditing: true,
+//       aspect: [4, 3],
+//       quality: 1,
+//     });
+//     if (!result.cancelled) {
+//       setProfilePhoto(result.uri);
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <TouchableOpacity onPress={handleChoosePhoto}>
+//         {profilePhoto ? (
+//           <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
+//         ) : (
+//           <View style={styles.placeholder}>
+//             <Text style={styles.placeholderText}>Add a photo</Text>
+//           </View>
+//         )}
+//       </TouchableOpacity>
+//     </View>
+//   );
+// }
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//     backgroundColor: '#fff',
+//   },
+//   profilePhoto: {
+//     width: 150,
+//     height: 150,
+//     borderRadius: 75,
+//   },
+//   placeholder: {
+//     width: 150,
+//     height: 150,
+//     borderRadius: 75,
+//     backgroundColor: '#eee',
+//     alignItems: 'center',
+//     justifyContent: 'center',
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     fontWeight: 'bold',
+//     color: '#aaa',
+//   },
+// });
