@@ -85,7 +85,7 @@ const ProductsListBurger = ({ navigation }) => {
                     {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                         <Icon name="heart" size={25} color={COLORS.grey} />
                     </Pressable> */}
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey}/>
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >

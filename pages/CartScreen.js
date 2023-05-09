@@ -15,6 +15,9 @@ return(
                     <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
+                    <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                        <Icon name="plus" size={25} color={COLORS.grey} />
+                    </Pressable>
                     <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>

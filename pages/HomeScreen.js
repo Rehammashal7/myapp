@@ -192,9 +192,9 @@ const HomeScreen = ({ navigation }) => {
 
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                    <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
+                    {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                         <Icon name="heart" size={25} color="gray" />
-                    </Pressable>
+                    </Pressable> */}
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color="gray" />
                     </Pressable>
