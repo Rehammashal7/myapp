@@ -14,7 +14,7 @@ import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
 import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/adminPizza';
-
+import Checkout from './pages/Checkout';
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
@@ -67,6 +67,7 @@ export default function App() {
 
         <Stack.Screen name="addadmin" component={ addadmin }/>
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
+        <Stack.Screen name="checkout" component={ Checkout }/>
 
       </Stack.Navigator>
     </NavigationContainer>

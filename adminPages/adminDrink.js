@@ -240,7 +240,7 @@ const CoffeeDetailsAdmin = ({ route, navigation }) => {
             
             <View style={{marginLeft:50}}> 
             <PrimaryButton
-            title='Ddit' 
+            title='Edit' 
             onPress={() => navigation.navigate('EditCoffeePage', { product })}/>
             <PrimaryButton
             title='Delete' 

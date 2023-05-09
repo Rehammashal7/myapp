@@ -716,7 +716,7 @@ return (
             },
           ]}
           onPress={() => {
-            navigation.navigate('Checkout');
+            navigation.navigate('checkout');
           }}>
           <Text style={{color: '#fff'}}>Checkout</Text>
         </TouchableOpacity>
