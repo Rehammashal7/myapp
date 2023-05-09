@@ -1,25 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput,FlatList, TouchableOpacity, Image, StyleSheet, ScrollView,Dimensions, Pressable } from 'react-native';
-import { collection, getDocs, updateDoc } from 'firebase/firestore';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import ImagePicker from 'react-native-image-picker';
+import COLORS from '../Consts/Color';
 
 import Food, { filterData, option, size } from '../data';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import COLORS from '../Consts/Color';
 import PrimaryButton from '../components/Button';
-import {  query, where, doc, deleteDoc } from 'firebase/firestore';
-
-const {width} = Dimensions.get('screen');
-const cardwidth = width/2-20;
-let iconcolor 
-const adminProductsListBurger = ({ navigation }) => {
+const { width } = Dimensions.get('screen');
+const cardwidth = width / 2 - 20;
+let iconcolor
+const ProductsListPizzaAdmin = ({ navigation }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
         const getProducts = async () => {
-            const productsCollection = collection(db, 'burger');
+            const productsCollection = collection(db, 'pizza');
             const productsSnapshot = await getDocs(productsCollection);
             const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setProducts(productsData);
@@ -28,7 +25,7 @@ const adminProductsListBurger = ({ navigation }) => {
     }, []);
 
     const handleProductPress = (product) => {
-        navigation.navigate('adminBurgerDetails', { product });
+        navigation.navigate('PizzaDetailsAdmin', { product });
     };
 
     const renderProduct = ({ item }) => (
@@ -37,8 +34,8 @@ const adminProductsListBurger = ({ navigation }) => {
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop:10,marginHorizontal:20,justifyContent:'space-between'}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.price}</Text>
+                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}</Text>
                     <View style={styles.HeartIcone}>
                         <Icon name="heart" size={30} color={COLORS.grey} />
                     </View>
@@ -60,7 +57,7 @@ const adminProductsListBurger = ({ navigation }) => {
                         <Pressable
                             onPress={() => navigation.navigate(item.name)}
                         >
-                            <View style={item.name === 'Burgers' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
+                            <View style={item.name === 'Pizza' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
                                 <Image
                                     style={{ height: 60, width: 60, borderRadius: 30 }}
                                     source={item.image}
@@ -75,13 +72,13 @@ const adminProductsListBurger = ({ navigation }) => {
                 />
             </View>
             <ScrollView>
-            <FlatList
-                numColumns={2}
-                data={products}
-                renderItem={renderProduct}
-                keyExtractor={(item) => item.id}
-            />
-            <View style={styles.bottoms}></View>
+                <FlatList
+                    numColumns={2}
+                    data={products}
+                    renderItem={renderProduct}
+                    keyExtractor={(item) => item.id}
+                />
+                <View style={styles.bottoms}></View>
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
@@ -89,7 +86,7 @@ const adminProductsListBurger = ({ navigation }) => {
                         <Icon name="heart" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.grey}/>
+                        <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
@@ -103,20 +100,18 @@ const adminProductsListBurger = ({ navigation }) => {
     );
 };
 
-const adminBurgerDetails = ({ route, navigation }) => {
+const PizzaDetailsAdmin = ({ route, navigation }) => {
     const { product } = route.params;
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
-    const [products, setProducts] = useState([]);
-
     const handleDelete = async (item) => {
         // Get the Firestore document ID for the pizza with the selected name
-        const querySnapshot = await getDocs(query(collection(db, 'burger'), 
+        const querySnapshot = await getDocs(query(collection(db, 'pizza'), 
         where('name', '==', product.name)));
         const docId = querySnapshot.docs[0].id;
       
         // Delete the pizza document from Firestore
-        await deleteDoc(doc(db, 'burger', docId));
+        await deleteDoc(doc(db, 'pizza', docId));
         const newProducts = products.filter((product) => product.name !== item.label);
         setProducts(newProducts);
         
@@ -237,8 +232,8 @@ const adminBurgerDetails = ({ route, navigation }) => {
             
             <View style={{marginLeft:50}}> 
             <PrimaryButton
-            title='Ddit' 
-            onPress={() => navigation.navigate('EditProductPage', { product })}/>
+            title='Edit' 
+            onPress={() => navigation.navigate('EditPizzaPage', { product })}/>
             <PrimaryButton
             title='Delete' 
             onPress={() => handleDelete ()}/>
@@ -281,7 +276,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 5,
         borderTopRightRadius: 5,
         height: 150,
-        width: 170
+        width: cardwidth,
     },
 
     Name: {
@@ -451,13 +446,9 @@ const styles = StyleSheet.create({
     },
 
 });
-
-
-
-//import { ref, uploadBytes } from 'firebase/storage';
 import { getDownloadURL, getStorage, ref, uploadBytes ,uploadBytesResumable,child} from "firebase/storage";
 import {  storage } from '../firebase';
-const EditProductPage = ({ route, navigation }) => {
+const EditPizzaPage = ({ route, navigation }) => {
 const { product } = route.params;
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -471,11 +462,11 @@ const { product } = route.params;
       await uploadBytes(imageRef, image);
       //const imageUrl = await imageRef.getDownloadURL();
       const imageUrl = await getDownloadURL(imageRef);
-      const querySnapshot = await getDocs(query(collection(db, 'burger'), 
+      const querySnapshot = await getDocs(query(collection(db, 'pizza'), 
       where('name', '==', product.name)));
       const docId = querySnapshot.docs[0].id;
       // Add product document to Firestore
-      await updateDoc(doc(db, 'burger',docId), {
+      await updateDoc(doc(db, 'pizza',docId), {
         name: name,
         description: description,
         imageUrl: imageUrl,
@@ -511,5 +502,4 @@ const { product } = route.params;
       </form>
       );
     };
-    
-export { EditProductPage,adminProductsListBurger, adminBurgerDetails };
+export { ProductsListPizzaAdmin, PizzaDetailsAdmin,EditPizzaPage };

@@ -9,14 +9,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import profile from './pages/profile';
 import Favorite from './pages/favorite';
 
-import  { adminBurgerDetails, adminProductsListBurger } from './adminPages/adminBurger'
+import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
 import  { BurgerDetails, ProductsListBurger } from './pages/Burgers'
 import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
+import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/adminDrink';
+import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/adminPizza';
 
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
 import { OfferDetails, ProductsListOffer } from './pages/Offers';
+import { OfferDetailsAdmin, ProductsListOfferAdmin ,EditOfferPage} from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
 const Stack = createNativeStackNavigator();
@@ -45,10 +48,22 @@ export default function App() {
         <Stack.Screen name="CartScreen" component={CartScreen} />
         <Stack.Screen name="AddProductForm " component={AddProductForm } /> 
         <Stack.Screen name="adminHome" component={ adminHome }/>
-     
+        <Stack.Screen name="EditProductPage" component={ EditProductPage }/>
+        <Stack.Screen name="OfferDetailsAdmin" component={ OfferDetailsAdmin }/>
+        <Stack.Screen name="adminOffers" component={ ProductsListOfferAdmin }/>
+        <Stack.Screen name="EditOfferPage" component={ EditOfferPage }/>
+        <Stack.Screen name="CoffeeDetailsAdmin" component={ CoffeeDetailsAdmin }/>
+        <Stack.Screen name="adminCoffee" component={ ProductsListCoffeeAdmin }/>
+        <Stack.Screen name="EditCoffePage" component={ EditCoffeePage }/>
+        <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
+
+        <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
+        <Stack.Screen name="EditPizzPage" component={ EditPizzaPage }/>
 
 
-       
+   
+
+      
       </Stack.Navigator>
     </NavigationContainer>
   );

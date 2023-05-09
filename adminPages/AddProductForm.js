@@ -12,31 +12,41 @@ const AddProductForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const imageRef = ref(storage,  image.name);
+    await uploadBytes(imageRef, image);
+    const imageUrl = await getDownloadURL(imageRef);
+
     if (selectedItem.id === 1) {
       await addDoc(collection(db, 'pizza'), {
         name: name,
         description: description,
+        imageUrl: imageUrl,
       });
     }else if (selectedItem.id === 2) {
       await addDoc(collection(db, 'burger'), {
         name: name,
         description: description,
+        imageUrl: imageUrl,
       });
     }
     else if (selectedItem.id === 3) {
       await addDoc(collection(db, 'coffee'), {
         name: name,
         description: description,
+        imageUrl: imageUrl,
       });
     }else {
       await addDoc(collection(db, 'offer'), {
         name: name,
         description: description,
+        imageUrl: imageUrl,
       });
     
     }
 
-
+    setName('');
+    setDescription('');
+    setImage(null);
   };
 
   const handleImageUpload = (e) => {
@@ -56,6 +66,7 @@ const AddProductForm = () => {
     setSelectedItem(item);
    
   };
+
 
   const renderItem = ({ item }) => (
     <TouchableOpacity onPress={() => handlePress(item)}>
