@@ -31,7 +31,7 @@ const Search = () => {
 
     useEffect(() => {
         const getProducts = async () => {
-            const productsCollection = collection(db, 'pizza');
+            const productsCollection = collection(db, 'search');
             const productsSnapshot = await getDocs(productsCollection);
             const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
             setData(productsData);
