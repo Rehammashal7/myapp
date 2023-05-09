@@ -332,11 +332,13 @@ import {
             );
           }}
         />
-        {cartList.length > 0 && (
+        {getCartItems.length > 0 && (
           <View style={styles.checkoutView}>
             <Text style={{color: '#000', fontWeight: '600'}}>
-                 {'Items(' + ( cartList.find(itm => itm.id)).qty + ')\nTotal: $' + getTotal()}
+                 {'Items(' + ( getItem(itm => itm.id)).qty + ')\nTotal: $' + getTotal()}
             </Text>
+            </View>)}
+               <View style={styles.checkoutView}>
             <TouchableOpacity
               style={[
                 styles.addToCartBtn,
@@ -353,7 +355,7 @@ import {
               <Text style={{color: '#fff'}}>Checkout</Text>
             </TouchableOpacity>
           </View>
-        )}
+       
       </View>
     );
   };
