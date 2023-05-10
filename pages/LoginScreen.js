@@ -38,12 +38,12 @@ const docSnap = await getDoc(docRef);
 if (docSnap.exists()) {
 
   const data =docSnap.data();
-  if(data.isAdmin==true)
-  
-  navigation.navigate('adminHome');
-}else
-navigation.navigate('Home');
-
+  if (data.isAdmin === 1) {
+    navigation.navigate('adminHome');
+  } else {
+    navigation.navigate('Home');
+  }
+}  
   };
 
 
