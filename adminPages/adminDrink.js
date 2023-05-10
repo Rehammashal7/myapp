@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Dimensions, TextInput } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import {  query, where, doc, deleteDoc,updateDoc } from 'firebase/firestore';
@@ -197,7 +197,7 @@ const CoffeeDetailsAdmin = ({ route, navigation }) => {
                 <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
             </View>
             <View style={{backgroundColor:COLORS.background,flex:1}}>
-            <FlatList
+            {/* <FlatList
                             horizontal={true}
                             showsHorizontalScrollIndicator={false}
                             data={option}
@@ -235,7 +235,7 @@ const CoffeeDetailsAdmin = ({ route, navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                             )}
-                        />
+                        /> */}
             <Text style={{fontSize:20,marginBottom:5}}> discription : {product.description}</Text>
             
             <View style={{marginLeft:50}}> 
@@ -452,6 +452,75 @@ const styles = StyleSheet.create({
         padding: 35,
         bottom: 30
     },
+    containerEditProduct: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5F5F5',
+      },
+      formEditProduct: {
+        width: '80%',
+        backgroundColor: '#FFF',
+        paddingVertical: 20,
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+      },
+      inputContainerEditProduct: {
+        marginBottom: 10,
+      },
+      labelEditProduct: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5,
+      },
+      inputEditProduct: {
+        borderWidth: 1,
+        borderColor: '#CCC',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        fontSize: 16,
+      },
+      textareaEditProduct: {
+        borderWidth: 1,
+        borderColor: '#CCC',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        fontSize: 16,
+        height: 100,
+        textAlignVertical: 'top',
+      },
+      fileInputEditProduct: {
+        borderWidth: 1,
+        borderColor: '#CCC',
+        borderRadius: 5,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        backgroundColor: '#FFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      buttonContainerEditProduct: {
+        alignItems: 'center',
+        marginTop: 20,
+      },
+      buttonEditProduct: {
+        backgroundColor: '#131A2C',
+        borderRadius: 5,
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+      },
+      buttonTextEditProduct: {
+        color: '#FFDE9B',
+        fontSize: 18,
+        fontWeight: 'bold',
+      },
 
 
 });
@@ -494,22 +563,50 @@ const { product } = route.params;
     };
   
     return (
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Product Name:</label>
-          <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
-        <div>
-          <label htmlFor="description">Description:</label>
-          <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)}></textarea>
-        </div>
-        <div>
+        <View style={styles.containerEditProduct}>
+        <View style={styles.formEditProduct}>
+          <View style={styles.inputContainerEditProduct}>
+            <Text style={styles.labelEditProduct}>Product Name:</Text>
+            <TextInput
+              style={styles.inputEditProduct}
+              value={name}
+              onChangeText={(text) => setName(text)}
+            />
+          </View>
+          <View style={styles.inputContainerEditProduct}>
+            <Text style={styles.labelEditProduct}>Description:</Text>
+            <TextInput
+              style={styles.textareaEditProduct}
+              multiline
+              value={description}
+              onChangeText={(text) => setDescription(text)}
+            />
+          </View>
+          <View style={styles.inputContainerEditProduct}>
+            {/* <Text style={styles.labelEditProduct}>Image:</Text>
+            <TouchableOpacity
+              style={styles.fileInputEditProduct}
+              onPress={handleImageUpload}
+            >
+              <Text>Select Image</Text>
+            </TouchableOpacity> */}
+            
+          </View>
+          <View style={{marginBottom : 10 }}>
           <label htmlFor="image">Image:</label>
-          <input type="file" id="image" onChange={handleImageUpload} />
-        </div>
-        <button type="submit">Add Product</button>
-      </form>
+           <input type="file" id="image" onChange={handleImageUpload} />
+           </View>
+          <TouchableOpacity
+            style={styles.buttonEditProduct}
+            onPress={handleSubmit}
+          >
+  
+            <Text style={styles.buttonTextEditProduct}>Edit Product</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
       );
     };
+    
 
 export { ProductsListCoffeeAdmin, CoffeeDetailsAdmin,EditCoffeePage};
