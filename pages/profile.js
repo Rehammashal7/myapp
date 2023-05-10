@@ -158,6 +158,7 @@ const Profile = ({navigation}) => {
   function handleChange(e) {
     if (e.target.files[0]) {
       setPhoto(e.target.files[0])
+      handleChoosePhoto();
     }
   };
 
@@ -326,7 +327,7 @@ if (docSnap.exists()) {
         <>
         <View style={styles.field}>
         <Feather name="file" color="#333333" size={20} />
-        <TouchableOpacity onPress={handleChoosePhoto}            >
+        <TouchableOpacity            >
 
        <input type="file" onChange={handleChange}   />
        </TouchableOpacity>
