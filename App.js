@@ -14,7 +14,7 @@ import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
 import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/Checkout';
+import Checkout from './pages/checkout';
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'

@@ -68,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <Text style={styles.Text}> Male Mate </Text>
+                <Text style={styles.Text}> Meal Mate </Text>
             </View>
 
             <ScrollView>
