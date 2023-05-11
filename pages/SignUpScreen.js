@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
   import uuid from 'react-native-uuid';
+  import AsyncStorage from '@react-native-async-storage/async-storage';
 
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
@@ -57,6 +58,9 @@ const SignUpScreen = ({ navigation }) => {
       const user = userCredential.user;
       console.log("Done");
       adduserTodata();
+      const id =auth.currentUser.uid;
+      //navigation.navigate('Profile');
+       AsyncStorage.setItem('USERID', id);
       navigation.navigate('Home')
       
       // ...
