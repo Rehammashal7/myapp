@@ -134,7 +134,7 @@ const OfferDetailsAdmin = ({ route, navigation }) => {
                     <Text style={styles.Name2}>{product.name}</Text>
                 </View>
                 <View style={styles.headerRight}>
-                    <Icon name='heart' size={25} color={COLORS.heart} />
+                    {/* <Icon name='heart' size={25} color={COLORS.heart} /> */}
                 </View>
 
             </View>
@@ -316,13 +316,13 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-Bold',
         fontSize: 24,
     },
-    HeartIcone: {
-        height: 30,
-        width: 30,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
+    // HeartIcone: {
+    //     height: 30,
+    //     width: 30,
+    //     borderRadius: 20,
+    //     justifyContent: 'center',
+    //     alignItems: 'center',
+    // },
     sizeContainer: {
         paddingVertical: 20,
         alignItems: 'center',

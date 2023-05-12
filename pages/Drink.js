@@ -104,6 +104,7 @@ const ProductsListCoffee = ({ navigation }) => {
                         </Pressable>
                     )}
                 />
+
             </View>
             <ScrollView>
                 <FlatList
@@ -112,6 +113,7 @@ const ProductsListCoffee = ({ navigation }) => {
                     renderItem={renderProduct}
                     keyExtractor={(item) => item.id}
                 />
+
                 <View style={styles.bottoms}></View>
             </ScrollView>
             <View style={styles.NavContainer} >
@@ -281,12 +283,12 @@ const CoffeeDetails = ({ route, navigation }) => {
                                 </TouchableOpacity>
                             )}
                         />
-
                     </View>
 
                     <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
                 </View>
                
+                <Text style={{fontSize:20,marginBottom:5}}> discription : {product.description}</Text>
 
                     <View style={{ marginLeft: 50 }}>
                         <FlatList

@@ -96,14 +96,14 @@ const Checkout = ({navigation}) =>{
       </View>
       
                <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
+                {/* <View style={styles.Navbar} > */}
                     {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
                         <Icon name="heart" size={25} color="gray" />
                     </Pressable> */}
                     {/* <Pressable onPress={() => navigation.navigate("Checkout")} style={styles.iconBehave} >
                        <Icon name="cube" size={30} color="gray" />
                    </Pressable> */}
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                    {/* <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey}/>
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
@@ -111,9 +111,9 @@ const Checkout = ({navigation}) =>{
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })}style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable>
+                    </Pressable> */}
 
-                </View>
+                {/* </View> */}
             </View>
     </View>
       );
@@ -142,9 +142,12 @@ const Checkout = ({navigation}) =>{
         alignItems: 'center',
         marginTop: 10,
         marginBottom: 10,
+        height : 100,
+        width : 100,
       },
       paypalButton: {
-        height: 0,
+        height: 20,
+        width:20,
         color: 'blue',
       },
       NavContainer: {
