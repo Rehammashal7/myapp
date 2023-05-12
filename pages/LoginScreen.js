@@ -7,7 +7,7 @@ import { signInWithEmailAndPassword, signInWithPopup,
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
-
+  import Icon from 'react-native-vector-icons/FontAwesome';
 
 
   import { doc, updateDoc ,getDoc } from "firebase/firestore";
@@ -18,6 +18,7 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
 
 
@@ -25,12 +26,10 @@ const LoginScreen = ({ navigation }) => {
   const auth = getAuth();
 
 
-
-
-
-
-
-
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+  
   const getUser = async() => {
     const docRef = doc(db, "users", auth.currentUser.uid);
 const docSnap = await getDoc(docRef);
@@ -175,10 +174,17 @@ if (docSnap.exists()) {
       <TextInput
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true}
+        secureTextEntry={!showPassword} 
         placeholder="Password"
         style={styles.input}
       />
+      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
+  <Icon
+    name={showPassword ? 'eye' : 'eye-slash'}
+    size={20}
+    color="gray"
+  />
+</TouchableOpacity>
       <TouchableOpacity
         onPress={handleLogin}
         style={styles.buttonlogin}
@@ -270,6 +276,13 @@ const styles = StyleSheet.create({
     top:-35 ,
     width: 50,
     height: 50,
+  },
+  iconContainer: {
+    position: 'absolute',
+    right: 35,
+    top: '41.3%',
+    transform:[{translateY: -10}],
+    zIndex:1
   },
 });
 

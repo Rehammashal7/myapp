@@ -4,14 +4,12 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
   import uuid from 'react-native-uuid';
   import AsyncStorage from '@react-native-async-storage/async-storage';
-
   import { Image } from 'react-native';
   import googleicon from "../assets/iconn.png";
   import faceicon from '../assets/fac.png';
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
-  
-
+  import Icon from 'react-native-vector-icons/FontAwesome';
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -24,6 +22,7 @@ const SignUpScreen = ({ navigation }) => {
   const [birthDate, setBirthDate] = useState('');
   const [isAdmin, setIsAdmin] = useState(false);
   const [validationEmail , setValidationEmail] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const handleCheckEmail = () => {
     let isvalid = true ;
     let re = /\S+@\S+\.\S+/; 
@@ -40,7 +39,9 @@ const SignUpScreen = ({ navigation }) => {
       handleSignUp();
     }
   };
-  
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
   const handleSignUp = () => {
 
@@ -179,17 +180,38 @@ const SignUpScreen = ({ navigation }) => {
       <TextInput
         value={password}
         onChangeText={setPassword}
-        secureTextEntry={true}
+        secureTextEntry={!showPassword} 
         placeholder="Password"
         style={styles.input}
       />
       <TextInput
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry={!showPassword} 
+        placeholder="Password"
+        style={styles.input}
+      />
+      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
+  <Icon
+    name={showPassword ? 'eye' : 'eye-slash'}
+    size={20}
+    color="gray"
+  />
+</TouchableOpacity>
+      <TextInput
         value={confirmPassword}
         onChangeText={setConfirmPassword}
-        secureTextEntry={true}
+        secureTextEntry={!showPassword}
         placeholder="Confirm Passwor"
         style={styles.input}
       />
+         <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
+  <Icon
+    name={showPassword ? 'eye' : 'eye-slash'}
+    size={20}
+    color="gray"
+  />
+</TouchableOpacity>
     
       <TouchableOpacity
         onPress={handleCheckEmail}
@@ -313,6 +335,12 @@ const styles = StyleSheet.create({
     top:-35 ,
     width: 50,
     height: 50,
+  }, iconContainer: {
+    position: 'absolute',
+    right: 35,
+    top: '44.5%',
+    transform:[{translateY: -10}],
+    zIndex:1
   },
 });
 
