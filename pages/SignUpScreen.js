@@ -184,13 +184,6 @@ const SignUpScreen = ({ navigation }) => {
         placeholder="Password"
         style={styles.input}
       />
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={!showPassword} 
-        placeholder="Password"
-        style={styles.input}
-      />
       <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
   <Icon
     name={showPassword ? 'eye' : 'eye-slash'}
@@ -205,13 +198,7 @@ const SignUpScreen = ({ navigation }) => {
         placeholder="Confirm Passwor"
         style={styles.input}
       />
-         <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
-  <Icon
-    name={showPassword ? 'eye' : 'eye-slash'}
-    size={20}
-    color="gray"
-  />
-</TouchableOpacity>
+       
     
       <TouchableOpacity
         onPress={handleCheckEmail}
@@ -338,7 +325,7 @@ const styles = StyleSheet.create({
   }, iconContainer: {
     position: 'absolute',
     right: 35,
-    top: '44.5%',
+    top: '48,5%',
     transform:[{translateY: -10}],
     zIndex:1
   },
