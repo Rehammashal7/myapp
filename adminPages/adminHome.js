@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable, ScrollView, Dimensions } from 'react-native';
 import Countdown from 'react-native-countdown-component';
-
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Food, { Offer, filterData } from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 
-
+const {width} = Dimensions.get('screen');
+const cardwidth = width-20;
 
 // Generate required css
 
@@ -18,11 +20,44 @@ import Search from '../components/search';
 
 const adminHomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [indexCheck, setIndexCheck] = useState("0")
-
-    const handleSearch = (text) => {
-        setSearchQuery(text);
+    const [indexCheck, setIndexCheck] = useState("0");
+    const [products, setProducts] = useState([]);
+    const [products2, setProducts2] = useState([]);
+    useEffect(() => {
+        const getProducts = async () => {
+            const productsCollection = collection(db, 'offer');
+            const productsSnapshot = await getDocs(productsCollection);
+            const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProducts(productsData);
+        };
+        getProducts();
+    }, []);
+    useEffect(() => {
+        const getProducts = async () => {
+            const productsCollection = collection(db, 'burger');
+            const productsSnapshot = await getDocs(productsCollection);
+            const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            setProducts2(productsData);
+        };
+        getProducts();
+    }, []);
+    const handleProductPress = (product) => {
+        navigation.navigate('OfferDetails', { product });
     };
+
+    const renderProduct = ({ item }) => (
+        <TouchableOpacity onPress={() => handleProductPress(item)}>
+            <View style={styles.cardView}>
+                <Image source={{ uri: item.imageUrl}} style={styles.image} />
+
+                <Text style={styles.Name}>{item.name}</Text>
+                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
+                   
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
@@ -83,19 +118,10 @@ const adminHomeScreen = ({ navigation }) => {
                     <FlatList
                         style={{ marginTop: 10, marginBottom: 10 }}
                         horizontal={true}
-                        data={Offer}
-                        keyExtractor={(item, index) => index.toString()}
+                        data={products}
                         showsHorizontalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <View style={{ marginRight: 5 }}>
-                                <FoodCard
-                                    screenWidth={300}
-                                    images={item.images}
-                                    restaurantName={item.restaurantName}
-                                    price={item.price}
-                                />
-                            </View>
-                        )}
+                        renderItem={renderProduct}
+                        keyExtractor={(item) => item.id}
                     />
                 </View>
 
@@ -105,22 +131,13 @@ const adminHomeScreen = ({ navigation }) => {
                 </View>
 
                 <View>
-                    <FlatList
+                <FlatList
                         style={{ marginTop: 10, marginBottom: 10 }}
                         horizontal={true}
-                        data={Offer}
-                        keyExtractor={(item, index) => index.toString()}
+                        data={products2}
                         showsHorizontalScrollIndicator={false}
-                        renderItem={({ item }) => (
-                            <View style={{ marginRight: 5 }}>
-                                <FoodCard
-                                    screenWidth={300}
-                                    images={item.images}
-                                    restaurantName={item.restaurantName}
-                                    price={item.price}
-                                />
-                            </View>
-                        )}
+                        renderItem={renderProduct}
+                        keyExtractor={(item) => item.id}
                     />
                 </View>
 
@@ -210,6 +227,32 @@ const adminHomeScreen = ({ navigation }) => {
 }
 
 const styles = StyleSheet.create({
+    cardView: {
+        marginHorizontal: 10,
+        marginBottom: 20,
+        marginTop: 20,
+        borderRadius: 15,
+        width: cardwidth,
+        height: 220,
+        elevation: 13,
+        backgroundColor: 'white',
+    },
+    image: {
+        borderTopLeftRadius: 5,
+        borderTopRightRadius: 5,
+        height: 150,
+        width: cardwidth,
+    },
+
+    Name: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: "#131A2C",
+        marginTop: 5,
+        marginLeft: 10,
+        marginBottom: 10,
+        left: 200
+    },
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
