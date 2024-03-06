@@ -1,582 +1,741 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Pressable, Dimensions } from 'react-native';
-import COLORS from '../Consts/Color';
-import { doc, collection, updateDoc, getDocs, getDoc } from "firebase/firestore";
-import { auth, db, storage } from '../firebase';
-import Food, { filterData, productt, option, size } from '../data';
-import FoodCard from '../components/Foodcard';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import PrimaryButton from '../components/Button';
-import Header from './Header';
-import { useIsFocused, useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState, useEffect } from "react";
 
-const { width } = Dimensions.get('screen');
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  ScrollView,
+  Pressable,
+  Dimensions,
+} from "react-native";
+import COLORS from "../Consts/Color";
+import {
+  doc,
+  collection,
+  updateDoc,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
+import { auth, db, storage } from "../firebase";
+import Food, { filterData, productt, option, size } from "../data";
+import FoodCard from "../components/Foodcard";
+import Icon from "react-native-vector-icons/FontAwesome";
+import PrimaryButton from "../components/Button";
+import Header from "./Header";
+import { useIsFocused, useNavigation } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+const { width } = Dimensions.get("screen");
 const cardwidth = width / 2 - 20;
-let iconcolor
+let iconcolor;
 const ProductsListPizza = ({ navigation }) => {
-    const [products, setProducts] = useState([]);
-    const [userId, setUserId] = useState('');
-    const isFocused = useIsFocused();
-    useEffect(() => {
-        const getProducts = async () => {
-            const productsCollection = collection(db, 'pizza');
-            const productsSnapshot = await getDocs(productsCollection);
-            const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setProducts(productsData);
-        };
-        getProducts();
-    }, []);
-
-
-    useEffect(() => {
-        const fetchItems = async () => {
-            const querySnapshot = await getDocs(collection(db, 'pizza'));
-            console.log('Total products: ', querySnapshot.size);
-            let tempData = [];
-            querySnapshot.forEach((documentSnapshot) => {
-                console.log(
-                    'product ID: ',
-                    documentSnapshot.id,
-                    documentSnapshot.data(),
-                );
-                tempData.push({
-                    id: documentSnapshot.id,
-                    data: documentSnapshot.data(),
-                });
-            });
-            setProducts(tempData);
-        };
-        //fetchItems();
-    }, []);
-
-
-    useEffect(() => {
-        const getUserId = async () => {
-            const id = await AsyncStorage.getItem('USERID');
-            setUserId(id);
-            console.log(id);
-        };
-        getUserId();
-    }, []);
-
-
-
-
-
-    const handleProductPress = (product) => {
-        navigation.navigate('PizzaDetails', { product });
+  const [products, setProducts] = useState([]);
+  const [userId, setUserId] = useState("");
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    const getProducts = async () => {
+      const productsCollection = collection(db, "pizza");
+      const productsSnapshot = await getDocs(productsCollection);
+      const productsData = productsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setProducts(productsData);
     };
+    getProducts();
+  }, []);
 
-    const renderProduct = ({ item }) => (
-        <TouchableOpacity onPress={() => handleProductPress(item)}>
-            <View style={styles.cardView}>
-                <Image source={{ uri: item.imageUrl }} style={styles.image} />
+  useEffect(() => {
+    const fetchItems = async () => {
+      const querySnapshot = await getDocs(collection(db, "pizza"));
+      console.log("Total products: ", querySnapshot.size);
+      let tempData = [];
+      querySnapshot.forEach((documentSnapshot) => {
+        console.log(
+          "product ID: ",
+          documentSnapshot.id,
+          documentSnapshot.data()
+        );
+        tempData.push({
+          id: documentSnapshot.id,
+          data: documentSnapshot.data(),
+        });
+      });
+      setProducts(tempData);
+    };
+    //fetchItems();
+  }, []);
 
-                <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
-                   
-                </View>
-            </View>
-        </TouchableOpacity>
-    );
+  useEffect(() => {
+    const getUserId = async () => {
+      const id = await AsyncStorage.getItem("USERID");
+      setUserId(id);
+      console.log(id);
+    };
+    getUserId();
+  }, []);
 
+  const handleProductPress = (product) => {
+    navigation.navigate("PizzaDetails", { product });
+  };
 
-    return (
-        <View style={styles.container} >
-            <View style={styles.header}>
-                <FlatList
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    data={filterData}
-                    keyExtractor={(item) => item.id}
+  const renderProduct = ({ item }) => (
+    <TouchableOpacity onPress={() => handleProductPress(item)}>
+      <View style={styles.cardView}>
+        <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
-                    renderItem={({ item, index }) => (
-                        <Pressable
-                            onPress={() => navigation.navigate(item.name)}
-                        >
-                            <View style={item.name === 'Pizza' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
-                                <Image
-                                    style={{ height: 60, width: 60, borderRadius: 30 }}
-                                    source={item.image}
-                                />
-
-                                <View style={styles.smallCardText}>
-                                    <Text>{item.name}</Text>
-                                </View>
-                            </View>
-                        </Pressable>
-                    )}
-                />
-            </View>
-            <ScrollView>
-                <FlatList
-                    numColumns={2}
-                    data={products}
-                    renderItem={renderProduct}
-                    keyExtractor={(item) => item.id}
-                />
-                <View style={styles.bottoms}></View>
-            </ScrollView>
-            <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
-                   
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                        <Icon name="home" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                </View>
-            </View>
+        <Text style={styles.Name}>{item.name}</Text>
+        <View
+          style={{
+            flexDirection: "row",
+            marginTop: 10,
+            marginHorizontal: 20,
+            justifyContent: "space-between",
+          }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+            {item.price}LE
+          </Text>
         </View>
-    );
+      </View>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <FlatList
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={filterData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <Pressable onPress={() => navigation.navigate(item.name)}>
+              <View
+                style={
+                  item.name === "Pizza"
+                    ? { ...styles.smallCardSelected }
+                    : { ...styles.smallCard }
+                }
+              >
+                <Image
+                  style={{ height: 60, width: 60, borderRadius: 30 }}
+                  source={item.image}
+                />
+
+                <View style={styles.smallCardText}>
+                  <Text>{item.name}</Text>
+                </View>
+              </View>
+            </Pressable>
+          )}
+        />
+      </View>
+      <ScrollView>
+        <FlatList
+          numColumns={2}
+          data={products}
+          renderItem={renderProduct}
+          keyExtractor={(item) => item.id}
+        />
+        <View style={styles.bottoms}></View>
+      </ScrollView>
+      <View style={styles.NavContainer}>
+        <View style={styles.Navbar}>
+          <Pressable
+            onPress={() => navigation.navigate("profile")}
+            style={styles.iconBehave}
+          >
+            <Icon name="user" size={25} color={COLORS.grey} />
+          </Pressable>
+          <Pressable
+            onPress={() => navigation.navigate("Home")}
+            style={styles.iconBehave}
+          >
+            <Icon name="home" size={25} color={COLORS.grey} />
+          </Pressable>
+          <Pressable
+            onPress={() =>
+              navigation.navigate("CartScreen", { userId: userId })
+            }
+            style={styles.iconBehave}
+          >
+            <Icon name="shopping-cart" size={25} color={COLORS.grey} />
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const PizzaDetails = ({ route, navigation }) => {
-    const { product } = route.params;
-    // const [products, setProducts] = React.useState('');
-    const [productt, setProductt] = React.useState([]);
+  // const { product } = route.params;
+  const { product } = route.params ? route.params : { product: {} };
+  // const [products, setProducts] = React.useState('');
+  const [productt, setProductt] = React.useState([]);
 
-    const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
-    const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
-    const [cartCount, setCartCount] = useState(0);
-    // const navigation = useNavigation();
-    const [userId, setUserId] = useState('');
-    const isFocused = useIsFocused();
-    const product_id = product.id;
+  const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
+  const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
+  const [cartCount, setCartCount] = useState(0);
+   //const navigation = useNavigation();
+  const [hasCheckedOut, setHasCheckedOut] = useState(false);
 
-
-
-    useEffect(() => {
-
-        const fetchItem = async (product_id) => {
-            const documentSnapshot = await getDoc(doc(db, 'pizza', product_id));
-            console.log('product ID: ', documentSnapshot.id, documentSnapshot.data());
-            let tempData = [];
-            tempData.push({
-                id: documentSnapshot.id,
-                data: documentSnapshot.data(),
-            });
-            setProductt(tempData);
-        };
-        fetchItem(product_id);
-
-    }, []);
-
-
-
-    useEffect(() => {
-        const getUserId = async () => {
-            const id = await AsyncStorage.getItem('USERID');
-            setUserId(id);
-            console.log(id);
-        };
-        getUserId();
-    }, []);
-
-
-
-
-    const getCartItems = async () => {
-
-        const userRef = doc(db, 'users', userId);
-        const userSnap = await getDoc(userRef);
-        const cartCount = userSnap?.data()?.cart?.length ?? 0;
-
-        setCartCount(cartCount);
+  const [userId, setUserId] = useState("");
+  const isFocused = useIsFocused();
+  const product_id = product.id;
+  const [reviews, setReviews] = useState([]);
+  const [showReviews, setShowReviews] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
+  const toggleReviews = () => {
+    setShowReviews(!showReviews);
+  };
+  useEffect(() => {
+    const fetchItem = async (product_id) => {
+      const documentSnapshot = await getDoc(doc(db, "pizza", product_id));
+      console.log("product ID: ", documentSnapshot.id, documentSnapshot.data());
+      let tempData = [];
+      tempData.push({
+        id: documentSnapshot.id,
+        data: {
+          ...documentSnapshot.data(),
+          reviews: [], 
+        },
+      });
+      setProductt(tempData);
     };
+    fetchItem(product_id);
+  }, []);
 
-    useEffect(() => {
-        if (userId) {
-            getCartItems();
-        }
-    }, [userId]);
+  useEffect(() => {
+    console.log("noo " + hasCheckedOut)
+    if (hasCheckedOut) {
+      setHasCheckedOut(true);
+      console.log("yess " + hasCheckedOut)
 
-    const onAddToCart = async (item, index) => {
+    }
+  }, []);
+  
+  useEffect(() => {
+    const getUserId = async () => {
+      const id = await AsyncStorage.getItem("USERID");
+      setUserId(id);
+      console.log(id);
+    };
+    getUserId();
+  }, []);
+  
+  
+  let  flagAdmin = false;
+const fetchAllReviews = async () => {
+    try {
+        const productRef = doc(db, "pizza", product_id);
+        const productDoc = await getDoc(productRef);
+        const productData = productDoc.data();
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+        const username = docSnap.data()?.fName || 'Unknown';
+        const data =docSnap.data();
+        if (data.isAdmin ==true) {
+          flagAdmin = true;
+        } 
+        setReviews(productData.reviews || []);
 
-        console.log(userId);
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const { cart = [] } = userSnap.data() ?? {};
-        let existingItem = cart.find(itm => itm.id === item.id);
-
-        if (existingItem) {
-            existingItem.qty += 1;
+        if (productData.reviews && productData.reviews.length > 0) {
+            const averageRating =
+                productData.reviews.reduce((total, review) => total + review.rating, 0) /
+                productData.reviews.length;
+            
+            setRating(averageRating);
         } else {
-            cart.push({ ...item, qty: 1 });
+            setRating(0);
         }
-        await updateDoc(userRef, { cart });
-        getCartItems();
-    };
+    } catch (error) {
+        console.error("Error fetching reviews: ", error);
+    }
+};
 
 
-    return (
-        <View style={styles.container}>
-            <Header
-                title={'FoodApp'}
-                icon={require('../assets/cart.png')}
-                count={cartCount}
-                onClickIcon={() => {
-                    navigation.navigate('CartScreen', { userId: userId });
-                }}
-            />
+  const getCartItems = async () => {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const cartCount = userSnap?.data()?.cart?.length ?? 0;
 
-            <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-                <View style={styles.headerWrapper}>
-                    <View style={styles.titlesWrapper}>
-                        <Text style={styles.Name2}>{product.name}</Text>
-                    </View>
-                   
+    setCartCount(cartCount);
+  };
 
-                </View>
-                <View style={styles.container2}>
+  useEffect(() => {
+    if (userId) {
+      getCartItems();
+      fetchAllReviews();
+    }
+  }, [userId]);
 
+  const onAddToCart = async (item, index) => {
+    console.log(userId);
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const { cart = [] } = userSnap.data() ?? {};
+    let existingItem = cart.find((itm) => itm.id === item.id);
 
-                    <View style={styles.container}>
+    if (existingItem) {
+      existingItem.qty += 1;
+    } else {
+      cart.push({ ...item, qty: 1 });
+    }
+    await updateDoc(userRef, { cart });
+    getCartItems();
+  };
 
-                        <View style={styles.priceWrapper}>
-                            <Text style={styles.price}> price : {product.price}LE</Text>
-                        </View>
-                        <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
-                        <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
-                            <Icon name='star' size={20} color={COLORS.star} />
-                            <Icon name='star' size={20} color={COLORS.star} />
-                            <Icon name='star' size={20} color={COLORS.star} />
-                            <Icon name='star' size={20} color={COLORS.star} />
-                            <Icon name='star' size={20} color={COLORS.star} />
-                        </View>
+  return (
+    <View style={styles.container}>
+      <Header
+        title={"FoodApp"}
+        icon={require("../assets/cart.png")}
+        count={cartCount}
+        onClickIcon={() => {
+          navigation.navigate("CartScreen", { userId: userId });
+        }}
+      />
 
-                        <FlatList
-                            Vertical={true}
-                            showsVerticalScrollIndicator={false}
-                            data={size}
-                            keyExtractor={(item) => item.id}
-
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.8}
-                                    onPress={() => setSelectedSizeIndex(index)}>
-                                    <View
-                                        style={{
-                                            backgroundColor:
-                                                selectedSizeIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
-                                            ...styles.size,
-                                            marginBottom: 5,
-                                            marginLeft: 20
-                                        }}>
-                                        <Text
-                                            style={{
-                                                fontSize: 15,
-                                                fontWeight: 'bold',
-                                                marginLeft: 10,
-                                                marginTop: 5,
-                                                color:
-                                                    selectedSizeIndex == index
-                                                        ? COLORS.white
-                                                        : COLORS.darkblue,
-                                            }}>
-                                            {item.Name}
-                                        </Text>
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                        />
-
-                    </View>
-
-                    <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
-                </View>
-                <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-                    <FlatList
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        data={option}
-                        keyExtractor={(item) => item.id}
-
-
-                        renderItem={({ item, index }) => (
-                            <TouchableOpacity
-                                key={index}
-                                activeOpacity={0.8}
-                                onPress={() => setSelectedOptionIndex(index)}>
-                                <View
-                                    style={{
-                                        backgroundColor:
-                                            selectedOptionIndex == index
-                                                ? COLORS.darkblue
-                                                : COLORS.yellow,
-                                        ...styles.size,
-                                        marginBottom: 5,
-                                        marginLeft: 20,
-                                        marginTop: 20
-                                    }}>
-                                    <Text
-                                        style={{
-                                            fontSize: 15,
-                                            fontWeight: 'bold',
-
-                                            marginTop: 5,
-                                            color:
-                                                selectedOptionIndex == index
-                                                    ? COLORS.white
-                                                    : COLORS.darkblue,
-                                        }}>
-                                        {item.Name}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        )}
-                    />
-                    <Text style={{ fontSize: 20, marginBottom: 20 }}> discription : {product.description}</Text>
-
-
-
-                    <View style={{ marginLeft: 50 }}>
-
-                        <FlatList
-
-                            data={productt}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.8}
-
-                                    onPress={() => setSelectedOptionIndex(index)}
-                                >
-
-                                    <PrimaryButton
-                                        title="Add to Order"
-                                        style={styles.addToCartBtn}
-                                        onPress={() => {
-                                            onAddToCart(item, index);
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </View>
-                </View>
-                {/* display other product details */}
-            </View>
+      <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+        <View style={styles.headerWrapper}>
+          <View style={styles.titlesWrapper}>
+            <Text style={styles.Name2}>{product.name}</Text>
+          </View>
         </View>
-    );
-}
+        <View style={styles.container2}>
+          <View style={styles.container}>
+            <View style={styles.priceWrapper}>
+              <Text style={styles.price}> price : {product.price}LE</Text>
+            </View>
+    
+<View style={styles.inputContainer}>
+    <Text style={styles.label}>Rating:</Text>
+</View>
+
+
+<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                        <Icon
+                            name={star <= rating ? 'star' : 'star-o'}
+                            size={25}
+                            color="gold"
+                        />
+                  
+                ))}
+            </View>
+
+
+
+
+            <FlatList
+              Vertical={true}
+              showsVerticalScrollIndicator={false}
+              data={size}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedSizeIndex(index)}
+                >
+                  <View
+                    style={{
+                      backgroundColor:
+                        selectedSizeIndex == index
+                          ? COLORS.darkblue
+                          : COLORS.yellow,
+                      ...styles.size,
+                      marginBottom: 5,
+                      marginLeft: 20,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 15,
+                        fontWeight: "bold",
+                        marginLeft: 10,
+                        marginTop: 5,
+                        color:
+                          selectedSizeIndex == index
+                            ? COLORS.white
+                            : COLORS.darkblue,
+                      }}
+                    >
+                      {item.Name}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+
+          <Image
+            source={{ uri: product.imageUrl }}
+            style={styles.imageCounter}
+          />
+        </View>
+        <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+          <FlatList
+            horizontal={true}
+            showsHorizontalScrollIndicator={false}
+            data={option}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity
+                key={index}
+                activeOpacity={0.8}
+                onPress={() => setSelectedOptionIndex(index)}
+              >
+                <View
+                  style={{
+                    backgroundColor:
+                      selectedOptionIndex == index
+                        ? COLORS.darkblue
+                        : COLORS.yellow,
+                    ...styles.size,
+                    marginBottom: 5,
+                    marginLeft: 20,
+                    marginTop: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 15,
+                      fontWeight: "bold",
+
+                      marginTop: 5,
+                      color:
+                        selectedOptionIndex == index
+                          ? COLORS.white
+                          : COLORS.darkblue,
+                    }}
+                  >
+                    {item.Name}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            )}
+          />
+          <Text style={{ fontSize: 20, marginBottom: 20 }}>
+            {" "}
+            discription : {product.description}
+          </Text>
+
+          <View style={{ marginLeft: 50 }}>
+            <FlatList
+              data={productt}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item, index }) => (
+                <TouchableOpacity
+                  key={index}
+                  activeOpacity={0.8}
+                  onPress={() => setSelectedOptionIndex(index)}
+                >
+                  <PrimaryButton
+                    title="Add to Order"
+                    style={styles.addToCartBtn}
+                    onPress={() => {
+                      onAddToCart(item, index);
+                    }}
+                  />
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+          <View>
+          { (
+  <TouchableOpacity 
+    style={styles.addToCartBtn}
+    onPress={() =>
+      navigation.navigate("AddReview", {
+        product: { id: product_id },
+        fetchAllReviews,
+      })
+    }
+  >
+    <Text style={styles.buttonText}>Add a Review</Text>
+  </TouchableOpacity>
+)}
+</View>
+
+<View style={styles.addToCartBtn}>
+  <TouchableOpacity onPress={() => { console.log("Fetching reviews..."); fetchAllReviews(); setShowReviews(!showReviews); }}>
+    <Text style={styles.buttonText}>{showReviews ? 'Hide Reviews' : 'View Reviews'}</Text>
+  </TouchableOpacity>
+  {showReviews && (
+    <FlatList
+      data={reviews}
+      renderItem={({ item }) => (
+        <View style={styles.reviewContainer}>
+              <Text style={styles.reviewText}>User:  {item.username}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                        <Icon
+                            name={star <= item.rating ? 'star' : 'star-o'}
+                            size={25}
+                            color="gold"
+                        />
+                  
+                ))}
+            </View>
+          <Text style={styles.reviewText}>Comment: {item.comment}</Text>
+        </View>
+      )}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  )}
+</View>
+
+        </View>
+        {/* display other product details */}
+      </View>
+    </View>
+  );
+};
 const styles = StyleSheet.create({
-    headerWrapper: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        paddingTop: 5,
-    },
-    headerRight: {
-        backgroundColor: COLORS.background,
-        padding: 12,
-        borderRadius: 10,
-        borderColor: COLORS.background,
-        marginLeft: 10,
-        marginBottom: 5,
-        marginTop: 10,
-        width: 40,
-        borderWidth: 2,
-    },
-    cardView: {
-        marginHorizontal: 10,
-        marginBottom: 20,
-        marginTop: 20,
-        borderRadius: 15,
-        width: cardwidth,
-        height: 220,
-        elevation: 13,
-        backgroundColor: 'white',
-    },
-    image: {
-        borderTopLeftRadius: 5,
-        borderTopRightRadius: 5,
-        height: 150,
-        width: 170
-    },
+  headerWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+  },
+  headerRight: {
+    backgroundColor: COLORS.background,
+    padding: 12,
+    borderRadius: 10,
+    borderColor: COLORS.background,
+    marginLeft: 10,
+    marginBottom: 5,
+    marginTop: 10,
+    width: 40,
+    borderWidth: 2,
+  },
+  cardView: {
+    marginHorizontal: 10,
+    marginBottom: 20,
+    marginTop: 20,
+    borderRadius: 15,
+    width: cardwidth,
+    height: 220,
+    elevation: 13,
+    backgroundColor: "white",
+  },
+  image: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    height: 150,
+    width: 170,
+  },
+  reviewContainer: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  reviewText: {
+    fontSize: 16,
+    color:"white"
+  },
 
-    Name: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: "#131A2C",
-        marginTop: 5,
-        marginLeft: 10,
-        marginBottom: 10,
-        left: 200
-    },
-    titlesWrapper: {
-        paddingHorizontal: 5,
-        marginTop: 5,
-    },
-    Name2: {
-        fontFamily: 'Montserrat-Bold',
-        fontSize: 32,
-        color: COLORS.darkblue,
-    },
-    priceWrapper: {
-        marginTop: 10,
-        paddingHorizontal: 20,
-        marginBottom: 10
-    },
-    price: {
-        color: COLORS.darkblue,
-        fontFamily: 'Montserrat-Bold',
-        fontSize: 24,
-    },
-    HeartIcone: {
-        height: 30,
-        width: 30,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    sizeContainer: {
-        paddingVertical: 20,
-        alignItems: 'center',
-        paddingHorizontal: 10,
-    },
-    size: {
-        height: 30,
-        width: 100,
-        marginRight: 7,
-        borderRadius: 30,
-        alignItems: 'center',
-        paddingHorizontal: 5,
-    },
-    container: {
-        flex: 1,
-        backgroundColor: '#FBFAFF',
-        //flexDirection:"row",
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    container2: {
-        flex: 1,
-        backgroundColor: '#FBFAFF',
-        flexDirection: "row",
+  Name: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#131A2C",
+    marginTop: 5,
+    marginLeft: 10,
+    marginBottom: 10,
+    left: 200,
+  },
+  addToCartBtn: {
+    backgroundColor: "#131A2C",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: "center",
+ },
+ viewReviewsBtn: {
+    backgroundColor: "blue",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
+    alignItems: "center",
+ },
+ buttonText: {
+    color: COLORS.white,
+    fontSize: 18,
+ },
+  titlesWrapper: {
+    paddingHorizontal: 5,
+    marginTop: 5,
+  },
+  Name2: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 32,
+    color: COLORS.darkblue,
+  },
+  priceWrapper: {
+    marginTop: 10,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  price: {
+    color: COLORS.darkblue,
+    fontFamily: "Montserrat-Bold",
+    fontSize: 24,
+  },
+  HeartIcone: {
+    height: 30,
+    width: 30,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sizeContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  size: {
+    height: 30,
+    width: 100,
+    marginRight: 7,
+    borderRadius: 30,
+    alignItems: "center",
+    paddingHorizontal: 5,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#FBFAFF",
+    //flexDirection:"row",
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  container2: {
+    flex: 1,
+    backgroundColor: "#FBFAFF",
+    flexDirection: "row",
 
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    heading: {
-        color: "WHITE",
-        fontSize: 40,
-        alignItems: 'center',
-        marginBottom: 5,
-    },
-    header: {
-        flexDirection: "row",
-        backgroundColor: "#FBFAFF",
-        height: 120,
-    },
-    bottoms: {
-        flexDirection: "row",
-        backgroundColor: "#FBFAFF",
-        height: 35,
-        bottom: 20
-    },
-    headerText: {
-        color: "#131A2C",
-        fontSize: 17,
-        fontWeight: "bold",
-        alignItems: 'center',
-        marginLeft: 10,
-        marginBottom: 10,
-        marginTop: 10
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  heading: {
+    color: "WHITE",
+    fontSize: 40,
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  header: {
+    flexDirection: "row",
+    backgroundColor: "#FBFAFF",
+    height: 120,
+  },
+  
 
-    },
-    Text: {
-        color: "#0B0E21",
-        fontSize: 40,
-        fontWeight: "bold",
-        alignItems: 'center',
+reviewTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 20,
+    marginBottom: 10,
+},
+  bottoms: {
+    flexDirection: "row",
+    backgroundColor: "#FBFAFF",
+    height: 35,
+    bottom: 20,
+  },
+  headerText: {
+    color: "#131A2C",
+    fontSize: 17,
+    fontWeight: "bold",
+    alignItems: "center",
+    marginLeft: 10,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  Text: {
+    color: "#0B0E21",
+    fontSize: 40,
+    fontWeight: "bold",
+    alignItems: "center",
+  },
+  discribtion: {
+    color: "#0B0E21",
+    fontSize: 20,
+    fontWeight: "bold",
+    alignItems: "center",
+  },
+  imageCounter: {
+    width: 200,
+    height: 250,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    padding: 10,
+    left: 7,
+    backgroundColor: "black",
+    marginTop: 10,
+  },
+  smallCard: {
+    borderRadius: 30,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 5,
+    width: 80,
+    margin: 10,
+    height: 100,
+  },
 
-    },
-    discribtion: {
-        color: "#0B0E21",
-        fontSize: 20,
-        fontWeight: "bold",
-        alignItems: 'center',
+  smallCardSelected: {
+    borderRadius: 30,
+    backgroundColor: "#FFDE9B",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 5,
+    width: 80,
+    margin: 10,
+    height: 100,
+  },
 
-    },
-    imageCounter: {
-        width: 200,
-        height: 250,
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        padding: 10,
-        left: 7,
-        backgroundColor: 'black',
-        marginTop: 10,
-    },
-    smallCard: {
-        borderRadius: 30,
-        backgroundColor: 'white',
-        justifyContent: "center",
-        alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
-    },
+  smallCardTextSected: {
+    fontWeight: "bold",
+    color: "#131A2C",
+  },
 
-    smallCardSelected: {
-        borderRadius: 30,
-        backgroundColor: '#FFDE9B',
-        justifyContent: "center",
-        alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
-    },
-
-    smallCardTextSected: {
-        fontWeight: "bold",
-        color: '#131A2C'
-    },
-
-    smallCardText: {
-        fontWeight: "bold",
-        color: '#131A2C'
-    },
-    NavContainer: {
-        position: 'absolute',
-        alignItems: 'center',
-        bottom: 5,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-    },
-    Navbar: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.darkblue,
-        width: width,
-        justifyContent: 'space-evenly',
-        borderRadius: 30,
-        height: 40
-
-    },
-    iconBehave: {
-        padding: 35,
-        bottom: 30
-    },
-    addToCartBtn: {
-        backgroundColor: 'green',
-        padding: 10,
-        borderRadius: 10,
-    },
-
+  smallCardText: {
+    fontWeight: "bold",
+    color: "#131A2C",
+  },
+  NavContainer: {
+    position: "absolute",
+    alignItems: "center",
+    bottom: 5,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  Navbar: {
+    flexDirection: "row",
+    backgroundColor: COLORS.darkblue,
+    width: width,
+    justifyContent: "space-evenly",
+    borderRadius: 30,
+    height: 40,
+  },
+  iconBehave: {
+    padding: 35,
+    bottom: 30,
+  },
+//   addToCartBtn: {
+//     backgroundColor: "green",
+//     padding: 10,
+//     borderRadius: 10,
+//   },
 });
 export { ProductsListPizza, PizzaDetails };
