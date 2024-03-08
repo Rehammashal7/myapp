@@ -216,6 +216,9 @@ const adminHomeScreen = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color="#FFDE9B" />
                     </Pressable>
+                    <Pressable onPress={() => navigation.navigate("adminReports")} style={styles.iconBehave} >
+                        <Icon name="home" size={25} color="#FFDE9B" />
+                    </Pressable>
                    
                 </View>
             </View>

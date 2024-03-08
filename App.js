@@ -24,7 +24,7 @@ import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
 import addadmin from './adminPages/addAdmin' ;
 import plusbutton from './adminPages/plusbutton';
-
+import adminReports from './adminPages/PurchasedProducts';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -68,6 +68,7 @@ export default function App() {
         <Stack.Screen name="addadmin" component={ addadmin }/>
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
+        <Stack.Screen name="adminReports" component={ adminReports }/>
 
       </Stack.Navigator>
     </NavigationContainer>
