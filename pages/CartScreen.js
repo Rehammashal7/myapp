@@ -458,7 +458,8 @@ const CartScreen = ({navigation}) => {
   const route = useRoute();
   //const userId = route.params.userId;
   const [userId, setUserId] = useState(route.params.userId);
-
+const [HistoryOrder,setHistoryOrder]=useState([]);
+const [totalPrice,settotalPrice]=React.useState(0); 
   useEffect(() => {
     getCartItems();
     //console.log(userId);
@@ -596,32 +597,43 @@ const CartScreen = ({navigation}) => {
     return total;
   };
 
-  // const getTotal = () => {
-  //   return cartList.reduce((total, item) => {
-  //     return total + item.data.qty * item.data.price;
-  //   }, 0);
-  // };
-//     const getTotal =async () => {
-//   const userRef = doc(db, 'users', userId);
-//   const cart = (await getDoc(userRef)).data().cart;
-//   return cart.reduce((total, item) => {
-//     return total +( cart.find(itm => itm.id === item.id)).qty ;
-//   }, 0);
-// };
 
-// const getTotal =async () => {
-//     const userRef = doc(db, 'users', userId);
-//     const userSnap = await getDoc(userRef);
-//     const cartList = userSnap.data().cart;
-//     return cartList.reduce((total, item) => {
-//       return total + item.data.qty * item.data.discountPrice;
-//     }, 0);
-//   };
+const AddOrderHistory = async () => {
+  console.log('Executing AddOrderHistory function...');
+  
+  try {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+     const currentDate = new Date();
+    const formattedDate = currentDate.toISOString();
+    
+    const userOrders = userSnap.data()?.orders || [];
+
+    cartList.forEach((cartItem) => {
+      const newOrder = {
+        productId: cartItem.id,
+        productName: cartItem.data.name,
+        quantity: cartItem.qty,
+        imageUrl: cartItem.data.imageUrl,
+        totalPrice: (cartItem.qty || 0) * (cartItem.data.price || 0),
+        timestamp: new Date(),
+      };
+
+      userOrders.push(newOrder);
+    });
+
+    await updateDoc(userRef, { orders: userOrders });
+
+    console.log('Order history updated successfully');
+  } catch (error) {
+    console.error('Error updating order history:', error);
+  }
+};
 
 
 return (
   <View style={styles.container}>
-    <FlatList
+      <FlatList
       data={cartList}
 
       renderItem={({item, index}) => {
@@ -716,7 +728,8 @@ return (
             },
           ]}
           onPress={() => {
-            navigation.navigate('checkout');
+            navigation.navigate("checkout")
+            AddOrderHistory();
           }}>
           <Text style={{color: '#fff'}}>Checkout</Text>
         </TouchableOpacity>

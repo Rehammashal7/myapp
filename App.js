@@ -24,7 +24,7 @@ import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
 import addadmin from './adminPages/addAdmin' ;
 import plusbutton from './adminPages/plusbutton';
-
+import OrderHistory from './pages/OrderHistory';
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -61,7 +61,7 @@ export default function App() {
         <Stack.Screen name="EditCoffeePage" component={ EditCoffeePage }/>
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
         <Stack.Screen name="profile" component={ profile }/>
-
+        <Stack.Screen name="OrderHistory" component={OrderHistory}/>
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
 
