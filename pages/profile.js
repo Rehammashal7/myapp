@@ -1,104 +1,6 @@
-// import React from 'react';
-// import { View, Text, Image, TouchableOpacity, StyleSheet ,input} from 'react-native';
-// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
-// import{ auth} from '../firebase';
-// import  { useState ,useEffect} from 'react';
-// import { upload ,useAuth} from '../firebase';
-// import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
-
-// const profile = ({ navigation }) => {
-//   const [userLoggedIn, setUserLoggedIn] = useState(false);
-//   const currentUser = useAuth();
-//   const [photo, setPhoto] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
-
-//   const handleLogOut = () => {
-//     signOut(auth)
-//       .then(() => {
-//         setUserLoggedIn(false);
-//         navigation.navigate('Home')
-//       })
-//       .catch((error) => console.log(error));
-//   };
-//   function handleChange(e) {
-//     if (e.target.files[0]) {
-//       setPhoto(e.target.files[0])
-//     }
-//   };
-//   function handleClick() {
-//     upload(photo, currentUser, setLoading);
-//   };
-//   useEffect(() => {
-//     if (currentUser?.photoURL) {
-//       setPhotoURL(currentUser.photoURL);
-//     }
-//   }, [currentUser])
 
 
 
-
-
-//   return (
-//     <View style={styles.container}>
-//       <Image
-//         style={styles.profileImage}
-//         source={photoURL}
-    
-//       />
-//       <Text style={styles.username}>{auth.currentUser?.email}</Text>
-
-//      <input type="file" onChange={handleChange} />
-
-//      {/* <TouchableOpacity style={styles.logoutButton}disabled={loading || !photo}
-//      onPress={handleClick}>
-//         <Text style={styles.buttonText}>Upload</Text>
-//       </TouchableOpacity> */}
-
-//      <button  disabled={loading || !photo} onClick={handleClick}>Upload</button>
-     
-//       <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-//         <Text style={styles.buttonText}>Logout</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: 'white',
-//   },
-//   profileImage: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     verticalAlign: 'middle',
-//     borderRadius: '50%',
-//     borderWidth: '5px',
-//     borderColor: 'gray',
-//     borderStyle: 'outset',
-//   },
-//   username: {
-//     marginTop: 20,
-//     fontSize: 20,
-//     color: '67738B',
-//   },
- 
-//   logoutButton: {
-//     marginTop: 10,
-//     backgroundColor: '#131A2C',
-//     padding: 10,
-//     borderRadius: 5,
-//   },
-//   buttonText: {
-//     color: '#FFDE9B',
-//     fontWeight: 'bold',
-//   },
-// });
-// export default profile;
 
 
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
@@ -113,8 +15,10 @@ import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 import * as ImagePicker from 'expo-image-picker';
+import { handleSomeAction } from './CartScreen';
+
 const {width} = Dimensions.get('screen');
-const Profile = ({navigation}) => {
+const Profile = ({navigation }) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -122,6 +26,9 @@ const Profile = ({navigation}) => {
   const [phone, setPhone] = useState('');
   const [mode, setMode] = useState('view');
   const [birthDate, setBirthDate] = useState('');
+  
+  const [bounspoint, setBouns] = useState('');
+
   const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   const [photo, setPhoto] = useState(null);
@@ -155,6 +62,7 @@ const Profile = ({navigation}) => {
       })
       .catch((error) => console.log(error));
   };
+
   function handleChange(e) {
     if (e.target.files[0]) {
       setPhoto(e.target.files[0])
@@ -202,6 +110,7 @@ if (docSnap.exists()) {
   setLastName(data.lName);
   setPhone(data.phone);
   setBirthDate(data.birthDate);
+  setBouns(data.boun || 0);
 } else {
   // docSnap.data() will be undefined in this case
   console.log("No such document!");
@@ -217,6 +126,7 @@ if (docSnap.exists()) {
       lName:lastName,
       phone:phone,
       birthDate:birthDate,
+      boun:bounspoint,
     });
 
   };
@@ -279,6 +189,8 @@ if (docSnap.exists()) {
     </View>
 
     </TouchableOpacity>
+
+
     
 
 
@@ -315,11 +227,21 @@ if (docSnap.exists()) {
             <Text style={styles.value2} >{birthDate}
             </Text>
           </View>
+
+          <View style={styles.field}>
+          <FontAwesome name="star" color="#333333" size={20} />
+            <Text style={styles.label}> Bouns:</Text>
+            <Text style={styles.value2} > {bounspoint} </Text>
+            <TouchableOpacity onPress={handleSomeAction}>
+               </TouchableOpacity>
+
+              
+          </View>
+
           <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
         <Text style={styles.buttonText}>Edit</Text>
       </TouchableOpacity></View>
           
-          {/* <Button  title="Edit" onPress={handleEdit} /> */}
         </>
       )}
 
@@ -363,19 +285,22 @@ if (docSnap.exists()) {
             <Text style={styles.label}> birth Date:</Text>
             <TextInput style={styles.input} value={birthDate} onChangeText={setBirthDate} 
             />
+            
           </View>
+
+
+
           <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity></View>
-          
-          {/* <Button title="Save" onPress={handleSave} /> */}
+
         </>
       )}
 
 
 <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-        <Text style={styles.buttonTextLoggout}>Logout</Text>
-      </TouchableOpacity></View>
+        <Text style={styles.buttonTextLoggout}>Logout</Text>     
+  </TouchableOpacity></View>
 
 
       <View style={styles.NavContainer} >
@@ -478,7 +403,7 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     padding: 5,
     width: '100%',
-    height: 40,
+    height: 45,
     alignItems: 'center',
     //marginTop:10,
     //marginVertical: 10

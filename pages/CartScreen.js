@@ -447,17 +447,50 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { doc, updateDoc } from 'firebase/firestore';
 //mport { collection, getDocs, where } from 'firebase/firestore';
 //import { useState, useEffect } from 'react';
+//import firebase from 'firebase';
 import { doc,collection,where,setDoc, updateDoc ,getDocs,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
+import { FirebaseError } from 'firebase/app';
 
-//parseInt()تحويل 
+
+
 const CartScreen = ({navigation}) => {
+
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
   //const [userId, setUserId] = useState('');
   const route = useRoute();
   //const userId = route.params.userId;
   const [userId, setUserId] = useState(route.params.userId);
+
+    const handleCheckout = async () => {
+      try {
+        await handleSomeAction(userId);
+        navigation.navigate('profile');
+      } catch (error) {
+        console.error('Error handling checkout:', error);
+      }
+    };
+
+    const handleSomeAction = async () => {
+      try {
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const userData = userSnap.data();
+        
+        console.log('Current Bonus Points:', userData.boun);
+
+        const currentPoints = userData.boun || 0;
+        const newPoints = currentPoints + 10;
+    
+        await updateDoc(userRef, { boun: newPoints });
+        console.log('Bonus points increased by 10.');
+      } catch (error) {
+        console.error('Error increasing bonus points:', error);
+      }};
+
+    
+    
 
   useEffect(() => {
     getCartItems();
@@ -717,16 +750,19 @@ return (
           ]}
           onPress={() => {
             navigation.navigate('checkout');
+            handleSomeAction();
+            
           }}>
           <Text style={{color: '#fff'}}>Checkout</Text>
         </TouchableOpacity>
       </View>
+
     )}
   </View>
 );
 };
 
-export default CartScreen;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -789,8 +825,7 @@ const styles = StyleSheet.create({
   checkoutView: {
     width: '100%',
     height: 60,
-    backgroundColor: '#fff',
-    position: 'absolute',
+    backgroundColor: '#fff',    position: 'absolute',
     bottom: 0,
     elevation: 5,
     flexDirection: 'row',
@@ -798,3 +833,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default CartScreen;
