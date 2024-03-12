@@ -122,13 +122,16 @@ const ProductsListCoffee = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
-                   
+
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
+                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
+                    </Pressable>
                     <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable> 
+                    </Pressable>
                 </View>
             </View>
         </View>
@@ -208,6 +211,29 @@ const CoffeeDetails = ({ route, navigation }) => {
         await updateDoc(userRef, { cart });
         getCartItems();
     };
+    const getFavItems = async () => {
+
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.fav?.length ?? 0;
+    };
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+    const [isPressed, setIsPressed] = useState('');
 
 
     return (
@@ -287,37 +313,40 @@ const CoffeeDetails = ({ route, navigation }) => {
 
                     <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
                 </View>
-               
-                <Text style={{fontSize:20,marginBottom:5}}> discription : {product.description}</Text>
 
-                    <View style={{ marginLeft: 50 }}>
-                        <FlatList
+                <Text style={{ fontSize: 20, marginBottom: 5 }}> discription : {product.description}</Text>
 
-                            data={productt}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.8}
+                <View style={{ marginLeft: 50 }}>
+                    <FlatList
 
-                                    onPress={() => setSelectedOptionIndex(index)}
-                                >
+                        data={productt}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity
+                                key={index}
+                                activeOpacity={0.8}
 
-                                    <PrimaryButton
-                                        title="Add to Order"
-                                        style={styles.addToCartBtn}
-                                        onPress={() => {
-                                            onAddToCart(item, index);
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </View>
+                                onPress={() => setSelectedOptionIndex(index)}
+                            >
+
+                                <PrimaryButton
+                                    title="Add to Order"
+                                    style={styles.addToCartBtn}
+                                    onPress={() => {
+                                        onAddToCart(item, index);
+                                    }}
+                                />
+                                <Pressable onPress={() => onAddToFav(item, index)} >
+                                    <Icon name="heart" size={30} color={isPressed ? 'red' : 'grey'} />
+                                </Pressable>
+                            </TouchableOpacity>
+                        )}
+                    />
                 </View>
-                {/* display other product details */}
             </View>
-       
+            {/* display other product details */}
+        </View>
+
     );
 }
 const styles = StyleSheet.create({

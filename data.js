@@ -211,29 +211,29 @@ export const Offer =[
 ];
 export const size=[
     {
-        Name:'Small',
+        Name:'Small',price: 10
     },
     {
-        Name:'Medium'
+        Name:'Medium',price: 20
     },
     {
-        Name:'Larg'
+        Name:'Larg',price: 50
     }
 ];
 export const option =[
     {
-        Name:'cheese'
+        Name:'cheese',price: 11
     },
     {
-        Name:'onion'
+        Name:'onion',price: 20
     },
     {
-        Name:'mushroom'
+        Name:'mushroom',price: 10
     },
     {
-        Name:'pepper'
+        Name:'pepper',price: 30
     },
     {
-        Name:'No Option'
+        Name:'No Option',price: 0
     }
 ];

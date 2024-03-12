@@ -7,7 +7,7 @@ import HomeScreen from './pages/HomeScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
-import Favorite from './pages/favorite';
+import favorite from './pages/favorite';
 import profile from'./pages/profile';
 import  { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
@@ -24,6 +24,7 @@ import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
 import addadmin from './adminPages/addAdmin' ;
 import plusbutton from './adminPages/plusbutton';
+import BottomNavigator from './components/bar';
 
 
 const Stack = createNativeStackNavigator();
@@ -44,7 +45,7 @@ export default function App() {
         <Stack.Screen name="BurgerDetails" component={BurgerDetails}  />
         <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
         <Stack.Screen name="Pizza" component={ProductsListPizza} />
-        <Stack.Screen name="Favorite" component={Favorite} />
+        <Stack.Screen name="favorite" component={favorite} />
         <Stack.Screen name ="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={adminprofile}  />
@@ -68,7 +69,7 @@ export default function App() {
         <Stack.Screen name="addadmin" component={ addadmin }/>
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
-
+        <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
       </Stack.Navigator>
     </NavigationContainer>
   );

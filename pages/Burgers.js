@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView,Dimensions, Pressable } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, Dimensions, Pressable } from 'react-native';
 import { doc, collection, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { db } from '../firebase';
 import Food, { filterData, option, size } from '../data';
@@ -13,9 +13,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 
-const {width} = Dimensions.get('screen');
-const cardwidth = width/2-20;
-let iconcolor 
+const { width } = Dimensions.get('screen');
+const cardwidth = width / 2 - 20;
+let iconcolor
 const ProductsListBurger = ({ navigation }) => {
     const [products, setProducts] = useState([]);
     const [userId, setUserId] = useState('');
@@ -30,7 +30,7 @@ const ProductsListBurger = ({ navigation }) => {
         getProducts();
     }, []);
 
-   
+
 
 
     useEffect(() => {
@@ -74,9 +74,9 @@ const ProductsListBurger = ({ navigation }) => {
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop:10,marginHorizontal:20,justifyContent:'space-between'}}>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>{item.price}LE</Text>
-                    
+                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
+
                 </View>
             </View>
         </TouchableOpacity>
@@ -110,28 +110,31 @@ const ProductsListBurger = ({ navigation }) => {
                 />
             </View>
             <ScrollView>
-            <FlatList
-                numColumns={2}
-                data={products}
-                renderItem={renderProduct}
-                keyExtractor={(item) => item.id}
-            />
-            <View style={styles.bottoms}></View>
+                <FlatList
+                    numColumns={2}
+                    data={products}
+                    renderItem={renderProduct}
+                    keyExtractor={(item) => item.id}
+                />
+                <View style={styles.bottoms}></View>
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                   
+
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.grey}/>
+                        <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
-                
-                   
+
+
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })}style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable> 
+                    </Pressable>
                 </View>
             </View>
         </View>
@@ -213,43 +216,87 @@ const BurgerDetails = ({ route, navigation }) => {
         getCartItems();
     };
 
+    const getFavItems = async () => {
+
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.fav?.length ?? 0;
+    };
+
+    const onAddToFav = async (item, index) => {
+        console.log(userId);
+        setIsPressed(!isPressed);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+      
+        if (existingItem) {
+            existingItem.qty = 1;
+            
+        } else {
+            fav.push({ ...item, qty: 1 });
+           
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+    const [isPressed, setIsPressed] = useState('');
+
+    // const handelHeart = async (item) => {
+    //   const userRef = doc(db, "users", userId);
+    //   const userSnap = await getDoc(userRef);
+    //   const { fav = [] } = userSnap.data() ?? {};
+    //   let existingItem = fav.find(itm => itm.id === item.id);
+      
+    //   if (existingItem) {
+    //     setIsPressed(isPressed);
+    //   } else {
+    //     setIsPressed(!isPressed);
+    //   }
+    // };
+  
+    // useEffect(() => {
+    //     handelHeart(productt);
+    //     console.log(isPressed);
+    // }, []);
 
     return (
         <View style={styles.container}>
-        <Header
-            title={'FoodApp'}
-            icon={require('../assets/cart.png')}
-            count={cartCount}
-            onClickIcon={() => {
-                navigation.navigate('CartScreen', { userId: userId });
-            }}
-        />
+            <Header
+                title={'FoodApp'}
+                icon={require('../assets/cart.png')}
+                count={cartCount}
+                onClickIcon={() => {
+                    navigation.navigate('CartScreen', { userId: userId });
+                }}
+            />
 
-        <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-            <View style={styles.headerWrapper}>
-                <View style={styles.titlesWrapper}>
-                    <Text style={styles.Name2}>{product.name}</Text>
+            <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+                <View style={styles.headerWrapper}>
+                    <View style={styles.titlesWrapper}>
+                        <Text style={styles.Name2}>{product.name}</Text>
+                    </View>
+
+
                 </View>
+                <View style={styles.container2}>
 
 
-            </View>
-            <View style={styles.container2}>
+                    <View style={styles.container}>
 
-
-                <View style={styles.container}>
-
-                    <View style={styles.priceWrapper}>
-                        <Text style={styles.price}> price : {product.price}LE</Text>
-                    </View>
-                    <Text style={{fontSize:20,color:COLORS.grey ,marginBottom:10,marginLeft:20}}>rate</Text>
-                    <View style={{ flexDirection: 'row', marginLeft: 20,marginBottom:10 }}>
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                        <Icon name='star' size={20} color={COLORS.star} />
-                    </View>
-                    <FlatList
+                        <View style={styles.priceWrapper}>
+                            <Text style={styles.price}> price : {product.price}LE</Text>
+                        </View>
+                        <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
+                        <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                            <Icon name='star' size={20} color={COLORS.star} />
+                        </View>
+                        <FlatList
                             Vertical={true}
                             showsVerticalScrollIndicator={false}
                             data={size}
@@ -267,15 +314,15 @@ const BurgerDetails = ({ route, navigation }) => {
                                                     ? COLORS.darkblue
                                                     : COLORS.yellow,
                                             ...styles.size,
-                                            marginBottom:5,
-                                            marginLeft:20
+                                            marginBottom: 5,
+                                            marginLeft: 20
                                         }}>
                                         <Text
                                             style={{
                                                 fontSize: 15,
                                                 fontWeight: 'bold',
                                                 marginLeft: 10,
-                                                marginTop:5,
+                                                marginTop: 5,
                                                 color:
                                                     selectedSizeIndex == index
                                                         ? COLORS.white
@@ -287,80 +334,84 @@ const BurgerDetails = ({ route, navigation }) => {
                                 </TouchableOpacity>
                             )}
                         />
-                  
+
+                    </View>
+
+                    <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
                 </View>
+                <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
+                    <FlatList
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        data={option}
+                        keyExtractor={(item) => item.id}
 
-                <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
-            </View>
-            <View style={{backgroundColor:COLORS.background,flex:1}}>
-            <FlatList
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            data={option}
+                        renderItem={({ item, index }) => (
+                            <TouchableOpacity
+                                key={index}
+                                activeOpacity={0.8}
+                                onPress={() => setSelectedOptionIndex(index)}>
+                                <View
+                                    style={{
+                                        backgroundColor:
+                                            selectedOptionIndex == index
+                                                ? COLORS.darkblue
+                                                : COLORS.yellow,
+                                        ...styles.size,
+                                        marginBottom: 5,
+                                        marginLeft: 20,
+                                        marginTop: 20
+                                    }}>
+                                    <Text
+                                        style={{
+                                            fontSize: 15,
+                                            fontWeight: 'bold',
+
+                                            marginTop: 5,
+                                            color:
+                                                selectedOptionIndex == index
+                                                    ? COLORS.white
+                                                    : COLORS.darkblue,
+                                        }}>
+                                        {item.Name}
+                                    </Text>
+                                </View>
+                            </TouchableOpacity>
+                        )}
+                    />
+                    <Text style={{ fontSize: 20, marginBottom: 5 }}> discription : {product.description}</Text>
+
+                    <View style={{ marginLeft: 50 }}>
+                        <FlatList
+
+                            data={productt}
                             keyExtractor={(item) => item.id}
-
                             renderItem={({ item, index }) => (
                                 <TouchableOpacity
                                     key={index}
                                     activeOpacity={0.8}
-                                    onPress={() => setSelectedOptionIndex(index)}>
-                                    <View
-                                        style={{
-                                            backgroundColor:
-                                                selectedOptionIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
-                                            ...styles.size,
-                                            marginBottom:5,
-                                            marginLeft:20,
-                                            marginTop:20
-                                        }}>
-                                        <Text
-                                            style={{
-                                                fontSize: 15,
-                                                fontWeight: 'bold',
-                                              
-                                                marginTop:5,
-                                                color:
-                                                    selectedOptionIndex == index
-                                                        ? COLORS.white
-                                                        : COLORS.darkblue,
-                                            }}>
-                                            {item.Name}
-                                        </Text>
-                                    </View>
+
+                                    onPress={() => setSelectedOptionIndex(index)}
+                                >
+
+                                    <PrimaryButton
+                                        title="Add to Order"
+                                        style={styles.addToCartBtn}
+                                        onPress={() => {
+                                            onAddToCart(item, index);
+                                        }}
+                                    />
+                                    <Pressable onPress={() => onAddToFav(item, index)}  >
+                                        
+                                        <Icon name="heart" size={30} color={isPressed ? 'red' : 'grey'} />
+                                    </Pressable>
                                 </TouchableOpacity>
                             )}
                         />
-            <Text style={{fontSize:20,marginBottom:5}}> discription : {product.description}</Text>
-            
-            <View style={{marginLeft:50}}> 
-            <FlatList
-
-data={productt}
-keyExtractor={(item) => item.id}
-renderItem={({ item, index }) => (
-    <TouchableOpacity
-        key={index}
-        activeOpacity={0.8}
-
-        onPress={() => setSelectedOptionIndex(index)}
-    >
-
-        <PrimaryButton
-            title="Add to Order"
-            style={styles.addToCartBtn}
-            onPress={() => {
-                onAddToCart(item, index);
-            }}
-        />
-    </TouchableOpacity>
-)}
-/>
+                    </View>
+                </View>
+                {/* display other product details */}
             </View>
-            </View>
-            {/* display other product details */}
-        </View>
         </View>
     );
 }

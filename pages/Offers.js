@@ -120,13 +120,16 @@ const ProductsListOffer = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
-                   
+
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
                     </Pressable>
+                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
+                    </Pressable>
                     <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable> 
+                    </Pressable>
                 </View>
             </View>
         </View>
@@ -208,6 +211,29 @@ const OfferDetails = ({ route, navigation }) => {
         getCartItems();
     };
 
+    const getFavItems = async () => {
+
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.fav?.length ?? 0;
+    };
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+    const [isPressed, setIsPressed] = useState('');
 
     return (
         <View style={styles.container}>
@@ -288,7 +314,7 @@ const OfferDetails = ({ route, navigation }) => {
                     <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
                 </View>
                 <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
-                    
+
                     <FlatList
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -349,6 +375,9 @@ const OfferDetails = ({ route, navigation }) => {
                                             onAddToCart(item, index);
                                         }}
                                     />
+                                    <Pressable onPress={() => onAddToFav(item, index)} >
+                                        <Icon name="heart" size={30} color={isPressed ? 'red' : 'grey'} />
+                                    </Pressable>
                                 </TouchableOpacity>
                             )}
                         />

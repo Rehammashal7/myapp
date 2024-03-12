@@ -18,6 +18,7 @@ const ProductsListPizza = ({ navigation }) => {
     const [products, setProducts] = useState([]);
     const [userId, setUserId] = useState('');
     const isFocused = useIsFocused();
+    const [isPressed, setIsPressed] = useState('');
     useEffect(() => {
         const getProducts = async () => {
             const productsCollection = collection(db, 'pizza');
@@ -60,7 +61,22 @@ const ProductsListPizza = ({ navigation }) => {
         getUserId();
     }, []);
 
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
 
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
 
 
 
@@ -74,9 +90,9 @@ const ProductsListPizza = ({ navigation }) => {
                 <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
-                   
+                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between', marginBottom: 10 }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 5 }}>{item.price}LE</Text>
+
                 </View>
             </View>
         </TouchableOpacity>
@@ -106,7 +122,9 @@ const ProductsListPizza = ({ navigation }) => {
                                     <Text>{item.name}</Text>
                                 </View>
                             </View>
+
                         </Pressable>
+
                     )}
                 />
             </View>
@@ -115,18 +133,22 @@ const ProductsListPizza = ({ navigation }) => {
                     numColumns={2}
                     data={products}
                     renderItem={renderProduct}
+
                     keyExtractor={(item) => item.id}
                 />
                 <View style={styles.bottoms}></View>
             </ScrollView>
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
-                   
+
                     <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
                         <Icon name="home" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
                         <Icon name="shopping-cart" size={25} color={COLORS.grey} />
@@ -144,6 +166,7 @@ const PizzaDetails = ({ route, navigation }) => {
     const [productt, setProductt] = React.useState([]);
 
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
+    const [selectedfav, setSelectedfav] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
     const [cartCount, setCartCount] = useState(0);
     // const navigation = useNavigation();
@@ -192,6 +215,7 @@ const PizzaDetails = ({ route, navigation }) => {
         setCartCount(cartCount);
     };
 
+
     useEffect(() => {
         if (userId) {
             getCartItems();
@@ -214,7 +238,35 @@ const PizzaDetails = ({ route, navigation }) => {
         await updateDoc(userRef, { cart });
         getCartItems();
     };
+    const getFavItems = async () => {
 
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.fav?.length ?? 0;
+    };
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+    const [isPressed, setIsPressed] = useState('');
+    const [Newprice, setNewprice] = useState(product.price);
+   
+    const handlePrice = (pl) => {
+      const price=Newprice+pl;
+       setNewprice(price)
+    };
 
     return (
         <View style={styles.container}>
@@ -232,7 +284,7 @@ const PizzaDetails = ({ route, navigation }) => {
                     <View style={styles.titlesWrapper}>
                         <Text style={styles.Name2}>{product.name}</Text>
                     </View>
-                   
+
 
                 </View>
                 <View style={styles.container2}>
@@ -241,7 +293,7 @@ const PizzaDetails = ({ route, navigation }) => {
                     <View style={styles.container}>
 
                         <View style={styles.priceWrapper}>
-                            <Text style={styles.price}> price : {product.price}LE</Text>
+                            <Text style={styles.price}> price : {Newprice}LE</Text>
                         </View>
                         <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
                         <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
@@ -262,7 +314,7 @@ const PizzaDetails = ({ route, navigation }) => {
                                 <TouchableOpacity
                                     key={index}
                                     activeOpacity={0.8}
-                                    onPress={() => setSelectedSizeIndex(index)}>
+                                    onPress={() =>{setSelectedSizeIndex(index),handlePrice(item.price)}}>
                                     <View
                                         style={{
                                             backgroundColor:
@@ -272,7 +324,8 @@ const PizzaDetails = ({ route, navigation }) => {
                                             ...styles.size,
                                             marginBottom: 5,
                                             marginLeft: 20
-                                        }}>
+                                        }}
+                                        >
                                         <Text
                                             style={{
                                                 fontSize: 15,
@@ -289,8 +342,11 @@ const PizzaDetails = ({ route, navigation }) => {
                                     </View>
                                 </TouchableOpacity>
                             )}
+                            
                         />
-
+                     <View style={styles.priceWrapper}>
+                            <Text style={styles.price}> Total price : {Newprice}LE</Text>
+                        </View>
                     </View>
 
                     <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
@@ -307,7 +363,7 @@ const PizzaDetails = ({ route, navigation }) => {
                             <TouchableOpacity
                                 key={index}
                                 activeOpacity={0.8}
-                                onPress={() => setSelectedOptionIndex(index)}>
+                                onPress={() => {setSelectedOptionIndex(index),handlePrice(item.price)}}>
                                 <View
                                     style={{
                                         backgroundColor:
@@ -332,6 +388,7 @@ const PizzaDetails = ({ route, navigation }) => {
                                         }}>
                                         {item.Name}
                                     </Text>
+                                   
                                 </View>
                             </TouchableOpacity>
                         )}
@@ -339,31 +396,36 @@ const PizzaDetails = ({ route, navigation }) => {
                     <Text style={{ fontSize: 20, marginBottom: 20 }}> discription : {product.description}</Text>
 
 
+                    <View style={{ flex: 9, flexDirection: "row" }}>
+                        <View style={{ marginLeft: 50, flexDirection: "row" }}>
 
-                    <View style={{ marginLeft: 50 }}>
+                            <FlatList
 
-                        <FlatList
+                                data={productt}
+                                keyExtractor={(item) => item.id}
+                                renderItem={({ item, index }) => (
+                                    <TouchableOpacity
+                                        key={index}
+                                        activeOpacity={0.8}
 
-                            data={productt}
-                            keyExtractor={(item) => item.id}
-                            renderItem={({ item, index }) => (
-                                <TouchableOpacity
-                                    key={index}
-                                    activeOpacity={0.8}
+                                        onPress={() => setSelectedOptionIndex(index)}
+                                    >
 
-                                    onPress={() => setSelectedOptionIndex(index)}
-                                >
+                                        <PrimaryButton
+                                            title="Add to Order"
+                                            style={styles.addToCartBtn}
+                                            onPress={() => {
+                                                onAddToCart(item, index);
+                                            }} />
+                                        <Pressable onPress={() => onAddToFav(item, index)} >
+                                            <Icon name="heart" size={30} color={isPressed ? 'red' : 'grey'} />
+                                        </Pressable>
+                                    </TouchableOpacity>
 
-                                    <PrimaryButton
-                                        title="Add to Order"
-                                        style={styles.addToCartBtn}
-                                        onPress={() => {
-                                            onAddToCart(item, index);
-                                        }}
-                                    />
-                                </TouchableOpacity>
-                            )}
-                        />
+                                )}
+                            />
+                        </View>
+
                     </View>
                 </View>
                 {/* display other product details */}
@@ -392,11 +454,11 @@ const styles = StyleSheet.create({
     },
     cardView: {
         marginHorizontal: 10,
-        marginBottom: 20,
+        marginBottom: 10,
         marginTop: 20,
         borderRadius: 15,
         width: cardwidth,
-        height: 220,
+        height: 250,
         elevation: 13,
         backgroundColor: 'white',
     },
