@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet } from 'react-native';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase'; // Import your Firebase configuration
 
 const PurchasedProductsScreen = () => {
@@ -30,10 +30,14 @@ const PurchasedProductsScreen = () => {
         keyExtractor={(item) => item.productId}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
-            <Text style={styles.itemText}>Product Name: {item.name}</Text>
-            <Text style={styles.itemText}>Description: {item.description}</Text>
-            <Text style={styles.itemText}>Price: ${item.totalPrice}</Text>
-            <Text style={styles.itemText}>Quantity: {item.quantity}</Text>
+            <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
+            <View style={styles.itemInfoContainer}>
+              <Text style={styles.itemText}>Product Name: {item.name}</Text>
+              <Text style={styles.itemText}>Description: {item.description}</Text>
+              <Text style={styles.itemText}>Price: ${item.totalPrice}</Text>
+              <Text style={styles.itemText}>Quantity: {item.quantity}</Text>
+              <Text style={styles.itemText}>Timestamp: {item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : 'N/A'}</Text>
+            </View>
           </View>
         )}
       />
@@ -48,11 +52,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   itemContainer: {
+    flexDirection: 'row', // Arrange items horizontally
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 10,
     padding: 10,
     marginBottom: 10,
+  },
+  itemImage: {
+    width: 100, // Adjust image width as needed
+    height: 100, // Adjust image height as needed
+    resizeMode: 'cover',
+    marginRight: 10, // Add spacing between image and text
+  },
+  itemInfoContainer: {
+    flex: 1, // Take remaining space
   },
   itemText: {
     fontSize: 16,
@@ -60,5 +74,6 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
 });
+
 
 export default PurchasedProductsScreen;
