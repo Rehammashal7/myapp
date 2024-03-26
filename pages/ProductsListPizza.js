@@ -35,6 +35,7 @@ const ProductsListPizza = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
+    const [isPressed, setIsPressed] = useState('');
   useEffect(() => {
     const getProducts = async () => {
       const productsCollection = collection(db, "pizza");
@@ -77,6 +78,33 @@ const ProductsListPizza = ({ navigation }) => {
     };
     getUserId();
   }, []);
+    useEffect(() => {
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem('USERID');
+            setUserId(id);
+            console.log(id);
+        };
+        getUserId();
+    }, []);
+
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+
+
 
   const handleProductPress = (product) => {
     navigation.navigate("PizzaDetails", { product });
@@ -126,49 +154,44 @@ const ProductsListPizza = ({ navigation }) => {
                   source={item.image}
                 />
 
-                <View style={styles.smallCardText}>
-                  <Text>{item.name}</Text>
+                                <View style={styles.smallCardText}>
+                                    <Text>{item.name}</Text>
+                                </View>
+                            </View>
+                        </Pressable>
+                    )}
+                />
+            </View>
+            <ScrollView>
+                <FlatList
+                    numColumns={2}
+                    data={products}
+                    renderItem={renderProduct}
+                    keyExtractor={(item) => item.id}
+                />
+                <View style={styles.bottoms}></View>
+            </ScrollView>
+            <View style={styles.NavContainer} >
+                <View style={styles.Navbar} >
+                   
+                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
+                        <Icon name="user" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
+                        <Icon name="home" size={25} color={COLORS.grey} />
+                    </Pressable>
+                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="heart" size={25} color={COLORS.grey} />
+                    </Pressable>
+
+
+                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
+                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
+                    </Pressable>
                 </View>
-              </View>
-            </Pressable>
-          )}
-        />
-      </View>
-      <ScrollView>
-        <FlatList
-          numColumns={2}
-          data={products}
-          renderItem={renderProduct}
-          keyExtractor={(item) => item.id}
-        />
-        <View style={styles.bottoms}></View>
-      </ScrollView>
-      <View style={styles.NavContainer}>
-        <View style={styles.Navbar}>
-          <Pressable
-            onPress={() => navigation.navigate("profile")}
-            style={styles.iconBehave}
-          >
-            <Icon name="user" size={25} color={COLORS.grey} />
-          </Pressable>
-          <Pressable
-            onPress={() => navigation.navigate("Home")}
-            style={styles.iconBehave}
-          >
-            <Icon name="home" size={25} color={COLORS.grey} />
-          </Pressable>
-          <Pressable
-            onPress={() =>
-              navigation.navigate("CartScreen", { userId: userId })
-            }
-            style={styles.iconBehave}
-          >
-            <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-          </Pressable>
+            </View>
         </View>
-      </View>
-    </View>
-  );
+    );
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -179,6 +202,7 @@ const PizzaDetails = ({ route, navigation }) => {
   const [productt, setProductt] = React.useState([]);
 
   const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
+    const [selectedfav, setSelectedfav] = React.useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
    //const navigation = useNavigation();
@@ -282,14 +306,43 @@ const fetchAllReviews = async () => {
     const { cart = [] } = userSnap.data() ?? {};
     let existingItem = cart.find((itm) => itm.id === item.id);
 
-    if (existingItem) {
-      existingItem.qty += 1;
-    } else {
-      cart.push({ ...item, qty: 1 });
-    }
-    await updateDoc(userRef, { cart });
-    getCartItems();
-  };
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            cart.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { cart });
+        getCartItems();
+    };
+    const getFavItems = async () => {
+
+        const userRef = doc(db, 'users', userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.fav?.length ?? 0;
+    };
+    const onAddToFav = async (item, index) => {
+        setIsPressed(!isPressed);
+        console.log(userId);
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const { fav = [] } = userSnap.data() ?? {};
+        let existingItem = fav.find(itm => itm.id === item.id);
+
+        if (existingItem) {
+            existingItem.qty += 1;
+        } else {
+            fav.push({ ...item, qty: 1 });
+        }
+        await updateDoc(userRef, { fav });
+        getFavItems();
+    };
+    const [isPressed, setIsPressed] = useState('');
+    const [Newprice, setNewprice] = useState(product.price);
+   
+    const handlePrice = (pl) => {
+      const price=Newprice+pl;
+       setNewprice(price)
+    };
 
   return (
     <View style={styles.container}>
@@ -418,6 +471,7 @@ const fetchAllReviews = async () => {
                   >
                     {item.Name}
                   </Text>
+                                   
                 </View>
               </TouchableOpacity>
             )}
@@ -426,27 +480,32 @@ const fetchAllReviews = async () => {
             {" "}
             discription : {product.description}
           </Text>
+                    <View style={{ flex: 9, flexDirection: "row" }}>
+              <View style={{ marginLeft: 50, flexDirection: "row" }}>
+                <FlatList
+                  data={productt}
+                  keyExtractor={(item) => item.id}
+                  renderItem={({ item, index }) => (
+                    <TouchableOpacity
+                      key={index}
+                      activeOpacity={0.8}
+                      onPress={() => setSelectedOptionIndex(index)}
+                    >
+                      <PrimaryButton
+                        title="Add to Order"
+                        style={styles.addToCartBtn}
+                        onPress={() => {
+                          onAddToCart(item, index);
+                        }} />
+                                        <Pressable onPress={() => onAddToFav(item, index)} >
+                          <Icon name="heart" size={30} color={isPressed ? 'red' : 'grey'} />
+                                        </Pressable>
+                    </TouchableOpacity>
 
-          <View style={{ marginLeft: 50 }}>
-            <FlatList
-              data={productt}
-              keyExtractor={(item) => item.id}
-              renderItem={({ item, index }) => (
-                <TouchableOpacity
-                  key={index}
-                  activeOpacity={0.8}
-                  onPress={() => setSelectedOptionIndex(index)}
-                >
-                  <PrimaryButton
-                    title="Add to Order"
-                    style={styles.addToCartBtn}
-                    onPress={() => {
-                      onAddToCart(item, index);
-                    }}
-                  />
-                </TouchableOpacity>
-              )}
-            />
+                  )}
+                />
+                        </View>
+
           </View>
           <View>
           { (
