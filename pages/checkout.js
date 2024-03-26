@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
 
 
-const Checkout = ({navigation}) =>{
+const Checkout = ({navigation }) =>{
   const [amount, setAmount] = useState('');
   const [error, setError] = useState(null);
   useEffect(() => {

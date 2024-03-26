@@ -12,6 +12,9 @@ import {useIsFocused, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc,collection,where,setDoc, updateDoc ,getDocs,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
+import { FirebaseError } from 'firebase/app';
+
+
 import {   serverTimestamp } from 'firebase/firestore';
 
 //parseInt()تحويل 
@@ -29,7 +32,23 @@ const CartScreen = ({navigation}) => {
   }, [isFocused]);
 
 
- 
+  const handleSomeAction = async () => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.data();
+      
+      console.log('Current Bonus Points:', userData.boun);
+
+      const currentPoints = userData.boun || 0;
+      const newPoints = currentPoints + 10;
+  
+      await updateDoc(userRef, { boun: newPoints });
+      console.log('Bonus points increased by 10.');
+    } catch (error) {
+      console.error('Error increasing bonus points:', error);
+    }};
+
   
   const getCartItems = async () => {
     //const userId = await AsyncStorage.getItem('USERID');
@@ -150,6 +169,7 @@ const CartScreen = ({navigation}) => {
   };
 
 
+  
 return (
   <View style={styles.container}>
     <FlatList
@@ -248,6 +268,8 @@ return (
           ]}
           onPress={() => {
             navigation.navigate('checkout');
+            handleSomeAction();
+            
             handleCheckout();
           }}>
           <Text style={{color: '#fff'}}>Checkout</Text>
