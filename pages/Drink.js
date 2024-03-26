@@ -209,7 +209,8 @@ const CoffeeDetails = ({ route, navigation }) => {
         getCartItems();
     };
 
-
+ 
+    
     return (
         <View style={styles.container}>
             <Header

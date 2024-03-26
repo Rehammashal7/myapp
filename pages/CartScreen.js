@@ -81,7 +81,7 @@ const CartScreen = ({navigation}) => {
             userId: userId,
             productId: item.id,
             quantity: item.qty,
-            totalPrice: item.qty * item.price,
+            totalPrice: (item.qty || 0) * (item.data.price || 0),
             timestamp: new Date(),
             imageUrl: item.data.imageUrl,
             name: item.data.name,

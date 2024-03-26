@@ -25,6 +25,8 @@ import adminHome from './adminPages/adminHome'
 import addadmin from './adminPages/addAdmin' ;
 import plusbutton from './adminPages/plusbutton';
 import adminReports from './adminPages/PurchasedProducts';
+import AddReview from './pages/AddReview';
+
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -37,6 +39,8 @@ export default function App() {
         <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
         <Stack.Screen name="Coffee" component={ProductsListCoffee} />
         <Stack.Screen name="Offer" component={ProductsListOffer} />
+        <Stack.Screen name='AddReview' component={AddReview}/>
+
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="PizzaDetails" component={PizzaDetails}  />
         <Stack.Screen name="OfferDetails" component={OfferDetails}  />
