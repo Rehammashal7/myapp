@@ -26,7 +26,7 @@ const Profile = ({navigation }) => {
   const [phone, setPhone] = useState('');
   const [mode, setMode] = useState('view');
   const [birthDate, setBirthDate] = useState('');
-  
+
   const [bounspoint, setBouns] = useState('');
 
   const [userLoggedIn, setUserLoggedIn] = useState(false);
@@ -110,7 +110,7 @@ if (docSnap.exists()) {
   setLastName(data.lName);
   setPhone(data.phone);
   setBirthDate(data.birthDate);
-  setBouns(data.boun || 0);
+setBouns(data.boun || 0);
 } else {
   // docSnap.data() will be undefined in this case
   console.log("No such document!");
@@ -126,7 +126,7 @@ if (docSnap.exists()) {
       lName:lastName,
       phone:phone,
       birthDate:birthDate,
-      boun:bounspoint,
+boun:bounspoint,
     });
 
   };
@@ -189,9 +189,9 @@ if (docSnap.exists()) {
     </View>
 
     </TouchableOpacity>
-
-
     
+
+
 
 
 
@@ -242,6 +242,7 @@ if (docSnap.exists()) {
         <Text style={styles.buttonText}>Edit</Text>
       </TouchableOpacity></View>
           
+          {/* <Button  title="Edit" onPress={handleEdit} /> */}
         </>
       )}
 
@@ -285,7 +286,7 @@ if (docSnap.exists()) {
             <Text style={styles.label}> birth Date:</Text>
             <TextInput style={styles.input} value={birthDate} onChangeText={setBirthDate} 
             />
-            
+
           </View>
 
 
@@ -293,14 +294,15 @@ if (docSnap.exists()) {
           <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
       </TouchableOpacity></View>
-
+          
+          {/* <Button title="Save" onPress={handleSave} /> */}
         </>
       )}
 
 
 <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-        <Text style={styles.buttonTextLoggout}>Logout</Text>     
-  </TouchableOpacity></View>
+        <Text style={styles.buttonTextLoggout}>Logout</Text>
+      </TouchableOpacity></View>
 
 
       <View style={styles.NavContainer} >
