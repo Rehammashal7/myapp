@@ -30,11 +30,12 @@ const Profile = ({navigation }) => {
   const [bounspoint, setBouns] = useState('');
 
   const [userLoggedIn, setUserLoggedIn] = useState(false);
-
+  const [order, setOrder] = useState('');
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
   //const [profilePhoto, setProfilePhoto] = useState(null);
+  const [orderedItems, setOrderedItems] = useState([]);
 
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -95,6 +96,8 @@ const Profile = ({navigation }) => {
     handleChange();
     
   };
+  const handleMyOrderPress = () => {
+    navigation.navigate('OrderHistory', { orderedItems: orderedItems });  };
 
 
 
@@ -146,7 +149,7 @@ boun:bounspoint,
       setPhotoURL(currentUser.photoURL);
     }
   }, [currentUser]);
-
+ 
  
   async function upload(file, currentUser, setLoading) {
     const storage = getStorage();
@@ -237,6 +240,15 @@ boun:bounspoint,
 
               
           </View>
+
+          <TouchableOpacity onPress={handleMyOrderPress}>
+          <View style={styles.field}>
+          <FontAwesome name="shopping-bag" color="#333333" size={20} />
+            <Text style={styles.label}> My Orders </Text>
+            <Text style={styles.value2} >{order}
+            </Text>
+            </View>
+          </TouchableOpacity>
 
           <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
         <Text style={styles.buttonText}>Edit</Text>
