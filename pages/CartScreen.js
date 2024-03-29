@@ -449,6 +449,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 //import { useState, useEffect } from 'react';
 import { doc,collection,where,setDoc, updateDoc ,getDocs,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
+import BottomNavigator from '../components/bar';
 
 //parseInt()تحويل 
 const CartScreen = ({navigation}) => {
@@ -722,6 +723,7 @@ return (
         </TouchableOpacity>
       </View>
     )}
+    <BottomNavigator item="cart" navigation={navigation} userId={userId} />
   </View>
 );
 };

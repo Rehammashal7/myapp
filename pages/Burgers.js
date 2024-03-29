@@ -10,6 +10,7 @@ import PrimaryButton from '../components/Button';
 import Header from './Header';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomNavigator from '../components/bar';
 
 
 
@@ -118,25 +119,7 @@ const ProductsListBurger = ({ navigation }) => {
                 />
                 <View style={styles.bottoms}></View>
             </ScrollView>
-            <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
-
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.grey} />
-                    </Pressable>
-
-
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                        <Icon name="home" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                </View>
-            </View>
+            <BottomNavigator navigation={navigation} userId={userId} />
         </View>
     );
 };
@@ -311,8 +294,8 @@ const BurgerDetails = ({ route, navigation }) => {
                                         style={{
                                             backgroundColor:
                                                 selectedSizeIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
+                                                    ? COLORS.dark
+                                                    : COLORS.white,
                                             ...styles.size,
                                             marginBottom: 5,
                                             marginLeft: 20
@@ -326,7 +309,7 @@ const BurgerDetails = ({ route, navigation }) => {
                                                 color:
                                                     selectedSizeIndex == index
                                                         ? COLORS.white
-                                                        : COLORS.darkblue,
+                                                        : COLORS.dark,
                                             }}>
                                             {item.Name}
                                         </Text>
@@ -355,8 +338,8 @@ const BurgerDetails = ({ route, navigation }) => {
                                     style={{
                                         backgroundColor:
                                             selectedOptionIndex == index
-                                                ? COLORS.darkblue
-                                                : COLORS.yellow,
+                                                ? COLORS.dark
+                                                : COLORS.white,
                                         ...styles.size,
                                         marginBottom: 5,
                                         marginLeft: 20,
@@ -371,7 +354,7 @@ const BurgerDetails = ({ route, navigation }) => {
                                             color:
                                                 selectedOptionIndex == index
                                                     ? COLORS.white
-                                                    : COLORS.darkblue,
+                                                    : COLORS.dark,
                                         }}>
                                         {item.Name}
                                     </Text>
@@ -467,7 +450,7 @@ const styles = StyleSheet.create({
     Name2: {
         fontFamily: 'Montserrat-Bold',
         fontSize: 32,
-        color: COLORS.darkblue,
+        color: COLORS.dark,
     },
     priceWrapper: {
         marginTop: 10,
@@ -475,7 +458,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     price: {
-        color: COLORS.darkblue,
+        color: COLORS.dark,
         fontFamily: 'Montserrat-Bold',
         fontSize: 24,
     },
@@ -605,7 +588,7 @@ const styles = StyleSheet.create({
     },
     Navbar: {
         flexDirection: 'row',
-        backgroundColor: COLORS.darkblue,
+        backgroundColor: COLORS.dark,
         width: width,
         justifyContent: 'space-evenly',
         borderRadius: 30,

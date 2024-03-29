@@ -10,6 +10,7 @@ import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
 import PrimaryButton from '../components/Button';
+import BottomNavigator from '../components/bar';
 const { width } = Dimensions.get('screen');
 const cardwidth = width / 2 - 20;
 let iconcolor
@@ -116,24 +117,7 @@ const ProductsListCoffee = ({ navigation }) => {
 
                 <View style={styles.bottoms}></View>
             </ScrollView>
-            <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
-
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.grey} />
-                    </Pressable>
-
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                        <Icon name="home" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                </View>
-            </View>
+            <BottomNavigator navigation={navigation} userId={userId} />
         </View>
     );
 };
@@ -286,8 +270,8 @@ const CoffeeDetails = ({ route, navigation }) => {
                                         style={{
                                             backgroundColor:
                                                 selectedSizeIndex == index
-                                                    ? COLORS.darkblue
-                                                    : COLORS.yellow,
+                                                    ? COLORS.dark
+                                                    : COLORS.white,
                                             ...styles.size,
                                             marginBottom: 5,
                                             marginLeft: 20
@@ -301,7 +285,7 @@ const CoffeeDetails = ({ route, navigation }) => {
                                                 color:
                                                     selectedSizeIndex == index
                                                         ? COLORS.white
-                                                        : COLORS.darkblue,
+                                                        : COLORS.dark,
                                             }}>
                                             {item.Name}
                                         </Text>
@@ -401,7 +385,7 @@ const styles = StyleSheet.create({
     Name2: {
         fontFamily: 'Montserrat-Bold',
         fontSize: 32,
-        color: COLORS.darkblue,
+        color: COLORS.dark,
     },
     priceWrapper: {
         marginTop: 10,
@@ -409,7 +393,7 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     price: {
-        color: COLORS.darkblue,
+        color: COLORS.dark,
         fontFamily: 'Montserrat-Bold',
         fontSize: 24,
     },
@@ -539,7 +523,7 @@ const styles = StyleSheet.create({
     },
     Navbar: {
         flexDirection: 'row',
-        backgroundColor: COLORS.darkblue,
+        backgroundColor: COLORS.dark,
         width: width,
         justifyContent: 'space-evenly',
         borderRadius: 30,
