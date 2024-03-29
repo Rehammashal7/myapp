@@ -60,11 +60,17 @@ const Food = [
 ]
 export default Food;
 
-export const filterData = [      
-                    {name:"Pizza",image:"https://img.pikbest.com/png-images/drawing-gourmet-tomato-pizza_5882034.png!bw700",id:"1"},
-                    {name:"Burgers",image:"https://img.pikbest.com/png-images/qiantu/hand-drawn-style-delicious-burger-elements_2551429.png!w700wp",id:"2"},
-                    {name:"Coffee",image:"https://www.shutterstock.com/image-vector/vector-illustration-paper-cup-coffee-260nw-696505459.jpg",id:"3"},
-                    {name:"Offer",image:"https://w7.pngwing.com/pngs/67/521/png-transparent-computer-icons-offers-text-logo-discount-thumbnail.png",id:"4"},
+// export const filterDataa = [      
+//                     {name:"Pizza",image:"https://img.pikbest.com/png-images/drawing-gourmet-tomato-pizza_5882034.png!bw700",id:"1"},
+//                     {name:"Burgers",image:"https://img.pikbest.com/png-images/qiantu/hand-drawn-style-delicious-burger-elements_2551429.png!w700wp",id:"2"},
+//                     {name:"Coffee",image:"https://www.shutterstock.com/image-vector/vector-illustration-paper-cup-coffee-260nw-696505459.jpg",id:"3"},
+//                     {name:"Offer",image:"https://w7.pngwing.com/pngs/67/521/png-transparent-computer-icons-offers-text-logo-discount-thumbnail.png",id:"4"},
+//                 ];
+                export const filterData = [      
+                    {name:"WOMAN",id:"1"},
+                    {name:"MEN",id:"2"},
+                    {name:"KIDS",id:"3"},
+                    {name:"BABY",id:"4"},
                 ];
 export const Burger=[
     {

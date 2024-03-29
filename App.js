@@ -36,10 +36,10 @@ export default function App() {
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Burgers" component={ProductsListBurger} />
+        <Stack.Screen name="MEN" component={ProductsListBurger} />
         <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
-        <Stack.Screen name="Coffee" component={ProductsListCoffee} />
-        <Stack.Screen name="Offer" component={ProductsListOffer} />
+        <Stack.Screen name="KIDS" component={ProductsListCoffee} />
+        <Stack.Screen name="BABY" component={ProductsListOffer} />
         <Stack.Screen name='AddReview' component={AddReview}/>
 
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
@@ -48,7 +48,7 @@ export default function App() {
         <Stack.Screen name="CoffeeDetails" component={CoffeeDetails}  />
         <Stack.Screen name="BurgerDetails" component={BurgerDetails}  />
         <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
-        <Stack.Screen name="Pizza" component={ProductsListPizza} />
+        <Stack.Screen name="WOMAN" component={ProductsListPizza} />
         <Stack.Screen name="favorite" component={favorite} />
         <Stack.Screen name ="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />

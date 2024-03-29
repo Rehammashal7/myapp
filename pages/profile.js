@@ -235,8 +235,8 @@ boun:bounspoint,
           <FontAwesome name="star" color="#333333" size={20} />
             <Text style={styles.label}> Bouns:</Text>
             <Text style={styles.value2} > {bounspoint} </Text>
-            <TouchableOpacity onPress={handleSomeAction}>
-               </TouchableOpacity>
+            {/* <TouchableOpacity onPress={handleSomeAction}>
+               </TouchableOpacity> */}
 
               
           </View>

@@ -206,17 +206,17 @@ const styles = StyleSheet.create({
 
     },
     SearchArea: {
-        marginTop: 10,
+       marginTop: 0,
         width: "94%",
         height: 40,
         backgroundColor: COLORS.background,
-        borderRadius: 30,
         borderWidth: 1,
-        borderColor: COLORS.grey,
+        borderColor: 'black', // لون الحافة
         flexDirection: "row",
         alignItems: "center",
         padding: 10
     },
+
     searchIcon: {
 
         marginRight: 10,

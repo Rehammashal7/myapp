@@ -1,5 +1,7 @@
 const COLORS = {
-    background: '#FBFAFF',
+    // background: '#FBFAFF',
+    background: '#FFF',
+
     dark: '#000',
     darkblue:'#131A2C',
     yellow: '#FFDE9B',

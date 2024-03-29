@@ -6,7 +6,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Food, { Offer, filterData } from '../data';
+import Food, { Offer, filterData ,filterDataa} from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -68,40 +68,59 @@ const HomeScreen = ({ navigation }) => {
         <View style={styles.container}>
 
             <View style={styles.header}>
-                <Text style={styles.Text}> Meal Mate </Text>
+                <Text style={styles.Text}> AToZ </Text>
             </View>
+            <Search/>
 
             <ScrollView>
-                <View  style = {{marginBottom:10,paddingTop:10}}>
-       <Search/>
-</View>
+                {/* <View  style = {{marginBottom:10,paddingTop:10}}>
+</View> */}
 
                 <View>
-                    <FlatList
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        data={filterData}
-                        keyExtractor={(item) => item.id}
-                        extraData={indexCheck}
-                        renderItem={({ item, index }) => (
-                            <Pressable
-                                onPress={() => navigation.navigate(item.name)}
-                            >
-                                <View style={indexCheck === item.id ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
-                                    <Image
-                                        style={{ height: 60, width: 60, borderRadius: 30 }}
-                                        source={item.image}
-                                    />
-
-                                    <View>
-                                        <Text style={indexCheck === item.id ? { ...styles.smallCardTextSected } :
-                                            { ...styles.smallCardText }}>{item.name}</Text>
-                                    </View>
-                                </View>
-                            </Pressable>
-                        )}
-                    />
+                <FlatList
+    horizontal={true}
+    showsHorizontalScrollIndicator={false}
+    data={filterData}
+    keyExtractor={(item) => item.id}
+    extraData={indexCheck}
+    renderItem={({ item, index }) => (
+        <Pressable
+            onPress={() => navigation.navigate(item.name)}
+        >
+            <View style={[styles.smallCard, indexCheck === item.id ? styles.selectedCard : null]}>
+                <View>
+                    <Text style={[styles.smallCardText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
                 </View>
+            </View>
+        </Pressable>
+    )}
+/>
+
+                </View>
+                {/* <View>
+                <FlatList
+    horizontal={true}
+    showsHorizontalScrollIndicator={false}
+    data={filterDataa}
+    keyExtractor={(item) => item.id}
+    renderItem={({ item, index }) => (
+        <Pressable
+                  onPress={() => navigation.navigate(item.name)}
+                        >
+                            <View style={item.id === "1" ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
+                                <Image
+                                    style={{ height: 60, width: 60, borderRadius: 30 }}
+                                    source={item.image}
+                                />
+
+                                <View style={styles.smallCardText}>
+                                    <Text>{item.name}</Text>
+                                </View>
+                            </View>
+                        </Pressable>
+                    )}
+                />
+                </View> */}
                 <View style={styles.headerTextView}>
                     <Text style={styles.headerText}>Free Delivery now</Text>
                 </View>
@@ -309,7 +328,8 @@ const styles = StyleSheet.create({
     },
     Text: {
         color: COLORS.darkblue,
-        fontSize: 40,
+        fontSize: 35,
+        fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
 
@@ -366,37 +386,49 @@ const styles = StyleSheet.create({
         paddingVertical: 3,
     },
     smallCard: {
-        borderRadius: 30,
-        backgroundColor: 'white',
+        // borderRadius: 30,
+        backgroundColor:  COLORS.background,
         justifyContent: "center",
         alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
+        width: 100,
+        height: 70
     },
 
-    smallCardSelected: {
-        borderRadius: 30,
-        backgroundColor: '#FFDE9B',
-        justifyContent: "center",
-        alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
-    },
+    // smallCardSelected: {
+    //     // borderRadius: 30,
+    //     backgroundColor: '#FFDE9B',
+    //     justifyContent: "center",
+    //     alignItems: 'center',
+    //     width: 100,
+    //     height: 70
+    // },
 
-    smallCardTextSected: {
-        fontWeight: "bold",
-        color: '#131A2C'
-    },
+    // smallCardTextSected: {
+    //     fontWeight: "bold",
+    //     color: '#131A2C'
+    // },
 
     smallCardText: {
         fontWeight: "bold",
         color: '#131A2C'
     },
 
+    selectedCard: {
+
+        shadowColor: 'black',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    smallCardText: {
+    },
+    selectedCardText: {
+        color: 'black',
+    },
     floatButton: {
         position: 'absolute',
         bottom: 10, right: 15,

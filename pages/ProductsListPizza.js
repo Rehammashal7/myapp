@@ -27,6 +27,7 @@ import PrimaryButton from "../components/Button";
 import Header from "./Header";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Search from '../components/search';
 
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2 - 20;
@@ -131,36 +132,39 @@ const ProductsListPizza = ({ navigation }) => {
       </View>
     </TouchableOpacity>
   );
-
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={filterData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <Pressable onPress={() => navigation.navigate(item.name)}>
-              <View
-                style={
-                  item.name === "Pizza"
-                    ? { ...styles.smallCardSelected }
-                    : { ...styles.smallCard }
-                }
-              >
-                <Image
-                  style={{ height: 60, width: 60, borderRadius: 30 }}
-                  source={item.image}
-                />
 
-                                <View style={styles.smallCardText}>
-                                    <Text>{item.name}</Text>
-                                </View>
-                            </View>
-                        </Pressable>
-                    )}
-                />
+    <View style={styles.container}>
+      
+      <View style={styles.headerName}>
+                <Text style={styles.Textt}> AToZ </Text>
+            </View>
+                <Search/>
+
+      <View style={styles.header}>
+                <FlatList
+    horizontal={true}
+    showsHorizontalScrollIndicator={false}
+    data={filterData}
+    keyExtractor={(item) => item.id}
+    renderItem={({ item, index }) => (
+        <Pressable onPress={() => navigation.navigate(item.name)}>
+            <View
+                style={
+                    item.name === "WOMAN"
+                        ? { ...styles.smallCardSelected }
+                        : { ...styles.smallCard }
+                }
+            >
+              
+               <View style={styles.smallCardText}>
+                    <Text style={
+                      item.name === "WOMAN" ? { ...styles.boldText} : { ...styles.regularText}}>{item.name}</Text>
+                </View>
+            </View>
+        </Pressable>
+    )}
+/>
             </View>
             <ScrollView>
                 <FlatList
@@ -672,7 +676,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: "#FBFAFF",
+    backgroundColor: "#ffff",
     //flexDirection:"row",
     // alignItems: 'center',
     // justifyContent: 'center',
@@ -694,7 +698,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     backgroundColor: "#FBFAFF",
-    height: 120,
+    height: 70,
   },
   
 
@@ -742,36 +746,44 @@ reviewTitle: {
     marginTop: 10,
   },
   smallCard: {
-    borderRadius: 30,
-    backgroundColor: "white",
+    // borderRadius: 30,
+    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: 'center',
+    width: 100,
+    height: 70,
+   borderBottomColor:'transparent', 
+    borderBottomWidth: 2, 
+},
+smallCardSelected: {
+    backgroundColor: "#FFFFFF",
     justifyContent: "center",
     alignItems: "center",
-    padding: 5,
-    width: 80,
-    margin: 10,
-    height: 100,
-  },
-
-  smallCardSelected: {
-    borderRadius: 30,
-    backgroundColor: "#FFDE9B",
-    justifyContent: "center",
-    alignItems: "center",
-    padding: 5,
-    width: 80,
-    margin: 10,
-    height: 100,
-  },
-
+    width: 100,
+    height: 70,
+  shadowColor: 'black',
+  borderBottomColor: 'black', 
+  borderBottomWidth: 2, 
+},
   smallCardTextSected: {
-    fontWeight: "bold",
     color: "#131A2C",
   },
-
+  regularText: {
+    
+    fontWeight: 'normal', 
+    fontSize: 16,
+},
+boldText: {
+    fontWeight: 'bold',
+    fontSize: 18, 
+},
+  
   smallCardText: {
-    fontWeight: "bold",
-    color: "#131A2C",
-  },
+    fontSize: 14, 
+    color: 'black', 
+    textAlign: 'center',
+    marginTop: 5, 
+},
   NavContainer: {
     position: "absolute",
     alignItems: "center",
@@ -791,6 +803,19 @@ reviewTitle: {
     padding: 35,
     bottom: 30,
   },
+  Textt: {
+    color: COLORS.darkblue,
+    fontSize: 35,
+    fontFamily: 'SofiaRegular',
+    fontWeight: "bold",
+    alignItems: 'center',
+
+},
+headerName: {
+  flexDirection: "row",
+  backgroundColor: COLORS.background,
+  height: '10%',
+},
 //   addToCartBtn: {
 //     backgroundColor: "green",
 //     padding: 10,

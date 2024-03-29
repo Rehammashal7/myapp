@@ -10,6 +10,7 @@ import PrimaryButton from '../components/Button';
 import Header from './Header';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Search from '../components/search';
 
 
 
@@ -84,30 +85,34 @@ const ProductsListBurger = ({ navigation }) => {
 
     return (
         <View style={styles.container} >
+             <View style={styles.headerName}>
+                <Text style={styles.Textt}> AToZ </Text>
+            </View>
+                      <Search/>
             <View style={styles.header}>
-                <FlatList
-                    horizontal={true}
-                    showsHorizontalScrollIndicator={false}
-                    data={filterData}
-                    keyExtractor={(item) => item.id}
-
-                    renderItem={({ item, index }) => (
-                        <Pressable
-                            onPress={() => navigation.navigate(item.name)}
-                        >
-                            <View style={item.name === 'Burgers' ? { ...styles.smallCardSelected } : { ...styles.smallCard }}>
-                                <Image
-                                    style={{ height: 60, width: 60, borderRadius: 30 }}
-                                    source={item.image}
-                                />
-
-                                <View style={styles.smallCardText}>
-                                    <Text>{item.name}</Text>
-                                </View>
-                            </View>
-                        </Pressable>
-                    )}
-                />
+            <FlatList
+    horizontal={true}
+    showsHorizontalScrollIndicator={false}
+    data={filterData}
+    keyExtractor={(item) => item.id}
+    renderItem={({ item, index }) => (
+        <Pressable onPress={() => navigation.navigate(item.name)}>
+            <View
+                style={
+                    item.name === "MEN"
+                        ? { ...styles.smallCardSelected }
+                        : { ...styles.smallCard }
+                }
+            >
+              
+               <View style={styles.smallCardText}>
+                    <Text style={
+                      item.name === "MEN" ? { ...styles.boldText} : { ...styles.regularText}}>{item.name}</Text>
+                </View>
+            </View>
+        </Pressable>
+    )}
+/>
             </View>
             <ScrollView>
                 <FlatList
@@ -501,7 +506,7 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        backgroundColor: '#FBFAFF',
+        backgroundColor: '#FFFF',
         //flexDirection:"row",
         // alignItems: 'center',
         // justifyContent: 'center',
@@ -523,7 +528,7 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: "row",
         backgroundColor: "#FBFAFF",
-        height: 120,
+        height: 70,
     },
     bottoms: {
         flexDirection: "row",
@@ -566,35 +571,43 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     smallCard: {
-        borderRadius: 30,
+        // borderRadius: 30,
         backgroundColor: 'white',
         justifyContent: "center",
         alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
+        width: 100,
+        height: 70,
+       borderBottomColor:'transparent', 
+        borderBottomWidth: 2, 
     },
-
     smallCardSelected: {
-        borderRadius: 30,
-        backgroundColor: '#FFDE9B',
+        backgroundColor: "#FFFFFF",
         justifyContent: "center",
-        alignItems: 'center',
-        padding: 5,
-        width: 80,
-        margin: 10,
-        height: 100
+        alignItems: "center",
+        width: 100,
+        height: 70,
+      shadowColor: 'black',
+      borderBottomColor: 'black', 
+      borderBottomWidth: 2, 
     },
-
-    smallCardTextSected: {
-        fontWeight: "bold",
-        color: '#131A2C'
+      smallCardTextSected: {
+        color: "#131A2C",
+      },
+      regularText: {
+        
+        fontWeight: 'normal', 
+        fontSize: 16,
     },
-
-    smallCardText: {
-        fontWeight: "bold",
-        color: '#131A2C'
+    boldText: {
+        fontWeight: 'bold',
+        fontSize: 18, 
+    },
+      
+      smallCardText: {
+        fontSize: 14, 
+        color: 'black', 
+        textAlign: 'center',
+        marginTop: 5, 
     },
     NavContainer: {
         position: 'absolute',
@@ -615,6 +628,17 @@ const styles = StyleSheet.create({
     iconBehave: {
         padding: 35,
         bottom: 30
+    },Textt: {
+        color: COLORS.darkblue,
+        fontSize: 35,
+        fontFamily: 'SofiaRegular',
+        fontWeight: "bold",
+        alignItems: 'center',
+
+    }, headerName: {
+        flexDirection: "row",
+        backgroundColor: COLORS.background,
+        height: '10%',
     },
 
 });
