@@ -12,10 +12,7 @@ import {useIsFocused, useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc,collection,where,setDoc, updateDoc ,getDocs,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
-import { FirebaseError } from 'firebase/app';
-
-
-import {   serverTimestamp } from 'firebase/firestore';
+import BottomNavigator from '../components/bar';
 
 //parseInt()تحويل 
 const CartScreen = ({navigation}) => {
@@ -310,6 +307,7 @@ return (
         </TouchableOpacity>
       </View>
     )}
+    <BottomNavigator item="cart" navigation={navigation} userId={userId} />
   </View>
 );
 };

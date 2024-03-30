@@ -1,6 +1,8 @@
-import React, { useState,useEffect } from 'react';
-import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable, 
-    ScrollView, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+    View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
+    ScrollView, Dimensions, TouchableWithoutFeedback
+} from 'react-native';
 import Countdown from 'react-native-countdown-component'
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -10,9 +12,10 @@ import Food, { Offer, filterData ,filterDataa} from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomNavigator from '../components/bar';
 
-const {width} = Dimensions.get('screen');
-const cardwidth = width-20;
+const { width } = Dimensions.get('screen');
+const cardwidth = width - 20;
 
 
 // Generate required css
@@ -54,12 +57,12 @@ const HomeScreen = ({ navigation }) => {
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item)}>
             <View style={styles.cardView}>
-                <Image source={{ uri: item.imageUrl}} style={styles.image} />
+                <Image source={{ uri: item.imageUrl }} style={styles.image} />
 
                 <Text style={styles.Name}>{item.name}</Text>
                 <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 20, justifyContent: 'space-between' }}>
                     <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}LE</Text>
-                   
+
                 </View>
             </View>
         </TouchableOpacity>
@@ -74,6 +77,7 @@ const HomeScreen = ({ navigation }) => {
 
             <ScrollView>
                 {/* <View  style = {{marginBottom:10,paddingTop:10}}>
+       <Search/>
 </View> */}
 
                 <View>
@@ -138,7 +142,7 @@ const HomeScreen = ({ navigation }) => {
                             timeLabels={{ m: 'Min', s: 'Sec' }}
                         />
                     </View>
-                
+
                     <FlatList
                         style={{ marginTop: 10, marginBottom: 10 }}
                         horizontal={true}
@@ -146,15 +150,15 @@ const HomeScreen = ({ navigation }) => {
                         showsHorizontalScrollIndicator={false}
                         renderItem={renderProduct}
                         keyExtractor={(item) => item.id}
-                            // <View style={{ marginRight: 5 }}>
-                            //     <FoodCard
-                            //         screenWidth={300}
-                            //         images={item.images}
-                            //         restaurantName={item.restaurantName}
-                            //         price={item.price}
-                            //     />
-                            // </View>
-                        // )}
+                    // <View style={{ marginRight: 5 }}>
+                    //     <FoodCard
+                    //         screenWidth={300}
+                    //         images={item.images}
+                    //         restaurantName={item.restaurantName}
+                    //         price={item.price}
+                    //     />
+                    // </View>
+                    // )}
                     />
                 </View>
 
@@ -235,25 +239,8 @@ const HomeScreen = ({ navigation }) => {
                 <View style={styles.bottoms}></View>
             </ScrollView>
 
-            <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
-                    
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color="gray" />
-                    </Pressable>
-
-                    <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >
-                        <Icon name="home" size={25} color="#FFDE9B" />
-                    </Pressable>
-                    <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="heart" size={25} color={COLORS.grey} />
-                    </Pressable>
-                    <Pressable onPress={() =>  navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave} >
-                        <Icon name="shopping-cart" size={25} color={COLORS.grey} />
-                    </Pressable>
-
-                </View>
-            </View>
+        
+            <BottomNavigator item="Home" navigation={navigation} userId={userId} />
 
 
 
@@ -296,7 +283,7 @@ const styles = StyleSheet.create({
         bottom: 20
     },
     headerText: {
-        color: COLORS.darkblue,
+        color: COLORS.dark,
         fontSize: 20,
         fontWeight: "bold",
         alignItems: 'center',
@@ -337,7 +324,7 @@ const styles = StyleSheet.create({
     address: {
         fontSize: 12,
         paddingTop: 5,
-        color: COLORS.darkblue,
+        color: COLORS.dark,
         paddingVertical: 10
     },
     NavContainer: {
@@ -349,7 +336,7 @@ const styles = StyleSheet.create({
     },
     Navbar: {
         flexDirection: 'row',
-        backgroundColor: COLORS.darkblue,
+        backgroundColor: COLORS.dark,
         width: width,
         justifyContent: 'space-evenly',
         borderRadius: 30,
@@ -360,19 +347,20 @@ const styles = StyleSheet.create({
         padding: 35,
         bottom: 30
     },
-    SearchArea:{marginTop :10,
-        width:"94%",
-        height:40,
-        backgroundColor:COLORS.background,
-        borderRadius:30,
-        borderWidth:1,
-        borderColor:COLORS.grey,
-        flexDirection:"row",
-        alignItems:"center",
-        padding:10
-      },
+    SearchArea: {
+        marginTop: 10,
+        width: "94%",
+        height: 40,
+        backgroundColor: COLORS.background,
+        borderRadius: 30,
+        borderWidth: 1,
+        borderColor: COLORS.grey,
+        flexDirection: "row",
+        alignItems: "center",
+        padding: 10
+    },
     searchIcon: {
-        
+
         marginRight: 10,
     },
     searchInput: {

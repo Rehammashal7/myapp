@@ -10,21 +10,17 @@ import {
 import React, { useEffect, useState } from 'react';
 import { useIsFocused, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-//import firestore from '@react-native-firebase/firestore';
-//import {StripeProvider} from '@stripe/stripe-react-native';
-//import { doc, updateDoc } from 'firebase/firestore';
-//mport { collection, getDocs, where } from 'firebase/firestore';
-//import { useState, useEffect } from 'react';
 import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import BottomNavigator from '../components/bar';
 
 const favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
-  //const [userId, setUserId] = useState('');
+
   const route = useRoute();
-  //const userId = route.params.userId;
+
   const [userId, setUserId] = useState(route.params.userId);
 
   useEffect(() => {
@@ -155,8 +151,9 @@ const favorite = ({ navigation }) => {
           );
         }}
       />
-
+        <BottomNavigator item="fav" navigation={navigation} userId={userId} />
     </View>
+    
   );
 };
 

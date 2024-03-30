@@ -28,7 +28,7 @@ const DynamicPage = () => {
 
     return (
         <View style={styles.container}>
-                        <Image source={require('../assets/Woman.jpeg')} style={styles.image} />
+                        {/* <Image source={require('../assets/Woman.jpeg')} style={styles.image} /> */}
             <TouchableWithoutFeedback onPress={handlePress}>
                 <Animated.Text style={{ ...styles.text, transform: [{ translateX: animatedValue.interpolate({ inputRange: [0, 1], outputRange: [0, -200] }) }], color: interpolateColor }} >A to Z</Animated.Text>
             </TouchableWithoutFeedback>
