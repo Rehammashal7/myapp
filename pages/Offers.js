@@ -138,7 +138,10 @@ const OfferDetails = ({ route, navigation }) => {
     const [userId, setUserId] = useState('');
     const isFocused = useIsFocused();
     const product_id = product.id;
-
+    const [Name, setName]=useState('');
+    const [Price, setPrice]=useState(0);
+    const [image, setImage]=useState('');
+    const [discribtion, setDiscribtion]=useState(0);
     useEffect(() => {
 
         const fetchItem = async (product_id) => {
@@ -149,6 +152,10 @@ const OfferDetails = ({ route, navigation }) => {
                 id: documentSnapshot.id,
                 data: documentSnapshot.data(),
             });
+            setName(documentSnapshot.data().name);
+            setPrice(documentSnapshot.data().price);
+            setImage(documentSnapshot.data().imageUrl);
+            setDiscribtion(documentSnapshot.data().description);
             setProductt(tempData);
         };
         fetchItem(product_id);
@@ -185,7 +192,8 @@ const OfferDetails = ({ route, navigation }) => {
     }, [userId]);
 
     const onAddToCart = async (item, index) => {
-
+        const newDate = new Date();
+        newDate.setDate(newDate.getDate() + 2);
         console.log(userId);
         const userRef = doc(db, "users", userId);
         const userSnap = await getDoc(userRef);
@@ -195,7 +203,7 @@ const OfferDetails = ({ route, navigation }) => {
         if (existingItem) {
             existingItem.qty += 1;
         } else {
-            cart.push({ ...item, qty: 1 });
+            cart.push({ ...item, qty: 1 ,delivery: newDate });
         }
         await updateDoc(userRef, { cart });
         getCartItems();
@@ -214,16 +222,34 @@ const OfferDetails = ({ route, navigation }) => {
         const userSnap = await getDoc(userRef);
         const { fav = [] } = userSnap.data() ?? {};
         let existingItem = fav.find(itm => itm.id === item.id);
-
+        const existingItemIndex = fav.findIndex(itm => itm.id === item.id);
         if (existingItem) {
-            existingItem.qty += 1;
+           
+            fav.splice(existingItemIndex, 1);
         } else {
-            fav.push({ ...item, qty: 1 });
+            fav.push({ ...item, qty: 4 });
         }
         await updateDoc(userRef, { fav });
         getFavItems();
     };
-    const [isPressed, setIsPressed] = useState('');
+    const [isPressed, setIsPressed] = useState(false); 
+
+    const handelHeart = async (item) => {
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+      const { fav = [] } = userSnap.data() ?? {};
+      const existingItem = fav.find(itm => itm.id === item.id);
+      
+      setIsPressed(!!existingItem); 
+    };
+    
+    useEffect(() => {
+      handelHeart(product);
+    }, [handelHeart]); 
+    useEffect(() => {
+      console.log(isPressed);
+    }, [isPressed]); 
+
 
     return (
         <View style={styles.container}>
@@ -239,7 +265,7 @@ const OfferDetails = ({ route, navigation }) => {
             <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
                 <View style={styles.headerWrapper}>
                     <View style={styles.titlesWrapper}>
-                        <Text style={styles.Name2}>{product.name}</Text>
+                        <Text style={styles.Name2}>{Name}</Text>
                     </View>
 
 
@@ -250,7 +276,7 @@ const OfferDetails = ({ route, navigation }) => {
                     <View style={styles.container}>
 
                         <View style={styles.priceWrapper}>
-                            <Text style={styles.price}> price : {product.price}LE</Text>
+                            <Text style={styles.price}> price : {Price}LE</Text>
                         </View>
                         <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
                         <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
@@ -301,7 +327,7 @@ const OfferDetails = ({ route, navigation }) => {
 
                     </View>
 
-                    <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
+                    <Image source={{ uri: image }} style={styles.imageCounter} />
                 </View>
                 <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
 
@@ -344,7 +370,7 @@ const OfferDetails = ({ route, navigation }) => {
                             </TouchableOpacity>
                         )}
                     />
-                    <Text style={{ fontSize: 20, marginBottom: 20 }}> discription : {product.description}</Text>
+                    <Text style={{ fontSize: 20, marginBottom: 20 }}> discription : {discribtion}</Text>
                     <View style={{ marginLeft: 50 }}>
                         <FlatList
 
