@@ -4,7 +4,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
 // import plusss from '../assets/plusss.png';
 
-const plusbutton = ({ navigation }) => {
+const PlusButton = ({ navigation }) => {
      
     return (
         <View style={styles.container}>
@@ -24,7 +24,7 @@ const plusbutton = ({ navigation }) => {
                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                   <Pressable onPress={() => navigation.navigate("PlusButton")} style={styles.iconBehave} >
                         <Icon name="plus" size={25} color={COLORS.grey} />
                     </Pressable>
                    <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
@@ -84,4 +84,4 @@ const styles = StyleSheet.create({
     // },
   });
 
-export default plusbutton;
+export default PlusButton;

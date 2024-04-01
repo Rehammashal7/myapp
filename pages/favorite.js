@@ -19,7 +19,7 @@ import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "fire
 import { auth, db, storage } from '../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-const favorite = ({ navigation }) => {
+const Favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
   //const [userId, setUserId] = useState('');
@@ -230,4 +230,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
-export default favorite;
+export default Favorite;

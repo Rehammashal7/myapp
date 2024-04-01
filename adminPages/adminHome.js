@@ -18,7 +18,7 @@ const cardwidth = width-20;
 // Inject stylesheet
 
 
-const adminHomeScreen = ({ navigation }) => {
+const AdminHomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [indexCheck, setIndexCheck] = useState("0");
     const [products, setProducts] = useState([]);
@@ -210,7 +210,7 @@ const adminHomeScreen = ({ navigation }) => {
                     <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color="gray" />
                     </Pressable>
-                    <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                    <Pressable onPress={() => navigation.navigate("PlusButton")} style={styles.iconBehave} >
                         <Icon name="plus" size={25} color={COLORS.grey} />
                     </Pressable>
                     <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
@@ -386,4 +386,4 @@ const styles = StyleSheet.create({
 
 
 });
-export default adminHomeScreen;
+export default AdminHomeScreen;

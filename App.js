@@ -6,24 +6,25 @@ import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
 import {NavigationContainer} from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/favorite';
-import profile from'./pages/profile';
+import adminprofile from './adminPages/Adminprofile';
+import Favorite from './pages/Favorite';
+import profile from './pages/Profile';
+// import profile from'./pages/Profile';
 import  { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import  { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
-import  { adminBurgerDetails, adminProductsListBurger ,EditProductPage} from './adminPages/adminBurger'
-import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/adminDrink';
-import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/checkout';
+import  { AdminBurgerDetails, AdminProductsListBurger ,EditProductPage} from './adminPages/AdminBurger'
+import  { CoffeeDetailsAdmin, ProductsListCoffeeAdmin,EditCoffeePage } from './adminPages/AdminDrink';
+import { PizzaDetailsAdmin, ProductsListPizzaAdmin,EditPizzaPage } from './adminPages/AdminPizza';
+import Checkout from './pages/Checkout';
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
 import { OfferDetails, ProductsListOffer } from './pages/Offers';
 import { OfferDetailsAdmin, ProductsListOfferAdmin ,EditOfferPage} from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
-import adminHome from './adminPages/adminHome'
-import addadmin from './adminPages/addAdmin' ;
-import plusbutton from './adminPages/plusbutton';
+import adminHome from './adminPages/AdminHome'
+import Addadmin from './adminPages/AddAdmin' ;
+import PlusButton from './adminPages/PlusButton';
 import BottomNavigator from './components/bar';
 import adminReports from './adminPages/PurchasedProducts';
 import AddReview from './pages/AddReview';
@@ -33,11 +34,11 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="Profile">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Burgers" component={ProductsListBurger} />
-        <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
+        <Stack.Screen name="AdminBurgers" component={AdminProductsListBurger} />
         <Stack.Screen name="Coffee" component={ProductsListCoffee} />
         <Stack.Screen name="Offer" component={ProductsListOffer} />
         <Stack.Screen name='AddReview' component={AddReview}/>
@@ -47,9 +48,9 @@ export default function App() {
         <Stack.Screen name="OfferDetails" component={OfferDetails}  />
         <Stack.Screen name="CoffeeDetails" component={CoffeeDetails}  />
         <Stack.Screen name="BurgerDetails" component={BurgerDetails}  />
-        <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
+        <Stack.Screen name="AdminBurgerDetails" component={AdminBurgerDetails}  />
         <Stack.Screen name="Pizza" component={ProductsListPizza} />
-        <Stack.Screen name="favorite" component={favorite} />
+        <Stack.Screen name="favorite" component={Favorite} />
         <Stack.Screen name ="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={adminprofile}  />
@@ -65,13 +66,13 @@ export default function App() {
         <Stack.Screen name="adminCoffee" component={ ProductsListCoffeeAdmin }/>
         <Stack.Screen name="EditCoffeePage" component={ EditCoffeePage }/>
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
-        <Stack.Screen name="profile" component={ profile }/>
+        <Stack.Screen name = "Profile" component = {profile}/>
         <Stack.Screen name="OrderHistory" component={OrderHistory}/>
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
 
-        <Stack.Screen name="addadmin" component={ addadmin }/>
-        <Stack.Screen name="plusbutton" component={ plusbutton }/>
+        <Stack.Screen name="addadmin" component={ Addadmin }/>
+        <Stack.Screen name="PlusButton" component={ PlusButton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>     
            <Stack.Screen name="adminReports" component={ adminReports }/>

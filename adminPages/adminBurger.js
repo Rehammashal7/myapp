@@ -14,7 +14,7 @@ import {  query, where, doc, deleteDoc } from 'firebase/firestore';
 const {width} = Dimensions.get('screen');
 const cardwidth = width/2-20;
 let iconcolor 
-const adminProductsListBurger = ({ navigation }) => {
+const AdminProductsListBurger = ({ navigation }) => {
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -106,7 +106,7 @@ const adminProductsListBurger = ({ navigation }) => {
     );
 };
 
-const adminBurgerDetails = ({ route, navigation }) => {
+const AdminBurgerDetails = ({ route, navigation }) => {
     const { product } = route.params;
     const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
@@ -626,4 +626,4 @@ const { product } = route.params;
       );
     };
     
-export { EditProductPage,adminProductsListBurger, adminBurgerDetails };
+export { EditProductPage,AdminProductsListBurger, AdminBurgerDetails };

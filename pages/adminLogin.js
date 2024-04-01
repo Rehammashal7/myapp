@@ -4,7 +4,7 @@ import { signInWithEmailAndPassword, } from "firebase/auth";
   
 
 
-const adminLogin = ({ navigation }) => {
+const AdminLogin = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -105,4 +105,4 @@ const styles = StyleSheet.create({
   
 });
 
-export default adminLogin;
+export default AdminLogin;

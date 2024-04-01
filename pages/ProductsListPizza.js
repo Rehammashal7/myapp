@@ -636,7 +636,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
   Name2: {
-    fontFamily: "Montserrat-Bold",
+    fontWeight: "bold",
     fontSize: 32,
     color: COLORS.darkblue,
   },
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
   },
   price: {
     color: COLORS.darkblue,
-    fontFamily: "Montserrat-Bold",
+    fontWeight: "bold",
     fontSize: 24,
   },
   HeartIcone: {

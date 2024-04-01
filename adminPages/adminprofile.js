@@ -113,7 +113,7 @@ import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 
-const adminProfile = ({navigation}) => {
+const AdminProfile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -359,7 +359,7 @@ if (docSnap.exists()) {
                     <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                         <Icon name="user" size={25} color={COLORS.yellow}/>
                     </Pressable>
-                      <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                      <Pressable onPress={() => navigation.navigate("PlusButton")} style={styles.iconBehave} >
                         <Icon name="plus" size={25} color={COLORS.grey} />
                       </Pressable>
                    <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
@@ -489,4 +489,4 @@ iconBehave: {
     bottom: 30
 },
 });
-export default adminProfile;
+export default AdminProfile;

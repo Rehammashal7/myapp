@@ -8,7 +8,7 @@ const Welcome = ({navigation}) => {
     <View style={{flex: 1, backgroundColor: COLORS.background}}>
       <View>
       <Image
-                source={"https://img.freepik.com/free-vector/vector-cartoon-illustration-traditional-set-fast-food-meal_1441-331.jpg?w=2000"}
+                source={{ uri : "https://img.freepik.com/free-vector/vector-cartoon-illustration-traditional-set-fast-food-meal_1441-331.jpg?w=2000"}}
                 style={{
                     width:'95%',
                     height:250,

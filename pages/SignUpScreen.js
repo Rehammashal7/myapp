@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   }, iconContainer: {
     position: 'absolute',
     right: 35,
-    top: '48,5%',
+    top: '48.5%',
     transform:[{translateY: -10}],
     zIndex:1
   },

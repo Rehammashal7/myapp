@@ -1,7 +1,7 @@
 import React, { useState,useEffect } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable, 
     ScrollView, Dimensions, TouchableWithoutFeedback } from 'react-native';
-import Countdown from 'react-native-countdown-component'
+import Countdown from 'react-native-countdown-component';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import FoodCard from '../components/Foodcard';
@@ -219,8 +219,8 @@ const HomeScreen = ({ navigation }) => {
             <View style={styles.NavContainer} >
                 <View style={styles.Navbar} >
                     
-                    <Pressable onPress={() => navigation.navigate("profile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color="gray" />
+                    <Pressable onPress={() => navigation.navigate("Profile")} style={styles.iconBehave}>
+                        <Icon name="user" size={25} color="white" />
                     </Pressable>
 
                     <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave} >

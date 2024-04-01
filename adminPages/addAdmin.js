@@ -14,7 +14,7 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
 
-const addadmin = ({navigation}) => {
+const Addadmin = ({navigation}) => {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -84,7 +84,7 @@ return(
                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
                        <Icon name="user" size={30} color="gray" />
                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
+                   <Pressable onPress={() => navigation.navigate("PlusButton")} style={styles.iconBehave} >
                         <Icon name="plus" size={25} color={COLORS.grey} />
                     </Pressable>
                    <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
@@ -155,4 +155,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default addadmin;
+export default Addadmin;
