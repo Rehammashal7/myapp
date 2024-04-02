@@ -16,7 +16,6 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ScrollView } from 'react-native';
-
 const { width } = Dimensions.get('screen');
 const cardwidth = width / 2;
 const Checkout = ({ navigation }) => {
@@ -217,6 +216,7 @@ const Checkout = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+
       <View style={styles.header}>
         <Text style={[styles.Text, { textAlign: 'center' }]}> Checkout</Text>
       </View>
@@ -317,6 +317,7 @@ const Checkout = ({ navigation }) => {
             </>
           )}
         </View>
+        <View style={styles.bottoms}></View>
       </ScrollView>
       {/* button */}
 
@@ -330,14 +331,14 @@ const Checkout = ({ navigation }) => {
             {styles.checkButton}
 
             onPress={() => {
-              
+
               AddOrderHistory();
               handleSomeAction();
               deleteAllItems();
               handleCheckout();
-              if(IconName4){
-              navigation.navigate("pay",{userId:userId});
-              }else{ navigation.navigate("CreditCard",{userId:userId});}
+              if (IconName4) {
+                navigation.navigate("pay", { userId: userId });
+              } else { navigation.navigate("CreditCard", { userId: userId }); }
             }}>
             <Text style={{ color: '#fff' }}>pay</Text>
           </TouchableOpacity>
@@ -487,7 +488,7 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: '#fff',
     position: 'absolute',
-    bottom: 60,
+    bottom: 0,
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -500,6 +501,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.dark,
 
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 70,
+    bottom: 0
   },
 });
 

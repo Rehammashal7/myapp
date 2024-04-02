@@ -20,6 +20,8 @@ import COLORS from '../Consts/Color';
 import Search from '../components/search';
 const { width } = Dimensions.get('screen');
 const cardwidth = width / 2;
+const { height: screenHeight } = Dimensions.get('window');
+const cardheight =screenHeight/2-50;
 const favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
@@ -211,14 +213,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 15,
     width: cardwidth,
-    height: 450,
+    height: cardheight,
     elevation: 13,
     backgroundColor: 'white',
   },
   image: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
-    height: 350,
+    height: cardheight-80,
     width: cardwidth
   },
 

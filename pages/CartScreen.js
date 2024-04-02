@@ -422,7 +422,7 @@ const CartScreen = ({ navigation }) => {
               </View>
               <View style={styles.row}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total price</Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getTotal() - points * 10}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getTotal() - points * 2}</Text>
               </View>
             </>
           )}
