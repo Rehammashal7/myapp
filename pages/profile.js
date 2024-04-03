@@ -1,144 +1,63 @@
-// import React from 'react';
-// import { View, Text, Image, TouchableOpacity, StyleSheet ,input} from 'react-native';
-// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
-// import{ auth} from '../firebase';
-// import  { useState ,useEffect} from 'react';
-// import { upload ,useAuth} from '../firebase';
-// import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
-
-// const profile = ({ navigation }) => {
-//   const [userLoggedIn, setUserLoggedIn] = useState(false);
-//   const currentUser = useAuth();
-//   const [photo, setPhoto] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
-
-//   const handleLogOut = () => {
-//     signOut(auth)
-//       .then(() => {
-//         setUserLoggedIn(false);
-//         navigation.navigate('Home')
-//       })
-//       .catch((error) => console.log(error));
-//   };
-//   function handleChange(e) {
-//     if (e.target.files[0]) {
-//       setPhoto(e.target.files[0])
-//     }
-//   };
-//   function handleClick() {
-//     upload(photo, currentUser, setLoading);
-//   };
-//   useEffect(() => {
-//     if (currentUser?.photoURL) {
-//       setPhotoURL(currentUser.photoURL);
-//     }
-//   }, [currentUser])
-
-
-
-
-
-//   return (
-//     <View style={styles.container}>
-//       <Image
-//         style={styles.profileImage}
-//         source={photoURL}
-    
-//       />
-//       <Text style={styles.username}>{auth.currentUser?.email}</Text>
-
-//      <input type="file" onChange={handleChange} />
-
-//      {/* <TouchableOpacity style={styles.logoutButton}disabled={loading || !photo}
-//      onPress={handleClick}>
-//         <Text style={styles.buttonText}>Upload</Text>
-//       </TouchableOpacity> */}
-
-//      <button  disabled={loading || !photo} onClick={handleClick}>Upload</button>
-     
-//       <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-//         <Text style={styles.buttonText}>Logout</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: 'white',
-//   },
-//   profileImage: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     verticalAlign: 'middle',
-//     borderRadius: '50%',
-//     borderWidth: '5px',
-//     borderColor: 'gray',
-//     borderStyle: 'outset',
-//   },
-//   username: {
-//     marginTop: 20,
-//     fontSize: 20,
-//     color: '67738B',
-//   },
- 
-//   logoutButton: {
-//     marginTop: 10,
-//     backgroundColor: '#131A2C',
-//     padding: 10,
-//     borderRadius: 5,
-//   },
-//   buttonText: {
-//     color: '#FFDE9B',
-//     fontWeight: 'bold',
-//   },
-// });
-// export default profile;
-
-
-import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Image, TouchableOpacity, Pressable, input, Dimensions } from 'react-native';
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Pressable,
+  input,
+  Dimensions,
+} from "react-native";
 //import { upload ,useAuth} from '../firebase';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import Icon from 'react-native-vector-icons/FontAwesome';
+// import FontAwesome from 'react-native-vector-icons/FontAwesome';
+// import FontAwesome from "react-native-vector-icons/FontAwesome";
+// import Feather from "react-native-vector-icons/Feather";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
-import { auth, db, storage } from '../firebase';
+import { Entypo } from '@expo/vector-icons';
+import { auth, db, storage } from "../firebase";
 import COLORS from "../Consts/Color";
-import * as ImagePicker from 'expo-image-picker';
-import BottomNavigator from '../components/bar';
-
-const {width} = Dimensions.get('screen');
-const Profile = ({navigation}) => {
+import * as ImagePicker from "expo-image-picker";
+import BottomNavigator from "../components/bar";
+import { Fontisto } from '@expo/vector-icons';
+import { SimpleLineIcons } from '@expo/vector-icons';
+const { width } = Dimensions.get("screen");
+const profile = ({ navigation }) => {
   const currentUser = useAuth();
-  const [fristName, setFristName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [mode, setMode] = useState('view');
-  const [birthDate, setBirthDate] = useState('');
+  const [fristName, setFristName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [mode, setMode] = useState("view");
+  const [birthDate, setBirthDate] = useState("");
 
-  const [bounspoint, setBouns] = useState('');
+  const [bounspoint, setBouns] = useState("");
 
   const [userLoggedIn, setUserLoggedIn] = useState(false);
-  const [order, setOrder] = useState('');
+  const [order, setOrder] = useState("");
   const [photo, setPhoto] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
+  const [photoURL, setPhotoURL] = useState(
+    "https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg"
+  );
   //const [profilePhoto, setProfilePhoto] = useState(null);
   const [orderedItems, setOrderedItems] = useState([]);
 
   const handleChoosePhoto = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (status !== 'granted') {
-      alert('Sorry, we need camera roll permissions to make this work!');
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
       return;
     }
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -152,68 +71,61 @@ const Profile = ({navigation}) => {
     }
   };
 
-
   const handleLogOut = () => {
     signOut(auth)
       .then(() => {
         setUserLoggedIn(false);
-        navigation.navigate('Welcome')
+        navigation.navigate("Welcome");
       })
       .catch((error) => console.log(error));
   };
 
   function handleChange(e) {
     if (e.target.files[0]) {
-      setPhoto(e.target.files[0])
+      setPhoto(e.target.files[0]);
       handleChoosePhoto();
     }
-  };
-
+  }
 
   function handleClick() {
     upload(photo, currentUser, setLoading);
-  };
-
-
-
-
-
+  }
 
   const handleSave = () => {
     // TODO: Call backend API to save changes
-    setMode('view');
+    setMode("view");
     UpdateUserData();
-    if (loading || !photo) {// disable
-    } else { handleClick(); }
-
+    if (loading || !photo) {
+      // disable
+    } else {
+      handleClick();
+    }
   };
 
   const handleEdit = () => {
-    setMode('edit');
+    setMode("edit");
     handleChange();
-
   };
   const handleMyOrderPress = () => {
-    navigation.navigate('OrderHistory', { orderedItems: orderedItems });  };
-
-
+    navigation.navigate("OrderHistory", { orderedItems: orderedItems });
+  };
 
   const getUser = async () => {
     const docRef = doc(db, "users", auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
 
-if (docSnap.exists()) {
-  console.log("Document data:", docSnap.data());
-  const data =docSnap.data();
-  setFristName(data.fName);
-  setEmail(data.email);
-  setLastName(data.lName);
-  setPhone(data.phone);
-  setBirthDate(data.birthDate);
-} else {
-  // docSnap.data() will be undefined in this case
-  console.log("No such document!");
-}
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      const data = docSnap.data();
+      setFristName(data.fName);
+      setEmail(data.email);
+      setLastName(data.lName);
+      setPhone(data.phone);
+      setBirthDate(data.birthDate);
+    } else {
+      // docSnap.data() will be undefined in this case
+      console.log("No such document!");
+    }
   };
 
   const UpdateUserData = async () => {
@@ -221,21 +133,20 @@ if (docSnap.exists()) {
 
     // Set the "capital" field of the city 'DC'
     await updateDoc(washingtonRef, {
-      fName:fristName,
-      lName:lastName,
-      phone:phone,
-      birthDate:birthDate,
+      fName: fristName,
+      lName: lastName,
+      phone: phone,
+      birthDate: birthDate,
     });
-
   };
 
   function useAuth() {
-    const [currentUser, setCurrentUser] = useState('');
+    const [currentUser, setCurrentUser] = useState("");
 
     useEffect(() => {
-      const unsub = onAuthStateChanged(auth, user => setCurrentUser(user));
+      const unsub = onAuthStateChanged(auth, (user) => setCurrentUser(user));
       return unsub;
-    }, [])
+    }, []);
 
     return currentUser;
   }
@@ -245,11 +156,10 @@ if (docSnap.exists()) {
     }
   }, [currentUser]);
 
- 
   async function upload(file, currentUser, setLoading) {
     const storage = getStorage();
 
-    const fileRef = ref(storage, currentUser.uid + '.png');
+    const fileRef = ref(storage, currentUser.uid + ".png");
 
     setLoading(true);
 
@@ -260,16 +170,40 @@ if (docSnap.exists()) {
 
     setLoading(false);
     alert("Uploaded file!");
+  }
+
+  {
+    mode === "view" ? getUser() : null;
+  }
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          setUserLoggedIn(true);
+        } else {
+          setUserLoggedIn(false);
+        }
+      });
+    };
+    checkLoginStatus();
+  }, []);
+  const handleLogin = () => {
+navigation.navigate('Login')
   };
+  const handleSignUp = () => {
+    navigation.navigate('SignUp')
+      };
+      const handleEditProfile=()=>{
+        navigation.navigate('EditProfile')
+      }
 
 
 
-
-  { mode === "view" ? getUser() : null }
-
+  if(userLoggedIn){
+    console.log(userLoggedIn);
   return (
     <View style={styles.container}>
-
+      <View style={styles.welcomecontainer}>
       <TouchableOpacity onPress={handleChoosePhoto} >
         <View >
 
@@ -278,20 +212,86 @@ if (docSnap.exists()) {
             source={photoURL}
 
           />
-          {/* <Feather name="file" color="#333333" size={20} />
-     <input type="file" onChange={handleChange} /> */}
-
-          {/* 
-     <button  disabled={loading || !photo} onClick={handleClick}>Upload</button>
-      */}
+        
         </View>
 
     </TouchableOpacity>
-    
 
+        <Text style={styles.welcomeinput}> Welcome, {fristName}{lastName} </Text>
+        <View style={styles.pencil} >
+        <Pressable  onPress={handleEditProfile}>
+        <SimpleLineIcons name="pencil" size={20} color="black" />        </Pressable>
+        </View>
+        
+        <View style={styles.pressableContainer}>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+              <MaterialCommunityIcons
+                style={styles.icon}
+                name="eye-circle-outline"
+                size={35}
+                color="black"
+              />
+              <Text style={styles.text}> Recently Visited </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+              <Icon
+                style={styles.icon}
+                name="map-marked-alt"
+                size={35}
+                color="black"
+              />
+              <Text style={styles.text}> My Address </Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
 
+      {/* <View style={styles.buttonContainer}>
+        <Pressable style={[styles.button, { backgroundColor: "#0d0d0d" }]}>
+          <Text style={[styles.buttonText, { color: "#ffffff" }]}>Register</Text>
+        </Pressable>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </Pressable>
+      </View> */}
 
-      {mode === 'view' && (
+      <View style={styles.ordercontainer}>
+        <Text style={[styles.welcomeinput, { fontWeight: "normal" }]}>My Orders</Text>
+        <Text style={[styles.SeeAll, { fontWeight: "normal" }]}>See All</Text>
+
+      <View style={styles.pressableContainer}>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <Entypo name="star-outlined" size={35} color="black" />
+              <Text style={styles.text}> Reviews </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <Fontisto name="shopping-bag-1" size={35} color="black" />
+              <Text style={styles.text}> Orders </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <MaterialCommunityIcons name="newspaper-variant-outline" size={35} color="black" />  
+            <Text style={styles.text}> Reports </Text>
+            </View>
+          </Pressable>
+          
+        </View>
+        </View>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
+                <Text style={styles.logoutButtonText}>Log Out</Text>
+            </TouchableOpacity>
+
+            
+
+      {/* {mode === 'view' && (
         <>
           <View style={styles.field}>
             <FontAwesome name="user-o" color="#333333" size={20} />
@@ -328,8 +328,7 @@ if (docSnap.exists()) {
           <FontAwesome name="star" color="#333333" size={20} />
             <Text style={styles.label}> Bouns:</Text>
             <Text style={styles.value2} > {bounspoint} </Text>
-            {/* <TouchableOpacity onPress={handleSomeAction}>
-               </TouchableOpacity> */}
+    
 
               
           </View>
@@ -347,10 +346,9 @@ if (docSnap.exists()) {
             <Text style={styles.buttonText}>Edit</Text>
           </TouchableOpacity></View>
 
-          {/* <Button  title="Edit" onPress={handleEdit} /> */}
         </>
-      )}
-
+      )}  */}
+{/* 
       {mode === 'edit' && (
         <>
           <View style={styles.field}>
@@ -400,206 +398,344 @@ if (docSnap.exists()) {
             <Text style={styles.buttonText}>Save</Text>
           </TouchableOpacity></View>
 
-          {/* <Button title="Save" onPress={handleSave} /> */}
         </>
-      )}
+      )} */}
 
 
-      <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
+      {/* <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
         <Text style={styles.buttonTextLoggout}>Logout</Text>
-      </TouchableOpacity></View>
+      </TouchableOpacity></View> */}
+
+      <BottomNavigator item="profile" navigation={navigation} />
+    </View>
+  );
+}
+else{
+  console.log(userLoggedIn)
+  return(
+    <View style={styles.container}>
+      <View style={styles.welcomecontainer}>
+        <Text style={styles.welcomeinput}> Welcome to AtoZ</Text>
+        <View style={styles.pressableContainer}>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+              <MaterialCommunityIcons
+                style={styles.icon}
+                name="eye-circle-outline"
+                size={35}
+                color="black"
+              />
+              <Text style={styles.text}> Recently Visited </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+              <Icon
+                style={styles.icon}
+                name="map-marked-alt"
+                size={35}
+                color="black"
+              />
+              <Text style={styles.text}> My Address </Text>
+            </View>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <Pressable style={[styles.button, { backgroundColor: "#0d0d0d" }]}>
+          <Text style={[styles.buttonText, { color: "#ffffff" }]} onPress={handleSignUp}>Register</Text>
+        </Pressable>
+        <Pressable style={styles.button}>
+          <Text style={styles.buttonText} onPress={handleLogin}>Login</Text>
+        </Pressable>
+      </View>
+
+      <View style={styles.ordercontainer}>
+        <Text style={[styles.welcomeinput, { fontWeight: "normal" }]}>My Orders</Text>
+        <Text style={[styles.SeeAll, { fontWeight: "normal" }]}>See All</Text>
+
+      <View style={styles.pressableContainer}>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <Entypo name="star-outlined" size={35} color="black" />
+              <Text style={styles.text}> Reviews </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <Fontisto name="shopping-bag-1" size={35} color="black" />
+              <Text style={styles.text}> Orders </Text>
+            </View>
+          </Pressable>
+          <Pressable style={styles.pressable}>
+            <View style={styles.row}>
+            <MaterialCommunityIcons name="newspaper-variant-outline" size={35} color="black" />  
+            <Text style={styles.text}> Reports </Text>
+            </View>
+          </Pressable>
+          
+        </View>
+        </View>
+
+     
 
       <BottomNavigator item="profile" navigation={navigation} />
     </View>
 
-
-
-
   );
-};
+}
+}
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: '#FBFAFF',
+    // padding: 16,
+    backgroundColor: "#ffffff",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   field: {
-
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 10,
     marginBottom: 10,
     borderBottomWidth: 1,
-    borderBottomColor: '#f2f2f2',
+    borderBottomColor: "#f2f2f2",
     paddingBottom: 5,
   },
 
   label: {
     flex: 1,
-    fontWeight: 'bold',
-    Color: '#131A2C',
+    fontWeight: "bold",
+    Color: "#131A2C",
   },
 
   value: {
     flex: 2,
-    color: '#FFDE9B',
+    color: "#FFDE9B",
   },
   value2: {
     flex: 2,
-    color: '#67788B',
+    color: "#67788B",
   },
   input: {
     flex: 2,
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: "#ccc",
     borderRadius: 4,
     paddingHorizontal: 8,
   },
   profileImage: {
-
-    width: 170,
-    height: 170,
+    width: 30,
+    height: 30,
     borderRadius: 75,
-    verticalAlign: 'middle',
-    borderRadius: '50%',
-    borderWidth: '5px',
-    borderColor: 'gray',
-    borderStyle: 'outset',
+    // verticalAlign: "middle",
+    // position: "absolute",
+    // borderRadius: "50%",
+    // borderWidth: "5px",
+    // borderColor: "gray",
+    // borderStyle: "outset",
+    marginLeft:10,
+    position: 'absolute', 
+    left: 5,
+    top: 10,
   },
   containerButton: {
     // display: flex,
-    flexDirection: 'row',
+    flexDirection: "row",
     //  flex:1,
     //   alignItems: 'center',
     //margin:3,
-    justifyContent: 'space-between',
+    justifyContent: "space-between",
   },
   logoutEdit: {
     flex: 1,
-    backgroundColor: '#131A2C',
+    backgroundColor: "#131A2C",
     borderRadius: 35,
     padding: 5,
-    width: '100%',
+    width: "100%",
     height: 40,
-    alignItems: 'center',
+    alignItems: "center",
     margin: 5,
     // marginVertical: 0,
     // marginBottom:50,
   },
   logoutButton: {
     flex: 1,
-    backgroundColor: '#FFDE9B',
+    backgroundColor: "#FFDE9B",
     borderRadius: 35,
     padding: 5,
-    width: '100%',
+    width: "100%",
     height: 45,
-    alignItems: 'center',
+    alignItems: "center",
     //marginTop:10,
     //marginVertical: 10
     margin: 5,
   },
   buttonText: {
-    color: '#FFDE9B',
+    color: "#FFDE9B",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   buttonTextLoggout: {
-    color: '#131A2C',
+    color: "#131A2C",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   NavContainer: {
-    position: 'absolute',
-    alignItems: 'center',
+    position: "absolute",
+    alignItems: "center",
     bottom: 5,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
   },
   Navbar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     backgroundColor: COLORS.dark,
     width: width,
-    justifyContent: 'space-evenly',
+    justifyContent: "space-evenly",
     borderRadius: 30,
-    height: 40
-
+    height: 40,
   },
   iconBehave: {
     padding: 35,
-    bottom: 30
+    bottom: 30,
   },
+  welcomecontainer: {
+    backgroundColor: "#ffffff",
+    width: 380,
+    height: 145,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    alignSelf: "flex-start",
+    marginTop: 5,
+    marginLeft: 5,
+    marginRight: 10,
+    borderStyle:'solid',
+    borderColor:'black',
+    borderWidth: 0.5,
+    position: 'relative',
+    textAlign: "right", 
+    // flexDirection: 'row',
+    // marginLeft:5,
+    // marginRight:0,
+  },
+  welcomeinput: {
+    flex: 1,
+    // fontWeight: "bold",
+    color: "black",
+    marginLeft: 50,
+    marginTop: 10,
+    fontSize: 20,
+    textAlign:"right",
+  },
+  pressableContainer: {
+    flexDirection: "row",
+    // alignItems: 'center',
+    marginBottom: 20,
+    marginLeft: 30,
+  },
+  pressable: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    // backgroundColor: '#007bff',
+    padding: 10,
+    borderRadius: 5,
+    marginRight: 10,
+  },
+  row: {
+    flexDirection: "column",
+    alignItems: "center",
+  },
+  column: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  text: {
+    color: "#000",
+    fontSize: 17,
+    marginLeft: 10,
+    flexDirection: "row",
+  },
+  icon: {
+    marginRight: -10,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+    marginTop: 10,
+  },
+  button: {
+    // paddingVertical: 15,
+    // paddingHorizontal: 20,
+    // borderRadius: 0,
+    marginHorizontal: 5,
+    width: 185,
+    height:40,
+    borderWidth: 1,
+    borderColor: "black",
+    textAlign: "center",
+  },
+  buttonText: {
+    color: "#000",
+    fontSize: 20,
+    textAlign: "center",
+  },
+  ordercontainer: {
+    backgroundColor: "#ffffff",
+    width: 380,
+    height: 145,
+    justifyContent: "center",
+    alignItems: "flex-start",
+    alignSelf: "flex-start",
+    marginTop: 10,
+    marginLeft: 5,
+    marginRight: 10,
+    borderStyle:'solid',
+    borderColor:'black',
+    borderWidth: 0.5,
+  },
+  SeeAll:{
+    flex: 1,
+    alignSelf: "flex-end",
+    color: "black",
+    marginRight: 15,
+    paddingTop:0,
+    marginTop: -40,
+    fontSize: 16,
+    textDecorationLine:'underline',
+  },
+  offer:{
+    marginTop: 10,
+    marginLeft: 5,
+    marginRight: 10,
+    borderStyle:'solid',
+    borderColor:'black',
+    borderWidth: 0.5,
+  },
+  logoutButton: {
+    backgroundColor: '#f00', // لون الزرار
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 5,
+    marginTop: 20,
+},
+logoutButtonText: {
+    color: '#fff', // لون نص الزرار
+    fontSize: 18,
+    fontWeight: 'bold',
+},
+pencil:{
+  position: 'absolute',
+  top: 15, 
+  // left: 200,
+  right:15,
+
+
+},
 });
-export default Profile;
-
-
-
-// import React, { useState } from 'react';
-// import { StyleSheet, Text, TouchableOpacity, View, Image } from 'react-native';
-// import * as ImagePicker from 'expo-image-picker';
-
-// export default function ProfilePage() {
-//   const [profilePhoto, setProfilePhoto] = useState(null);
-
-//   const handleChoosePhoto = async () => {
-//     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-//     if (status !== 'granted') {
-//       alert('Sorry, we need camera roll permissions to make this work!');
-//       return;
-//     }
-//     let result = await ImagePicker.launchImageLibraryAsync({
-//       mediaTypes: ImagePicker.MediaTypeOptions.All,
-//       allowsEditing: true,
-//       aspect: [4, 3],
-//       quality: 1,
-//     });
-//     if (!result.cancelled) {
-//       setProfilePhoto(result.uri);
-//     }
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <TouchableOpacity onPress={handleChoosePhoto}>
-//         {profilePhoto ? (
-//           <Image source={{ uri: profilePhoto }} style={styles.profilePhoto} />
-//         ) : (
-//           <View style={styles.placeholder}>
-//             <Text style={styles.placeholderText}>Add a photo</Text>
-//           </View>
-//         )}
-//       </TouchableOpacity>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: '#fff',
-//   },
-//   profilePhoto: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//   },
-//   placeholder: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     backgroundColor: '#eee',
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//   },
-//   placeholderText: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#aaa',
-//   },
-// });
+export default profile;

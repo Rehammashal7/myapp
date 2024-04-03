@@ -8,13 +8,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
 import favorite from './pages/favorite';
+// import{ profile} from './pages/profile';
 import profile from './pages/profile';
 import { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/checkout';
+import Checkout from './pages/Checkout';
+import EditProfile from './pages/EditProfile';
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
@@ -31,7 +33,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="EditProfile">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MEN" component={ProductsListBurger} />
@@ -65,6 +67,9 @@ export default function App() {
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
         <Stack.Screen name="profile" component={ profile }/>
         <Stack.Screen name="catigory" component={ category }/>
+        <Stack.Screen name="EditProfile" component={ EditProfile }/>
+
+        {/* <Stack.Screen name="EditProfile" component={ EditProfile }/> */}
 
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
