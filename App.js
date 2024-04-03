@@ -27,11 +27,13 @@ import plusbutton from './adminPages/plusbutton';
 import BottomNavigator from './components/bar';
 import AddReview from './pages/AddReview';
 import category from './pages/catigory';
+import PayWithCard from './pages/PayWithCard';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="PayWithCard">
+      <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MEN" component={ProductsListBurger} />
@@ -73,6 +75,8 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );
