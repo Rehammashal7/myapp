@@ -25,8 +25,20 @@ import adminHome from './adminPages/adminHome'
 import addadmin from './adminPages/addAdmin';
 import plusbutton from './adminPages/plusbutton';
 import BottomNavigator from './components/bar';
-import AddReview from './pages/AddReview';
+import AddReviewWoman from './pages/AddReviews/AddReview-woman';
+import AddReviewMen from './pages/AddReviews/AddReview-men';
+import AddReviewKids from './pages/AddReviews/AddReview-kids';
+import AddReviewBaby from './pages/AddReviews/AddReview-baby';
+
+
 import category from './pages/catigory';
+import AddProducts from './pages/AddProducts';
+import AllReviewsPage from './pages/Catigory/AllReviewsPage';
+import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
+import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
+import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
+import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -34,19 +46,33 @@ export default function App() {
       <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="MEN" component={ProductsListBurger} />
-        <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
-        <Stack.Screen name="KIDS" component={ProductsListCoffee} />
-        <Stack.Screen name="BABY" component={ProductsListOffer} />
-        <Stack.Screen name='AddReview' component={AddReview}/>
 
+        <Stack.Screen name="WOMAN" component={ProductsListWoman} />
+        <Stack.Screen name="WomanDetails" component={WomanDetails} />
+        <Stack.Screen name='AddReviewWoman' component={AddReviewWoman}/>
+
+        <Stack.Screen name="MEN" component={ProductsListMen} />
+        <Stack.Screen name="MenDetails" component={MenDetails} />
+        <Stack.Screen name='AddReviewMen' component={AddReviewMen}/>
+
+        <Stack.Screen name="KIDS" component={ProductsListKids} />
+        <Stack.Screen name="KidsDetails" component={KidsDetails} />
+        <Stack.Screen name='AddReviewKids' component={AddReviewKids}/>
+
+        <Stack.Screen name="BABY" component={ProductsListBaby} />
+        <Stack.Screen name="BabyDetails" component={BabyDetails} />
+        <Stack.Screen name='AddReviewBaby' component={AddReviewBaby}/>
+
+        <Stack.Screen name="AllReviewsPage" component={AllReviewsPage} />
+
+        <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
+        <Stack.Screen name='AddProducts' component={AddProducts}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="PizzaDetails" component={PizzaDetails}  />
         <Stack.Screen name="OfferDetails" component={OfferDetails}  />
         <Stack.Screen name="CoffeeDetails" component={CoffeeDetails}  />
         <Stack.Screen name="BurgerDetails" component={BurgerDetails}  />
         <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
-        <Stack.Screen name="WOMAN" component={ProductsListPizza} />
         <Stack.Screen name="favorite" component={favorite} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />

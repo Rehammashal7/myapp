@@ -13,18 +13,17 @@ const PrimaryButton = ({title, onPress = () => {}}) => {
   );
 };
 const style = StyleSheet.create({
-    title: {color: COLORS.yellow , fontWeight: 'bold', fontSize: 18},
+    title: {color: 'white' , fontWeight: 'bold', fontSize: 18},
     btnContainer: {
-      backgroundColor: COLORS.darkblue,
+      backgroundColor: 'black',
       height: 50,
-      borderRadius: 30,
-      justifyContent: 'center',
-      alignItems: 'center',
+      // justifyContent: 'center',
+      // alignItems: 'center',
       marginTop:20,
       marginBottom:10,
       marginLeft:40,
 
-      width:200
+      width:250
     },
   });
   

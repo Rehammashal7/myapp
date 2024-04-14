@@ -14,7 +14,7 @@ const Welcome = ({ navigation }) => {
       setShowImage(true);
     }, 2000); 
     const timeout2 = setTimeout(() => {
-      navigation.navigate('Home');
+      navigation.navigate('WOMAN');
     }, 5000); 
     return () => {
       clearTimeout(timeout1);
