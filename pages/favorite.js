@@ -6,6 +6,8 @@ import {
   Image,
   TouchableOpacity,
   Pressable,
+  Dimensions,
+  ScrollView,
 } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused, useRoute } from '@react-navigation/native';
@@ -14,7 +16,10 @@ import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "fire
 import { auth, db, storage } from '../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import BottomNavigator from '../components/bar';
-
+import COLORS from '../Consts/Color';
+import Search from '../components/search';
+const { width } = Dimensions.get('screen');
+const cardwidth = width / 2;
 const favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
@@ -102,67 +107,132 @@ const favorite = ({ navigation }) => {
     await updateDoc(userRef, { fav: tempfav });
     getFavItems();
   };
+  const handleProductPress = (product,qty) => {
+    console.log(qty);
+    if(qty===1){
+      navigation.navigate('PizzaDetails', { product });
+    }else if(qty===2)
+   { navigation.navigate('BurgerDetails', { product });
+  }else if(qty===3){
+    navigation.navigate('CoffeeDetails', { product });
+  }else if(qty===4){
+    navigation.navigate('OfferDetails', { product });
+  }
+
+};
   return (
     <View style={styles.container}>
-      <FlatList
-        data={favList}
+      <View style={styles.header}>
+        <Text style={[styles.Text, { textAlign: 'center' }]}> Favorite </Text>
+      </View>
+      <Search />
+      <ScrollView>
+        <FlatList
+          numColumns={2}
+          data={favList}
 
-        renderItem={({ item, index }) => {
-          return (
+          renderItem={({ item, index }) => {
+            return (
+              <TouchableOpacity onPress={() => handleProductPress(item,item.qty)}>
+              <View style={styles.container}>
 
-            <View style={styles.itemView}>
-              <Image
-                source={{ uri: item.data.imageUrl }}
-                style={styles.itemImage}
-              />
-              <View style={styles.nameView}>
-                <Text style={styles.nameText}>{item.data.name}</Text>
-                {/* <Text style={styles.descText}>{item.data.description}</Text> */}
+
+                <View style={styles.cardView}>
+                  <Image source={{ uri: item.data.imageUrl }} style={styles.image} />
+
+                  <Text style={styles.Name}>{item.data.name}</Text>
+                  <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}LE</Text>
+
+                  </View>
+
+                  <View style={styles.containerHeart}>
+
+                    <Pressable
+                      onPress={() => {
+                        let existingItem = favList.find(itm => itm.id === item.id)
+                        if (existingItem.qty >= 1) {
+                          deleteItem(index);
+                        } else {
+                          deleteItem(index);
+                        }
+                      }} style={[
+                        styles.addToFavBtn,
+                        {
+                          width: 30,
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          //marginRight: 60,
+                          marginLeft: 20
+                        },
+                      ]}>
+                      <Icon name="heart" size={30} color={item.qty >= 1 ? 'red' : 'gray'} />
+                    </Pressable>
+
+
+                  </View>
+                </View>
 
               </View>
-              <View style={styles.addRemoveView}>
-              
-
-                  
-                  <Pressable 
-                  onPress={() => {
-                    let existingItem = favList.find(itm => itm.id === item.id)
-                    if (existingItem.qty >= 1) {
-                      deleteItem(index);
-                    } else {
-                      deleteItem(index);
-                    }
-                  }} style={[
-                    styles.addToFavBtn,
-                    {
-                      width: 30,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      //marginRight: 60,
-                      marginLeft: 20
-                    },
-                  ]}>
-                    <Icon name="heart" size={30} color={item.qty >= 1 ? 'red':'gray'} />
-                  </Pressable>
-                
-
-              </View>
-            </View>
-          );
-        }}
-      />
-        <BottomNavigator item="fav" navigation={navigation} userId={userId} />
+              </TouchableOpacity>
+            );
+          }}
+        /> <View style={styles.bottoms}></View>
+      </ScrollView>
+      <BottomNavigator item="fav" navigation={navigation} userId={userId} />
     </View>
-    
+
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: COLORS.white
+  },
+  header: {
+    flexDirection: "row",
+    backgroundColor: COLORS.background,
+    height: '10%',
+    alignItems: 'center',
+    textAlign: 'center'
+  }, Text: {
+    color: COLORS.darkblue,
+    fontSize: 35,
+    fontFamily: 'SofiaRegular',
+    fontWeight: "bold",
+    alignItems: 'center',
+    marginLeft: width / 2 - 80
+
+  },
+  cardView: {
+
+    marginBottom: 20,
+    marginTop: 20,
+    borderRadius: 15,
+    width: cardwidth,
+    height: 450,
+    elevation: 13,
+    backgroundColor: 'white',
+  },
+  image: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    height: 350,
+    width: cardwidth
+  },
+
+  Name: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: "#131A2C",
+    marginTop: 5,
+    marginLeft: 10,
+    marginBottom: 10,
+    left: 200
   },
   itemView: {
-    flexDirection: 'row',
+
     width: '90%',
     alignSelf: 'center',
     backgroundColor: '#fff',
@@ -206,14 +276,20 @@ const styles = StyleSheet.create({
     textDecorationLine: 'line-through',
     marginLeft: 5,
   },
-  addRemoveView: {
-    flexDirection: 'row',
+  containerHeart: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    zIndex: 1,
+    backgroundColor: COLORS.white,
+    borderRadius: 40,
     alignItems: 'center',
-    textAlign: 'center'
   },
   addToFavBtn: {
     padding: 10,
+    right: 10,
     borderRadius: 10,
+    alignItems: 'center',
   },
   checkoutView: {
     width: '100%',
@@ -225,6 +301,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 50,
+    bottom: 20
   },
 });
 export default favorite;

@@ -82,34 +82,34 @@ const ProductsListCoffee = ({ navigation }) => {
 
     return (
         <View style={styles.container} >
-          <View style={styles.headerName}>
+            <View style={styles.headerName}>
                 <Text style={styles.Textt}> AToZ </Text>
             </View>
-            <Search/>
+            <Search />
             <View style={styles.header}>
-            <FlatList
-    horizontal={true}
-    showsHorizontalScrollIndicator={false}
-    data={filterData}
-    keyExtractor={(item) => item.id}
-    renderItem={({ item, index }) => (
-        <Pressable onPress={() => navigation.navigate(item.name)}>
-            <View
-                style={
-                    item.name === "KIDS"
-                        ? { ...styles.smallCardSelected }
-                        : { ...styles.smallCard }
-                }
-            >
-              
-               <View style={styles.smallCardText}>
-                    <Text style={
-                      item.name === "KIDS" ? { ...styles.boldText} : { ...styles.regularText}}>{item.name}</Text>
-                </View>
-            </View>
-        </Pressable>
-    )}
-/>
+                <FlatList
+                    horizontal={true}
+                    showsHorizontalScrollIndicator={false}
+                    data={filterData}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item, index }) => (
+                        <Pressable onPress={() => navigation.navigate(item.name)}>
+                            <View
+                                style={
+                                    item.name === "KIDS"
+                                        ? { ...styles.smallCardSelected }
+                                        : { ...styles.smallCard }
+                                }
+                            >
+
+                                <View style={styles.smallCardText}>
+                                    <Text style={
+                                        item.name === "KIDS" ? { ...styles.boldText } : { ...styles.regularText }}>{item.name}</Text>
+                                </View>
+                            </View>
+                        </Pressable>
+                    )}
+                />
 
             </View>
             <ScrollView>
@@ -138,7 +138,10 @@ const CoffeeDetails = ({ route, navigation }) => {
     const [userId, setUserId] = useState('');
     const isFocused = useIsFocused();
     const product_id = product.id;
-
+    const [Name, setName]=useState('');
+    const [Price, setPrice]=useState(0);
+    const [image, setImage]=useState('');
+    const [discribtion, setDiscribtion]=useState(0);
     useEffect(() => {
 
         const fetchItem = async (product_id) => {
@@ -149,6 +152,11 @@ const CoffeeDetails = ({ route, navigation }) => {
                 id: documentSnapshot.id,
                 data: documentSnapshot.data(),
             });
+            setName(documentSnapshot.data().name);
+            setPrice(documentSnapshot.data().price);
+            setImage(documentSnapshot.data().imageUrl);
+            setDiscribtion(documentSnapshot.data().description);
+            
             setProductt(tempData);
         };
         fetchItem(product_id);
@@ -185,7 +193,8 @@ const CoffeeDetails = ({ route, navigation }) => {
     }, [userId]);
 
     const onAddToCart = async (item, index) => {
-
+        const newDate = new Date();
+        newDate.setDate(newDate.getDate() + 2);
         console.log(userId);
         const userRef = doc(db, "users", userId);
         const userSnap = await getDoc(userRef);
@@ -195,7 +204,7 @@ const CoffeeDetails = ({ route, navigation }) => {
         if (existingItem) {
             existingItem.qty += 1;
         } else {
-            cart.push({ ...item, qty: 1 });
+            cart.push({ ...item, qty: 1 ,delivery: newDate });
         }
         await updateDoc(userRef, { cart });
         getCartItems();
@@ -213,19 +222,37 @@ const CoffeeDetails = ({ route, navigation }) => {
         const userSnap = await getDoc(userRef);
         const { fav = [] } = userSnap.data() ?? {};
         let existingItem = fav.find(itm => itm.id === item.id);
-
+        const existingItemIndex = fav.findIndex(itm => itm.id === item.id);
         if (existingItem) {
-            existingItem.qty += 1;
+           
+            fav.splice(existingItemIndex, 1);
         } else {
-            fav.push({ ...item, qty: 1 });
+            fav.push({ ...item, qty: 3 });
         }
         await updateDoc(userRef, { fav });
         getFavItems();
     };
-    const [isPressed, setIsPressed] = useState('');
+  
 
- 
+    const [isPressed, setIsPressed] = useState(false); 
+
+    const handelHeart = async (item) => {
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+      const { fav = [] } = userSnap.data() ?? {};
+      const existingItem = fav.find(itm => itm.id === item.id);
+      
+      setIsPressed(!!existingItem); 
+    };
     
+    useEffect(() => {
+      handelHeart(product);
+    }, [handelHeart]); 
+    useEffect(() => {
+      console.log(isPressed);
+    }, [isPressed]); 
+
+
     return (
         <View style={styles.container}>
             <Header
@@ -240,7 +267,7 @@ const CoffeeDetails = ({ route, navigation }) => {
             <View style={{ backgroundColor: COLORS.background, flex: 1 }}>
                 <View style={styles.headerWrapper}>
                     <View style={styles.titlesWrapper}>
-                        <Text style={styles.Name2}>{product.name}</Text>
+                        <Text style={styles.Name2}>{Name}</Text>
                     </View>
 
 
@@ -251,7 +278,7 @@ const CoffeeDetails = ({ route, navigation }) => {
                     <View style={styles.container}>
 
                         <View style={styles.priceWrapper}>
-                            <Text style={styles.price}> price : {product.price}LE</Text>
+                            <Text style={styles.price}> price : {Price}LE</Text>
                         </View>
                         <Text style={{ fontSize: 20, color: COLORS.grey, marginBottom: 10, marginLeft: 20 }}>rate</Text>
                         <View style={{ flexDirection: 'row', marginLeft: 20, marginBottom: 10 }}>
@@ -301,10 +328,10 @@ const CoffeeDetails = ({ route, navigation }) => {
                         />
                     </View>
 
-                    <Image source={{ uri: product.imageUrl }} style={styles.imageCounter} />
+                    <Image source={{ uri:image }} style={styles.imageCounter} />
                 </View>
 
-                <Text style={{ fontSize: 20, marginBottom: 5 }}> discription : {product.description}</Text>
+                <Text style={{ fontSize: 20, marginBottom: 5 }}> discription : {discribtion}</Text>
 
                 <View style={{ marginLeft: 50 }}>
                     <FlatList
@@ -496,8 +523,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: 100,
         height: 70,
-       borderBottomColor:'transparent', 
-        borderBottomWidth: 2, 
+        borderBottomColor: 'transparent',
+        borderBottomWidth: 2,
     },
     smallCardSelected: {
         backgroundColor: "#FFFFFF",
@@ -505,28 +532,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: 100,
         height: 70,
-      shadowColor: 'black',
-      borderBottomColor: 'black', 
-      borderBottomWidth: 2, 
+        shadowColor: 'black',
+        borderBottomColor: 'black',
+        borderBottomWidth: 2,
     },
-      smallCardTextSected: {
+    smallCardTextSected: {
         color: "#131A2C",
-      },
-      regularText: {
-        
-        fontWeight: 'normal', 
+    },
+    regularText: {
+
+        fontWeight: 'normal',
         fontSize: 16,
     },
     boldText: {
         fontWeight: 'bold',
-        fontSize: 18, 
+        fontSize: 18,
     },
-      
-      smallCardText: {
-        fontSize: 14, 
-        color: 'black', 
+
+    smallCardText: {
+        fontSize: 14,
+        color: 'black',
         textAlign: 'center',
-        marginTop: 5, 
+        marginTop: 5,
     },
     NavContainer: {
         position: 'absolute',
@@ -552,7 +579,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         backgroundColor: COLORS.background,
         height: '10%',
-    },Textt: {
+    }, Textt: {
         color: COLORS.darkblue,
         fontSize: 35,
         fontFamily: 'SofiaRegular',

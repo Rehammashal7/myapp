@@ -6,24 +6,31 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
+  ScrollView,
+  Dimensions,
+  Pressable,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {useIsFocused, useRoute} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { useIsFocused, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc,collection,where,setDoc, updateDoc ,getDocs,getDoc } from "firebase/firestore";
-import { auth , db , storage}  from '../firebase';
+import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "firebase/firestore";
+import { auth, db, storage } from '../firebase';
 import BottomNavigator from '../components/bar';
-
+import Search from '../components/search';
+import COLORS from '../Consts/Color';
+import Icon from 'react-native-vector-icons/Ionicons';
+const { width } = Dimensions.get('screen');
+const cardwidth = width / 2;
 //parseInt()تحويل 
-const CartScreen = ({navigation}) => {
+const CartScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
   //const [userId, setUserId] = useState('');
   const route = useRoute();
   //const userId = route.params.userId;
   const [userId, setUserId] = useState(route.params.userId);
-const [HistoryOrder,setHistoryOrder]=useState([]);
-const [totalPrice,settotalPrice]=React.useState(0); 
+  const [HistoryOrder, setHistoryOrder] = useState([]);
+  const [totalPrice, settotalPrice] = React.useState(0);
   useEffect(() => {
     getCartItems();
     //console.log(userId);
@@ -35,32 +42,43 @@ const [totalPrice,settotalPrice]=React.useState(0);
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
-      
+
       console.log('Current Bonus Points:', userData.boun);
 
       const currentPoints = userData.boun || 0;
       const newPoints = currentPoints + 10;
-  
+
       await updateDoc(userRef, { boun: newPoints });
       console.log('Bonus points increased by 10.');
     } catch (error) {
       console.error('Error increasing bonus points:', error);
-    }};
+    }
+  };
+  const [points, setpoints] = useState(0);
+  useEffect(() => {
+    const getbouns = async () => {
+      const userRef = doc(db, 'users', userId);
+      const userSnap = await getDoc(userRef);
+      const userData = userSnap.data();
+      const currentPoints = userData.boun || 0;
+      setpoints(currentPoints);
+    }
+    getbouns();
+  }, []);
 
-  
   const getCartItems = async () => {
     //const userId = await AsyncStorage.getItem('USERID');
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     setCartList(userSnap.get('cart'));
   };
-  
+
 
   useEffect(() => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem('USERID');
       setUserId(id);
-      
+
     };
     getUserId();
   }, []);
@@ -68,83 +86,82 @@ const [totalPrice,settotalPrice]=React.useState(0);
 
 
   const addItem = async item => {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      const user = userSnap.data();
-    
-      let tempCart = [...user.cart];
-    
-      const existingItemIndex = tempCart.findIndex(cartItem => cartItem.id === item.id);
-    
-      if (existingItemIndex !== -1) {
-        const existingItem = tempCart[existingItemIndex];
-        existingItem.qty += 1;
-        tempCart[existingItemIndex] = existingItem;
-        console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
-      } else {
-        tempCart.push({ ...item, qty: 1 });
-      }
-    
-      await updateDoc(userRef, { cart: tempCart });
-      getCartItems();
-    };
-    
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    const user = userSnap.data();
 
-    const handleCheckout = async () => {
-      try {
-        // Loop through the products and add them to the purchasedProducts collection
-        cartList.forEach(async (item) => {
-          const purchaseData = {
-            userId: userId,
-            productId: item.id,
-            quantity: item.qty,
-            totalPrice: (item.qty || 0) * (item.data.price || 0),
-            timestamp: new Date(),
-            imageUrl: item.data.imageUrl,
-            name: item.data.name,
-            description: item.data.description
+    let tempCart = [...user.cart];
 
-           
-          };
-          const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
-          await setDoc(purchasedProductRef, purchaseData);
-        });
-    
-        console.log('Purchased products saved to Firestore successfully');
-        // After successful checkout, you can navigate to the checkout screen or do any other necessary action
-        navigation.navigate('checkout');
-      } catch (error) {
-        console.error('Error saving purchased products to Firestore:', error);
-      }
-    };
-    
+    const existingItemIndex = tempCart.findIndex(cartItem => cartItem.id === item.id);
 
-  
+    if (existingItemIndex !== -1) {
+      const existingItem = tempCart[existingItemIndex];
+      existingItem.qty += 1;
+      tempCart[existingItemIndex] = existingItem;
+      console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
+    } else {
+      tempCart.push({ ...item, qty: 1 });
+    }
+
+    await updateDoc(userRef, { cart: tempCart });
+    getCartItems();
+  };
+
+
+  const handleCheckout = async () => {
+    try {
+      // Loop through the products and add them to the purchasedProducts collection
+      cartList.forEach(async (item) => {
+        const purchaseData = {
+          userId: userId,
+          productId: item.id,
+          quantity: item.qty,
+          totalPrice: (item.qty || 0) * (item.data.price || 0),
+          timestamp: new Date(),
+          imageUrl: item.data.imageUrl,
+          name: item.data.name,
+          description: item.data.description
+
+        };
+        const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
+        await setDoc(purchasedProductRef, purchaseData);
+      });
+
+      console.log('Purchased products saved to Firestore successfully');
+      // After successful checkout, you can navigate to the checkout screen or do any other necessary action
+      navigation.navigate('checkout');
+    } catch (error) {
+      console.error('Error saving purchased products to Firestore:', error);
+    }
+  };
+
+
+
   const removeItem = async item => {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      const { cart = [] } = userSnap.data() ?? {};
-      
-      let existingItem = cart.find(itm => itm.id === item.id);
-      
-      if (existingItem) {
-        if (existingItem.qty > 1) {
-          existingItem.qty-= 1;
-          console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    const { cart = [] } = userSnap.data() ?? {};
 
-        } else {
-          cart.splice(cart.indexOf(existingItem), 1);
-        }
+    let existingItem = cart.find(itm => itm.id === item.id);
+
+    if (existingItem) {
+      if (existingItem.qty > 1) {
+        existingItem.qty -= 1;
+        console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
+
       } else {
-        console.log('Item not found in cart.');
+        cart.splice(cart.indexOf(existingItem), 1);
       }
-      
-      await updateDoc(userRef, { cart });
-      getCartItems();
-    };
-    
+    } else {
+      console.log('Item not found in cart.');
+    }
 
- 
+    await updateDoc(userRef, { cart });
+    getCartItems();
+  };
+
+
+
   const deleteItem = async (index) => {
     //const userId = await AsyncStorage.getItem('USERID');
     const userRef = doc(db, 'users', userId);
@@ -155,167 +172,347 @@ const [totalPrice,settotalPrice]=React.useState(0);
     getCartItems();
   };
 
-
-
+  const deleteAllItems = async () => {
+    try {
+      const userRef = doc(db, 'users', userId);
+      await updateDoc(userRef, { cart: [] });
+      getCartItems(); // Refresh the cart items after deletion
+    } catch (error) {
+      console.error('Error deleting all items:', error);
+    }
+  };
+  const [items, setitems] = useState(0);
 
   const getTotal = () => {
     let total = 0;
-    cartList.map(item => {let existingItem = cartList.find(itm => itm.id === item.id)
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
       total = total + existingItem.qty * item.data.price;
     });
     return total;
   };
-
-
-const AddOrderHistory = async () => {
-  console.log('Executing AddOrderHistory function...');
-  
-  try {
-    const userRef = doc(db, 'users', userId);
-    const userSnap = await getDoc(userRef);
-     const currentDate = new Date();
-    const formattedDate = currentDate.toISOString();
-    
-    const userOrders = userSnap.data()?.orders || [];
-
-    cartList.forEach((cartItem) => {
-      const newOrder = {
-        productId: cartItem.id,
-        productName: cartItem.data.name,
-        quantity: cartItem.qty,
-        imageUrl: cartItem.data.imageUrl,
-        totalPrice: (cartItem.qty || 0) * (cartItem.data.price || 0),
-        timestamp: new Date(),
-      };
-
-      userOrders.push(newOrder);
+  const getTotalItems = () => {
+    let total = 0;
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
+      total = total + existingItem.qty;
     });
+    return total;
+  };
 
-    await updateDoc(userRef, { orders: userOrders });
+  const AddOrderHistory = async () => {
+    console.log('Executing AddOrderHistory function...');
 
-    console.log('Order history updated successfully');
-  } catch (error) {
-    console.error('Error updating order history:', error);
-  }
-};
+    try {
+      const userRef = doc(db, 'users', userId);
+      const userSnap = await getDoc(userRef);
+      const currentDate = new Date();
+      const formattedDate = currentDate.toISOString();
 
-  
-return (
-  <View style={styles.container}>
-      <FlatList
-      data={cartList}
+      const userOrders = userSnap.data()?.orders || [];
 
-      renderItem={({item, index}) => {
-        return (
-        
-          <View style={styles.itemView}>
-            <Image
-              source={{uri: item.data.imageUrl}}
-              style={styles.itemImage}
-            />
-            <View style={styles.nameView}>
-              <Text style={styles.nameText}>{item.data.name}</Text>
-              {/* <Text style={styles.descText}>{item.data.description}</Text> */}
-              <View style={styles.priceView}>
-                <Text style={styles.priceText}>
-                  {'LE' + item.data.price}
-                </Text>
-                <Text style={styles.discountText}>
-                  {'LE' + item.data.discountPrice}
-                </Text>
-              </View>
-            </View>
-            <View style={styles.addRemoveView}>
-              <TouchableOpacity
-                style={[
-                  styles.addToCartBtn,
-                  {
-                    width: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    //marginRight: 60,
-                    marginLeft:20
-                  },
-                ]}
-                onPress={() => {   
-                    let existingItem = cartList.find(itm => itm.id === item.id)
-                    if (existingItem.qty > 1)
-                   {
-                    removeItem(item);
-                  } else {
-                    deleteItem(index);
-                  }
-                }}>
-                <Text
-                  style={{color: '#fff', fontSize: 20, fontWeight: '700'}}>
-                  -
-                </Text>
-              </TouchableOpacity>
-              <Text style={{fontSize: 16, fontWeight: '600',marginLeft:15}}>
-                    {  ( cartList.find(itm => itm.id === item.id)).qty}
-              </Text>
-              <TouchableOpacity
-                style={[
-                  styles.addToCartBtn,
-                  {
-                    width: 30,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    marginLeft: 20,
-                  },
-                ]}
-                onPress={() => {
-                  addItem(item);
-                }}>
-                <Text
-                  style={{
-                    color: '#fff',
-                    fontSize: 20,
-                    fontWeight: '700',
-                  }}>
-                  +
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        );
-      }}
-    />
-    {cartList.length > 0 && (
-      <View style={styles.checkoutView}>
-        <Text style={{color: '#000', fontWeight: '600'}}>
-             {'Items(' + ( cartList.find(itm => itm.id)).qty + ')\nTotal: $' + getTotal()}
-        </Text>
+      cartList.forEach((cartItem) => {
+        const newOrder = {
+          productId: cartItem.id,
+          productName: cartItem.data.name,
+          quantity: cartItem.qty,
+          imageUrl: cartItem.data.imageUrl,
+          totalPrice: (cartItem.qty || 0) * (cartItem.data.price || 0),
+          timestamp: new Date(),
+        };
+
+        userOrders.push(newOrder);
+      });
+
+      await updateDoc(userRef, { orders: userOrders });
+
+      console.log('Order history updated successfully');
+    } catch (error) {
+      console.error('Error updating order history:', error);
+    }
+  };
+  const [IconName, setIconName] = useState(false);
+  const [IconName2, setIconName2] = useState(false);
+  const formatDate = (timestamp) => {
+
+
+
+    if (timestamp && timestamp.seconds && timestamp.nanoseconds) {
+
+      const newDate = new Date(
+        timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
+      );
+      // Check if the parsedDate is a valid date
+      if (!isNaN(newDate.getTime())) {
+        return newDate.toLocaleDateString();
+      }
+      console.log(timestamp);
+
+      console.log(newDate);
+      const year = newDate.getFullYear();
+      const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Adding 1 to month because months are zero-indexed
+      const day = String(newDate.getDate()).padStart(2, '0');
+
+      const formattedDate = `${year}-${month}-${day}`;
+      return formattedDate;
+    }
+
+  };
+  return (
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={[styles.Text, { textAlign: 'center' }]}> My basket </Text>
+      </View>
+      <Search />
+      <ScrollView style={[styles.container, { marginTop: 10 }]}>
         <TouchableOpacity
           style={[
             styles.addToCartBtn,
             {
               width: 100,
-              height: 40,
-              justifyContent: 'center',
-              alignItems: 'center',
+              marginLeft:5
             },
           ]}
           onPress={() => {
-            navigation.navigate("checkout")
-            AddOrderHistory();
-            handleSomeAction();
-            
-            handleCheckout();
+            deleteAllItems();
           }}>
-          <Text style={{color: '#fff'}}>Checkout</Text>
+          <Text
+            style={{
+              color: COLORS.grey,
+              fontSize: 16,
+              fontWeight: '700',
+            }}>
+            Clear all
+          </Text>
         </TouchableOpacity>
-      </View>
-    )}
-    <BottomNavigator item="cart" navigation={navigation} userId={userId} />
-  </View>
-);
+        <FlatList
+          data={cartList}
+
+          renderItem={({ item, index }) => {
+            return (
+
+              <View style={styles.container}>
+
+
+                <View style={styles.cardView}>
+                  <Pressable onPress={() => deleteItem(index)} style={styles.iconBehave}>
+                    <Icon name='trash-outline' size={25} color={COLORS.dark} style={styles.iconBehave} />
+                  </Pressable>
+                  <Image
+                    source={{ uri: item.data.imageUrl }}
+                    style={styles.itemImage}
+                  />
+                  <View style={styles.nameView}>
+                    <Text style={styles.nameText}>{item.data.name}</Text>
+                    {/* <Text style={styles.descText}>{item.data.description}</Text> */}
+                    <View style={styles.priceView}>
+                      <Text style={styles.priceText}>
+                        {item.data.price + 'EGP'}
+                      </Text>
+                      <Text style={styles.discountText}>
+                        {item.data.discountPrice + 'EGP'}
+                      </Text>
+                    </View>
+                    <View style={styles.addRemoveView}>
+
+                      <TouchableOpacity
+                        style={[
+                          styles.addToCartBtn,
+                          {
+                            width: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+
+                          },
+                        ]}
+                        onPress={() => {
+                          let existingItem = cartList.find(itm => itm.id === item.id)
+                          if (existingItem.qty > 1) {
+                            removeItem(item);
+
+                          } else {
+                            deleteItem(index);
+                          }
+                        }}>
+                        <Text
+                          style={{ color: COLORS.grey, fontSize: 30, fontWeight: '700' }}>
+                          -
+                        </Text>
+                      </TouchableOpacity>
+                      <Text style={{ fontSize: 22, fontWeight: '600', marginLeft: 15, color: COLORS.dark }}>
+                        {(cartList.find(itm => itm.id === item.id)).qty}
+                      </Text>
+                      <TouchableOpacity
+                        style={[
+                          styles.addToCartBtn,
+                          {
+                            width: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            marginLeft: 20,
+                          },
+                        ]}
+                        onPress={() => {
+                          addItem(item);
+                        }}>
+                        <Text
+                          style={{
+                            color: COLORS.grey,
+                            fontSize: 30,
+                            fontWeight: '700',
+                          }}>
+                          +
+                        </Text>
+                      </TouchableOpacity>
+
+                    </View>
+
+                  </View>
+
+                </View>
+                <Text style={styles.deliveryText}>Delivery:{formatDate(item.delivery)}</Text>
+              </View>
+            );
+          }}
+        />
+        <View style={[styles.containerTotal, { marginBottom: 5 }]}>
+          <View style={styles.total}>
+            <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {'Total: ' + getTotal() + ' EGP'}
+            </Text>
+            <Pressable onPress={() => setIconName(!IconName)}>
+              <Icon name={IconName ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
+            </Pressable>
+          </View>
+          {IconName && (
+            <>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18 }}>SubTotal</Text>
+                <Text style={{ fontSize: 18 }}>{(getTotal()) + ' EGP'}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18 }}>Delivery</Text>
+                <Text style={{ fontSize: 18 }}>{(getTotal() * 0.10) + ' EGP'}</Text>
+              </View>
+              <View style={[styles.row, styles.totalRow]}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total(VAT included)</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{getTotal() + (getTotal() * 0.10) + ' EGP'}</Text>
+              </View>
+              <View style={[styles.row, styles.totalRow]}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>20% Discound </Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + (getTotal() * 0.20) + ' EGP'}</Text>
+              </View>
+            </>
+          )}
+        </View>
+        <View style={[styles.containerTotal, { marginBottom: 5 }]}>
+          <View style={styles.total}>
+            <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {'using gift points'}
+            </Text>
+            <Pressable onPress={() => setIconName2(!IconName2)}>
+              <Icon name={IconName2 ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
+            </Pressable>
+          </View>
+          {IconName2 && (
+            <>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18 }}>Points</Text>
+                <Text style={{ fontSize: 18 }}>{points}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total price</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getTotal() - points * 10}</Text>
+              </View>
+            </>
+          )}
+        </View>
+        <View style={styles.bottoms}></View>
+      </ScrollView>
+      {cartList.length > 0 && (
+        <View style={styles.checkoutView}>
+          <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
+            {'Items(' + getTotalItems() + ')\nTotal: $' + getTotal()}
+          </Text>
+          <TouchableOpacity
+            style=
+            {styles.checkButton}
+
+            onPress={() => {
+              navigation.navigate("checkout", { userId: userId });
+              // AddOrderHistory();
+              // handleSomeAction();
+
+              handleCheckout();
+            }}>
+            <Text style={{ color: '#fff' }}>Checkout</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+      <BottomNavigator item="cart" navigation={navigation} userId={userId} />
+    </View>
+  );
 };
 
 export default CartScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    backgroundColor: COLORS.white
+  },
+  containerTotal: {
+    padding: 10,
+    borderWidth: 0.1,
+    borderColor: COLORS.grey,
+    borderWidth: 0.1,
+    borderRadius: 1,
+    elevation: 13,
+    flexDirection: 'column',
+    backgroundColor: COLORS.white,
+    marginBottom: 10,
+    margin: 5
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 5,
+  },
+  header: {
+    flexDirection: "row",
+    backgroundColor: COLORS.background,
+    height: '10%',
+    alignItems: 'center',
+    textAlign: 'center'
+  }, Text: {
+    color: COLORS.darkblue,
+    fontSize: 35,
+    fontFamily: 'SofiaRegular',
+    fontWeight: "bold",
+    alignItems: 'center',
+    marginLeft: width / 2 - 80
+
+  },
+  deliveryText: {
+    marginLeft: 60,
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.grey
+  },
+  iconBehave: {
+    marginTop: 50,
+    marginRight: 10
+  },
+  cardView: {
+    flexDirection: 'row',
+    marginBottom: 5,
+    marginTop: 20,
+    borderRadius: 15,
+    width: width - 20,
+    height: 210,
+    elevation: 13,
+    backgroundColor: COLORS.white,
+    marginLeft: 20,
   },
   itemView: {
     flexDirection: 'row',
@@ -328,15 +525,15 @@ const styles = StyleSheet.create({
     height: 100,
     marginBottom: 10,
     alignItems: 'center',
+    marginLeft: 70,
   },
   itemImage: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
+    width: cardwidth - 50,
+    height: 200,
     margin: 5,
   },
   nameView: {
-    width: '30%',
+    width: '50%',
     margin: 10,
   },
   priceView: {
@@ -344,43 +541,70 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameText: {
-    fontSize: 18,
+    fontSize: 20,
+    color: COLORS.dark,
     fontWeight: '700',
+    marginBottom: 10
   },
   descText: {
-    fontSize: 14,
+    fontSize: 20,
     fontWeight: '600',
   },
   priceText: {
-    fontSize: 18,
+    fontSize: 16,
     color: 'green',
     fontWeight: '700',
+    marginBottom: 20
   },
   discountText: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 16,
+    color: COLORS.grey,
+    fontWeight: '700',
     textDecorationLine: 'line-through',
     marginLeft: 5,
+    marginBottom: 20
   },
   addRemoveView: {
     flexDirection: 'row',
     alignItems: 'center',
-    textAlign:'center'
+    textAlign: 'center'
   },
   addToCartBtn: {
-    backgroundColor: '#131A2C',
     padding: 10,
-    borderRadius: 10,
+
   },
   checkoutView: {
     width: '100%',
     height: 60,
     backgroundColor: '#fff',
     position: 'absolute',
-    bottom: 0,
+    bottom: 60,
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
+  },
+  checkButton: {
+    width: cardwidth,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: COLORS.dark,
+
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 150,
+    bottom: 0
+  },
+  total: {
+    width: '90%',
+    height: 60,
+    backgroundColor: COLORS.white,
+    elevation: 5,
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+
   },
 });

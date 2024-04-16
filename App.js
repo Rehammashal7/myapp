@@ -39,11 +39,13 @@ import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 
+import PayWithCard from './pages/PayWithCard';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="PayWithCard">
+      <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
 
@@ -99,6 +101,8 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        
+
       </Stack.Navigator>
     </NavigationContainer>
   );
