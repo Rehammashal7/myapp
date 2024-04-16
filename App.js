@@ -8,13 +8,15 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
 import favorite from './pages/favorite';
+// import{ profile} from './pages/profile';
 import profile from './pages/profile';
 import { BurgerDetails, ProductsListBurger } from './pages/Burgers';
 import { CoffeeDetails, ProductsListCoffee } from './pages/Drink';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/checkout';
+import Checkout from './pages/Checkout';
+import EditProfile from './pages/EditProfile';
 import { PizzaDetails, ProductsListPizza } from './pages/ProductsListPizza';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
@@ -32,6 +34,9 @@ import AddReviewBaby from './pages/AddReviews/AddReview-baby';
 
 
 import category from './pages/catigory';
+import DeleteAccount from './pages/DeleteAccount';
+// import MapScreen from './pages/MapScreen';
+import OrderHistory from './pages/OrderHistory';
 import AddProducts from './pages/AddProducts';
 import AllReviewsPage from './pages/Catigory/AllReviewsPage';
 import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
@@ -69,6 +74,7 @@ export default function App() {
 
         <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
         <Stack.Screen name='AddProducts' component={AddProducts}/>
+        <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="PizzaDetails" component={PizzaDetails}  />
         <Stack.Screen name="OfferDetails" component={OfferDetails}  />
@@ -93,6 +99,10 @@ export default function App() {
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
         <Stack.Screen name="profile" component={ profile }/>
         <Stack.Screen name="catigory" component={ category }/>
+        <Stack.Screen name="EditProfile" component={ EditProfile }/>
+        <Stack.Screen name="DeleteAccount" component={ DeleteAccount }/>
+        {/* <Stack.Screen name="MapScreen" component={ MapScreen }/> */}
+
 
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>
