@@ -5,7 +5,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SelectDropdown from 'react-native-select-dropdown';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -45,7 +45,7 @@ const EditProfile = ({ navigation }) => {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [dateBirth , setDateBirth] = useState(new Date());
+  const [birthDate , setBirthDate] = useState(new Date());
   const [firstNameError, setFirstNameError] = useState(false);
   const [lastNameError, setLastNameError] = useState(false);
   const [emailError, setEmailError] = useState(true);
@@ -62,9 +62,12 @@ const EditProfile = ({ navigation }) => {
   const [month, setMonth] = useState();
   const [year, setYear] = useState();
   const [countdown, setCountdown] = useState(100);
-  const [fullPhoneNumber, setFullphoneNumber] = useState("");
   const [confirmPressed, setConfirmPressed] = useState(false);
-  const numbers = [
+  const [validationSuccess, setValidationSuccess] = useState(false);
+  const [fullPhoneNumber, setFullphoneNumber] = useState("");
+  const validationSuccessRef = useRef(false);
+  const confirmPressedRef = useRef(false);
+    const numbers = [
     { title: '10' },
     { title: '11'},
     { title: '12'},
@@ -87,19 +90,13 @@ const EditProfile = ({ navigation }) => {
       setPhotoURL(result.uri);
     }
   };
-  // function handleChange(e) {
-  //   if (e.target.files[0]) {
-  //     setPhoto(e.target.files[0])
-  //     handleChoosePhoto();
-  //   }
-  // };
-  function handleChange(imagepath) {
-    if (imagepath && imagepath.length > 0 && !imagepath.canceled) {
-      const image = imagepath[0];
-      setPhotoURL(imagepath.uri);
-      setPhoto(imagepath);
-    }
-  }
+  function handleChange(e) {
+    // if (e.target.files[0]) {
+    //   setPhoto(e.target.files[0])
+    //   handleChoosePhoto();
+    // }
+  };
+ 
 
   function handleClick() {
     upload(photo, currentUser, setLoading);
@@ -137,11 +134,11 @@ const EditProfile = ({ navigation }) => {
         setPhone(data.phone);
         setGender(data.gender);
         setNumberType(data.numberType);
-        const  dateBirth = data.dateBirth.toDate(); 
-      const day = dateBirth.getDate().toString().padStart(2, "0");
-      const month = (dateBirth.getMonth() + 1).toString().padStart(2, "0");
-      const year = dateBirth.getFullYear().toString();
-      setDateBirth(dateBirth); 
+        const  birthDate = data.birthDate.toDate(); 
+        const day = birthDate.getDate().toString().padStart(2, "0");
+        const month = (birthDate.getMonth() + 1).toString().padStart(2, "0");
+        const year = birthDate.getFullYear().toString();
+        setBirthDate(birthDate); 
         setDay(day); 
         setMonth(month);
         setYear(year); 
@@ -153,20 +150,19 @@ const EditProfile = ({ navigation }) => {
 
   const UpdateUserData = async () => {
     const washingtonRef = doc(db, "users", auth.currentUser.uid);
-console.log("iam heree");
+console.log("update meeeeee");
     // Set the "capital" field of the city 'DC'
     await updateDoc(washingtonRef, {
       fName: fristName,
       lName: lastName,
       phone: phone,
-      dateBirth: dateBirth,
-      boun: bounspoint,
+      birthDate: birthDate,
       countryCode:countryCode,
-      fullPhoneNumber:fullPhoneNumber,
       numberType:numberType,
       gender : gender ,
-      
     });
+    console.log("lname",lName);
+
   };
 
   function useAuth() {
@@ -219,40 +215,55 @@ console.log("iam heree");
       setEmailError(true);
     }
   }, [countdown]);
+  useEffect(() => {
+    if (validationEmail === "Email has been successfully activated!") {
+      setValidationSuccess(true);
+    } else {
+      setValidationSuccess(false);
+    }
+  }, [validationEmail]);
+
   const handleConfirm = () => {
-    // اقتران تفعيل التأثير الجانبي مع الضغط على زر "Confirm"
     setConfirmPressed(true);
-  
     const user = auth.currentUser;
     sendEmailVerification(user)
       .then(() => {
         console.log("Verification email sent");
         setEmailError(false);
+        setValidationEmail("Email activation email has been sent! Please check your email box.");
         alert("Email activation email has been sent! Please check your email box.");
   
-        // تأخير تحديث الرسالة بالحالة الأصلية بعد 100 ثانية
         setTimeout(() => {
-          if (validationEmail !== "Email has been successfully activated!") {
+          if (validationEmail !== "Your email has been verified") {
+            setValidationEmail("Failed to send activation email. Please try again later.");
             alert("Failed to send activation email. Please try again later.");
           }
+          if (validationEmail === "Your email has been verified") {
+            setValidationEmail("Your email has been verified");
+            alert("Your email has been verified");
+            setValidationSuccess(true);
+            validationSuccessRef.current = true;
+          }
         }, 100000); // 100 ثانية
+  
       })
       .catch((error) => {
         setConfirmPressed(false);
-
         console.error("Error sending verification email:", error.message);
+        setValidationEmail("Failed to send activation email. Please try again later.");
         alert("Failed to send activation email. Please try again later.");
       });
   };
+  
 
   const showDatepicker = () => {
     setShowDatePicker(true);
   };
 
   const handleDateChange = ( event , selectedDate) => {
-    const currentDate = selectedDate || dateBirth;
+    const currentDate = selectedDate || birthDate;
     setShowDatePicker(false);
-    setDateBirth(currentDate);
+    setBirthDate(currentDate);
 
     const day = currentDate.getDate().toString().padStart(2, "0");
     const month = (currentDate.getMonth() + 1).toString().padStart(2, "0");
@@ -293,20 +304,21 @@ console.log("iam heree");
   };
 
   const handleSave = async () => {
-    console.log("First Name:", fristName);
-    console.log("Last Name:", lastName);
-    console.log("Phone:", phone);
-    console.log("Country Code:", countryCode);
-    console.log("Number Type:", numberType);
-    console.log("Gender:", gender);
+    // console.log("First Name:", fristName);
+    // console.log("Last Name:", lastName);
+    // console.log("Phone:", phone);
+    // console.log("Country Code:", countryCode);
+    // console.log("Number Type:", numberType);
+    // console.log("Gender:", gender);
     if (countdown > 0) {
       alert("Wait until the verification process is completed");
-
       return;
+    }else{
+
     }
   
     const currentDate = new Date();
-    if (dateBirth > currentDate) {
+    if (birthDate > currentDate) {
       alert("Birthdate cannot be in the future");
       return;
     }
@@ -344,7 +356,7 @@ console.log("iam heree");
       console.log("Country Code:", countryCode);
       console.log("Number Type:", numberType);
       console.log("Gender:", gender);
-      console.log("Birthdate:", dateBirth);
+      console.log("Birthdate:", birthDate);
   
       if (loading || !photo) {
         // disable
@@ -462,16 +474,20 @@ console.log("iam heree");
               <Text style={styles.errorname}>Please verify your E-mail</Text>
               
             )}
-             {!emailError && (
-              <Text style={[styles.errorname,{color : 'green', fontSize:10}]}>Email activation email has been sent! check your E-mail box.</Text>
-              
-            )}
+             {!emailError && !validationSuccess && (
+  <Text style={[styles.errorname,{color : 'green', fontSize:10}]}>Email activation email has been sent! check your E-mail box.</Text>
+)}
+       {validationSuccess && (
+  <Text style={{ color: 'green', fontSize: 16, marginTop: 5 }}>
+    Email activation successful!
+  </Text>
+)}
           </View>
           <View style={[{ flexDirection: "column" }]}>
                       <TouchableOpacity onPress={confirmPressed ? null : handleConfirm}>
   <Text style={[styles.confirmButton, { opacity: confirmPressed ? 0.5 : 1 }]}>Confirm</Text>
 </TouchableOpacity>
-{confirmPressed && (
+{confirmPressed &&  (
   <Text style={{ color: 'red', textAlign: 'center', marginTop: 5 , fontSize:10}}>
   {countdown > 0 ? `Resend in ${countdown} S` : ''}
 </Text>              
@@ -479,9 +495,7 @@ console.log("iam heree");
 </View>
 
 
-          {/* <TouchableOpacity onPress={confirmPressed ? handleConfirm : null }>
-            <Text style={[styles.confirmButton,{ opacity: confirmPressed ? 1 : 0.5 }]}>Confirm</Text>
-          </TouchableOpacity> */}
+         
 
         </View>
 
@@ -584,7 +598,7 @@ console.log("iam heree");
           </TouchableOpacity>
           {showDatePicker && (
             <DateTimePicker
-              value={dateBirth}
+              value={birthDate}
               mode="date"
               display="default"
               onChange={handleDateChange}
