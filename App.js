@@ -29,11 +29,14 @@ import plusbutton from './adminPages/plusbutton';
 import BottomNavigator from './components/bar';
 import AddReview from './pages/AddReview';
 import category from './pages/catigory';
+import DeleteAccount from './pages/DeleteAccount';
+// import MapScreen from './pages/MapScreen';
+import OrderHistory from './pages/OrderHistory';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="EditProfile">
+      <Stack.Navigator initialRouteName="Welcome">
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MEN" component={ProductsListBurger} />
@@ -41,6 +44,7 @@ export default function App() {
         <Stack.Screen name="KIDS" component={ProductsListCoffee} />
         <Stack.Screen name="BABY" component={ProductsListOffer} />
         <Stack.Screen name='AddReview' component={AddReview}/>
+        <Stack.Screen name='OrderHistory' component={OrderHistory}/>
 
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="PizzaDetails" component={PizzaDetails}  />
@@ -68,8 +72,9 @@ export default function App() {
         <Stack.Screen name="profile" component={ profile }/>
         <Stack.Screen name="catigory" component={ category }/>
         <Stack.Screen name="EditProfile" component={ EditProfile }/>
+        <Stack.Screen name="DeleteAccount" component={ DeleteAccount }/>
+        {/* <Stack.Screen name="MapScreen" component={ MapScreen }/> */}
 
-        {/* <Stack.Screen name="EditProfile" component={ EditProfile }/> */}
 
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
         <Stack.Screen name="EditPizzaPage" component={ EditPizzaPage }/>

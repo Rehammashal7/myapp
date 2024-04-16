@@ -15,7 +15,7 @@ import {
 } from "firebase/firestore";
 import { auth, db, storage } from "../firebase";
 // const [userId, setUserId] = useState(route.params.userId);
-const OrderHistory = ({}) => {
+const OrderHistory = ({navigation}) => {
   const [OrderList, setOrderList] = useState([]);
 
   useEffect(() => {
