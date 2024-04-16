@@ -44,7 +44,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="PayWithCard">
+      <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
