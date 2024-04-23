@@ -103,7 +103,14 @@ const Checkout = ({ navigation }) => {
   const onError = (err) => {
     setError(err.message);
   };
-
+  const getTotalOfers = () => {
+    let total = 0;
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
+      total = total + (item.data.offer/100 * item.data.price*existingItem.qty);
+    });
+    return total.toFixed(2);
+  };
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
@@ -124,7 +131,7 @@ const Checkout = ({ navigation }) => {
 
   const deliveryprice = () => {
     if (IconName) {
-      setdelprice(getTotal() * 0.10);
+      setdelprice((getTotal() * 0.05));
     } else { setdelprice(0); }
   };
   useEffect(() => {
@@ -236,7 +243,7 @@ const Checkout = ({ navigation }) => {
               </Text>
             </View>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {getTotal() * 0.10 + ' EGP'}
+              {(getTotal() * 0.05 ).toFixed(2)+ ' EGP'}
             </Text>
           </View>
           <View style={styles.total}>
@@ -290,7 +297,7 @@ const Checkout = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'Total: ' + (getTotal() + delprice) + ' EGP'}
+              {'Total: ' + (getTotal() + delprice- getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconArr(!IconArr)}>
               <Icon name={IconArr ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
@@ -304,26 +311,27 @@ const Checkout = ({ navigation }) => {
               </View>
               <View style={styles.row}>
                 <Text style={{ fontSize: 18 }}>Delivery</Text>
-                <Text style={{ fontSize: 18 }}>{delprice + ' EGP'}</Text>
+                <Text style={{ fontSize: 18 }}>{delprice.toFixed(2) + ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total(VAT included)</Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{getTotal() + delprice + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{(getTotal() + delprice ).toFixed(2)+ ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>20% Discound </Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + (getTotal() * 0.20) + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + getTotalOfers() + ' EGP'}</Text>
               </View>
             </>
           )}
         </View>
+        <View style={styles.bottoms}></View>
       </ScrollView>
       {/* button */}
 
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
           <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
-            {'Items(' + getTotalItems() + ')\nTotal: $' + getTotal()}
+            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice- getTotalOfers()).toFixed(2)}
           </Text>
           <TouchableOpacity
             style=
@@ -487,7 +495,7 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: '#fff',
     position: 'absolute',
-    bottom: 60,
+    bottom: 0,
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -500,6 +508,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.dark,
 
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 70,
+    bottom: 0
   },
 });
 

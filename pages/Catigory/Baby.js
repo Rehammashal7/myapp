@@ -395,6 +395,8 @@ const [disLike, setDislikes] = useState([0]);
   //   getCartItems();
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
+    const newDate = new Date();
+     newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -404,7 +406,7 @@ const [disLike, setDislikes] = useState([0]);
     if (existingItem) {
       existingItem.qty += 1;
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize });
+      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
     }
 
     await updateDoc(userRef, { cart });
@@ -433,6 +435,22 @@ const [disLike, setDislikes] = useState([0]);
     getFavItems();
   };
   const [isPressed, setIsPressed] = useState("");
+  const handelHeart = async (item) => {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const { fav = [] } = userSnap.data() ?? {};
+    const existingItem = fav.find(itm => itm.id === item.id);
+    
+    setIsPressed(!!existingItem); 
+  };
+  
+  useEffect(() => {
+    handelHeart(product);
+  }, [handelHeart]); 
+  useEffect(() => {
+    console.log(isPressed);
+  }, [isPressed]); 
+
   const [Newprice, setNewprice] = useState(product.price);
 
   const handlePrice = (pl) => {

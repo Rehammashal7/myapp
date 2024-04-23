@@ -35,8 +35,16 @@ const CartScreen = ({ navigation }) => {
     getCartItems();
     //console.log(userId);
   }, [isFocused]);
-
-
+  const [activeIndexes, setActiveIndexes] = useState({});
+  const imageWidth = width;
+  const handleScroll = (event, productId) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.floor(contentOffsetX / imageWidth);
+    setActiveIndexes((prevState) => ({
+      ...prevState,
+      [productId]: currentIndex,
+    }));
+  };
   const handleSomeAction = async () => {
     try {
       const userRef = doc(db, 'users', userId);
@@ -183,6 +191,15 @@ const CartScreen = ({ navigation }) => {
   };
   const [items, setitems] = useState(0);
 
+
+  const getTotalOfers = () => {
+    let total = 0;
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
+      total = total + (item.data.offer / 100 * item.data.price * existingItem.qty);
+    });
+    return total.toFixed(2);
+  };
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
@@ -234,9 +251,6 @@ const CartScreen = ({ navigation }) => {
   const [IconName, setIconName] = useState(false);
   const [IconName2, setIconName2] = useState(false);
   const formatDate = (timestamp) => {
-
-
-
     if (timestamp && timestamp.seconds && timestamp.nanoseconds) {
 
       const newDate = new Date(
@@ -270,7 +284,7 @@ const CartScreen = ({ navigation }) => {
             styles.addToCartBtn,
             {
               width: 100,
-              marginLeft:5
+              marginLeft: 5
             },
           ]}
           onPress={() => {
@@ -298,20 +312,33 @@ const CartScreen = ({ navigation }) => {
                   <Pressable onPress={() => deleteItem(index)} style={styles.iconBehave}>
                     <Icon name='trash-outline' size={25} color={COLORS.dark} style={styles.iconBehave} />
                   </Pressable>
-                  <Image
-                    source={{ uri: item.data.imageUrl }}
-                    style={styles.itemImage}
+                  <FlatList
+                    horizontal
+                    data={item.data.images}
+                    showsHorizontalScrollIndicator={false}
+                    renderItem={({ item: image, index }) => (
+                      <Image key={index} source={{ uri: image }} style={styles.itemImage} />
+                    )}
+                    keyExtractor={(image, index) => index.toString()}
+                    onScroll={(event) => handleScroll(event, item.data.id)}
                   />
                   <View style={styles.nameView}>
                     <Text style={styles.nameText}>{item.data.name}</Text>
-                    {/* <Text style={styles.descText}>{item.data.description}</Text> */}
+
+                    <Text style={styles.descText}>
+                      {item.color ? `${item.color}/${item.size}` : item.size}
+                    </Text>
+
+
                     <View style={styles.priceView}>
                       <Text style={styles.priceText}>
-                        {item.data.price + 'EGP'}
+                        {item.data.price + 'EGP '}
                       </Text>
-                      <Text style={styles.discountText}>
-                        {item.data.discountPrice + 'EGP'}
-                      </Text>
+                      {item.data.offer !== 0 && (
+                        <Text style={styles.discountText}>
+                          {' - '+(item.data.offer / 100 * item.data.price).toFixed(2) + 'EGP'}
+                        </Text>
+                      )}
                     </View>
                     <View style={styles.addRemoveView}>
 
@@ -378,7 +405,7 @@ const CartScreen = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'Total: ' + getTotal() + ' EGP'}
+              {'Total: ' + (getTotal() - getTotalOfers()) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconName(!IconName)}>
               <Icon name={IconName ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
@@ -392,15 +419,15 @@ const CartScreen = ({ navigation }) => {
               </View>
               <View style={styles.row}>
                 <Text style={{ fontSize: 18 }}>Delivery</Text>
-                <Text style={{ fontSize: 18 }}>{(getTotal() * 0.10) + ' EGP'}</Text>
+                <Text style={{ fontSize: 18 }}>{(getTotal() * 0.05).toFixed(2) + ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total(VAT included)</Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{getTotal() + (getTotal() * 0.10) + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total(after Delivery)</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{(getTotal() + (getTotal() * 0.05)).toFixed(2) + ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>20% Discound </Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + (getTotal() * 0.20) + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + getTotalOfers() + ' EGP'}</Text>
               </View>
             </>
           )}
@@ -547,22 +574,24 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   descText: {
-    fontSize: 20,
+    fontSize: 18,
+    color: COLORS.dark,
     fontWeight: '600',
+    marginBottom: 10
   },
   priceText: {
     fontSize: 16,
-    color: 'green',
+    color: COLORS.dark,
     fontWeight: '700',
-    marginBottom: 20
+    marginBottom: 5
   },
   discountText: {
     fontSize: 16,
-    color: COLORS.grey,
+    color: "green",
     fontWeight: '700',
     textDecorationLine: 'line-through',
     marginLeft: 5,
-    marginBottom: 20
+    marginBottom: 5
   },
   addRemoveView: {
     flexDirection: 'row',

@@ -19,15 +19,26 @@ import BottomNavigator from '../components/bar';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 const { width } = Dimensions.get('screen');
+const { height: screenHeight } = Dimensions.get('window');
+const cardheight =screenHeight/2-30;
 const cardwidth = width / 2;
 const favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
-
+  const [activeIndexes, setActiveIndexes] = useState({});
   const route = useRoute();
 
   const [userId, setUserId] = useState(route.params.userId);
+  const imageWidth = width;
 
+  const handleScroll = (event, productId) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.floor(contentOffsetX / imageWidth);
+    setActiveIndexes((prevState) => ({
+      ...prevState,
+      [productId]: currentIndex,
+    }));
+  };
   useEffect(() => {
     getFavItems();
     //console.log(userId);
@@ -39,6 +50,7 @@ const favorite = ({ navigation }) => {
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     setFavList(userSnap.get('fav'));
+    
   };
 
 
@@ -107,19 +119,52 @@ const favorite = ({ navigation }) => {
     await updateDoc(userRef, { fav: tempfav });
     getFavItems();
   };
-  const handleProductPress = (product,qty) => {
-    console.log(qty);
-    if(qty===1){
-      navigation.navigate('PizzaDetails', { product });
-    }else if(qty===2)
-   { navigation.navigate('BurgerDetails', { product });
-  }else if(qty===3){
-    navigation.navigate('CoffeeDetails', { product });
-  }else if(qty===4){
-    navigation.navigate('OfferDetails', { product });
-  }
 
-};
+
+  const getProductById = async (categoryId, itemId) => {
+    try {
+      const productsCollection = collection(db, categoryId);
+      const querySnapshot = await getDocs(productsCollection);
+      const productsData = querySnapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }))
+        .find((product) => product.id === itemId);
+  
+      return productsData;
+    } catch (error) {
+      console.error("Error fetching product: ", error);
+      return null; // Return null if an error occurs
+    }
+  };
+  
+  const handleProductPress = async (product, Category) => {
+    console.log(Category);
+    
+    try {
+      const categoryId = Category ? Category.toLowerCase() : "woman"; 
+    const retrievedProduct = await getProductById(categoryId, product.id);
+      
+      if (retrievedProduct) {
+        if (Category === "KIDS") {
+          navigation.navigate('KidsDetails', { product: retrievedProduct });
+        } else if (Category === "MEN") {
+          navigation.navigate('MenDetails', { product: retrievedProduct });
+        } else if (Category === "BABY") {
+          navigation.navigate('BabyDetails', { product: retrievedProduct });
+        } else {
+          navigation.navigate('WomanDetails', { product: retrievedProduct });
+        }
+      } else {
+        console.error("Product not found!");
+        // Handle case when product is not found
+      }
+    } catch (error) {
+      console.error("Error fetching product: ", error);
+      // Handle error
+    }
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -131,18 +176,27 @@ const favorite = ({ navigation }) => {
           numColumns={2}
           data={favList}
 
-          renderItem={({ item, index }) => {
+          renderItem={({ item,index }) => {
             return (
-              <TouchableOpacity onPress={() => handleProductPress(item,item.qty)}>
+              <TouchableOpacity onPress={() => handleProductPress(item,item.data.categoryName)}>
               <View style={styles.container}>
 
 
                 <View style={styles.cardView}>
-                  <Image source={{ uri: item.data.imageUrl }} style={styles.image} />
-
+                <FlatList
+                  horizontal
+                  data={item.data.images}
+                  showsHorizontalScrollIndicator={false}
+                  renderItem={({ item: image, index }) => (
+                    <Image key={index} source={{ uri: image }} style={styles.image} />
+                  )}
+                  keyExtractor={(image, index) => index.toString()}
+                  onScroll={(event) => handleScroll(event, item.data.id)}
+                />
+                
                   <Text style={styles.Name}>{item.data.name}</Text>
                   <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}LE</Text>
+                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}EGP</Text>
 
                   </View>
 
@@ -159,14 +213,14 @@ const favorite = ({ navigation }) => {
                       }} style={[
                         styles.addToFavBtn,
                         {
-                          width: 30,
+                          width: 25,
                           justifyContent: 'center',
                           alignItems: 'center',
                           //marginRight: 60,
                           marginLeft: 20
                         },
                       ]}>
-                      <Icon name="heart" size={30} color={item.qty >= 1 ? 'red' : 'gray'} />
+                      <Icon name="heart" size={25} color={item.qty >= 1 ? COLORS.dark : 'gray'} />
                     </Pressable>
 
 
@@ -211,14 +265,14 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderRadius: 15,
     width: cardwidth,
-    height: 450,
+    height: cardheight+20,
     elevation: 13,
     backgroundColor: 'white',
   },
   image: {
     borderTopLeftRadius: 5,
     borderTopRightRadius: 5,
-    height: 350,
+    height: cardheight-80,
     width: cardwidth
   },
 
@@ -229,7 +283,29 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 10,
-    left: 200
+   
+  },
+  dotsContainer: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: cardheight-120,
+    //  zIndex: 1
+    //marginBottom:30,
+  },
+  dot: {
+    width: cardwidth/4-10,
+    height: 2,
+    
+    // borderRadius: 5,
+    backgroundColor: "black",
+
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    
+    backgroundColor: "white",
   },
   itemView: {
 
