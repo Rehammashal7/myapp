@@ -36,13 +36,28 @@ import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
 import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
+import ChatScreen from './pages/Chatbot';
 import PayWithCard from './pages/PayWithCard';
 const Stack = createNativeStackNavigator();
+import { Platform, BackHandler } from 'react-native';
+
+
 export default function App() {
+  
+  if (__DEV__) {
+    const oldConsoleWarn = console.warn;
+    console.warn = (message, ...args) => {
+      if (message.includes('source map')) return;
+      oldConsoleWarn(message, ...args);
+    };
+  }
+  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="ChatScreen">
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
+      <Stack.Screen name="ChatScreen" component={ChatScreen} />
+
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
