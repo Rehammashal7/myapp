@@ -30,7 +30,7 @@ const favorite = ({ navigation }) => {
   const [activeIndexes, setActiveIndexes] = useState({});
   const route = useRoute();
   const [userId, setUserId] = useState(route.params.userId);
-  const imageWidth = width;
+  const imageWidth = cardwidth;
 
   useEffect(() => {
     getFavItems();
@@ -130,12 +130,28 @@ const favorite = ({ navigation }) => {
                         <Image key={index} source={{ uri: image }} style={styles.image} />
                       )}
                       keyExtractor={(image, index) => index.toString()}
-                      onScroll={(event) => handleScroll(event, item.data.id)}
+                      onScroll={(event) => handleScroll(event, item.id)}
                     />
+                    <View style={styles.dotsContainer}>
+                      {item.data.images.map((_, index) => (
+                        <View
+                          key={index}
+                          style={[
+                            styles.dot,
+                            index === (activeIndexes[item.id] || 0)
+                              ? styles.activeDot
+                              : null,
+                          ]}
+                        />
+                      ))}
+                    </View>
                     <Text style={styles.Name}>{item.data.name}</Text>
                     <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-                      <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}EGP</Text>
-                    </View>
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}</Text>
+                 
+                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}> <Text>EGP</Text> </Text>
+                </View>
+
                     <View style={styles.containerHeart}>
                       <Pressable
                         onPress={() => {
@@ -190,11 +206,37 @@ const styles = StyleSheet.create({
     elevation: 13,
     backgroundColor: 'white',
   },
+  dotsContainer: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: cardheight - 90,
+    //  zIndex: 1
+    //marginBottom:30,
+  },
+  dot: {
+    width: 40,
+    height: 2,
+    marginBottom: 20,
+
+    backgroundColor: "black",
+
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    marginBottom: 20,
+    backgroundColor: "white",
+  },
+
+  scrollView: {
+    height: 200,
+  },
   image: {
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
+    position: "relative",
     height: cardheight - 80,
-    width: cardwidth
+    width: cardwidth,
+
   },
   Name: {
     fontSize: 14,

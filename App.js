@@ -11,11 +11,10 @@ import profile from './pages/profile';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/Checkout';
+import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
-
 import { OfferDetailsAdmin, ProductsListOfferAdmin, EditOfferPage } from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
@@ -28,7 +27,6 @@ import AddReviewKids from './pages/AddReviews/AddReview-kids';
 import AddReviewBaby from './pages/AddReviews/AddReview-baby';
 import category from './pages/catigory';
 import DeleteAccount from './pages/DeleteAccount';
-// import MapScreen from './pages/MapScreen';
 import OrderHistory from './pages/OrderHistory';
 import AddProducts from './pages/AddProducts';
 import AllReviewsPage from './pages/Catigory/AllReviewsPage';
@@ -38,6 +36,7 @@ import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
 import ProductPage from './pages/ResultSearch';
+import offer from './pages/offers';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -91,7 +90,7 @@ export default function App() {
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
         <Stack.Screen name="SearchResultsPage" component={ ProductPage }/>
-
+        <Stack.Screen name="offer" component={ offer }/>
       </Stack.Navigator>
     </NavigationContainer>
   );

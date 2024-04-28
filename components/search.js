@@ -187,7 +187,7 @@ const Search = () => {
                     <Icon name='refresh-outline' size={20} color={COLORS.grey} style={{ alignItems: 'center', }} />
                 </Pressable>
                 <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
-                    <Text>{item.name}</Text>
+                    <Text style={{width:width-60}}>{item.name}</Text>
                 </TouchableOpacity>
             </View>
             <Pressable onPress={() => deleteItem(index)} style={{ alignItems: 'center', }}>
@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 60,
         backgroundColor: COLORS.white,
-        elevation: 5,
+        marginLeft:5,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',

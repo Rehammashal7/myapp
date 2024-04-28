@@ -309,7 +309,7 @@ const CartScreen = ({ navigation }) => {
 
 
                 <View style={styles.cardView}>
-                  <Pressable onPress={() => deleteItem(index)} style={styles.iconBehave}>
+                  <Pressable onPress={() => deleteItem(index)} style={[styles.iconBehave,{marginLeft:5}]}>
                     <Icon name='trash-outline' size={25} color={COLORS.dark} style={styles.iconBehave} />
                   </Pressable>
                   <FlatList
@@ -373,7 +373,7 @@ const CartScreen = ({ navigation }) => {
                         style={[
                           styles.addToCartBtn,
                           {
-                            width: 30,
+                            width: 35,
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginLeft: 20,
@@ -528,6 +528,7 @@ const styles = StyleSheet.create({
   },
   iconBehave: {
     marginTop: 50,
+    marginLeft:10,
     marginRight: 10
   },
   cardView: {
@@ -555,9 +556,10 @@ const styles = StyleSheet.create({
     marginLeft: 70,
   },
   itemImage: {
-    width: cardwidth - 50,
-    height: 200,
-    margin: 5,
+    width: cardwidth - 30,
+    height: 210,
+    marginLeft: 5,
+    marginRight:5
   },
   nameView: {
     width: '50%',
@@ -568,9 +570,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   nameText: {
-    fontSize: 20,
+    fontSize: 18,
     color: COLORS.dark,
-    fontWeight: '700',
+    fontWeight: '500',
     marginBottom: 10
   },
   descText: {
@@ -630,10 +632,9 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 60,
     backgroundColor: COLORS.white,
-    elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-
+    
   },
 });

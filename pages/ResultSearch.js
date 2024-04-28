@@ -45,6 +45,15 @@ const ProductPage = ({ route, navigation }) => {
   }
   const [selectedCategory, setSelectedCategory] = useState('All');
 
+  const handleScroll = (event, productId) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const currentIndex = Math.floor(contentOffsetX / imageWidth);
+    setActiveIndexes((prevState) => ({
+      ...prevState,
+      [productId]: currentIndex,
+    }));
+  };
+
   const handleCategorySelect = (category) => {
     if (selectedCategory === category) {
       // If the selected category is already the current category, deselect it
@@ -54,6 +63,7 @@ const ProductPage = ({ route, navigation }) => {
       setSelectedCategory(category);
     }
   };
+  const [activeIndexes, setActiveIndexes] = useState({});
   const [numOfProductWoman, setNumOfProductWomen] = useState(0);
   const [numOfProductKids, setNumOfProductKids] = useState(0);
   const [numOfProductMen, setNumOfProductMen] = useState(0);
@@ -73,7 +83,7 @@ const ProductPage = ({ route, navigation }) => {
     productCount();
   }, []);
 
-
+  const imageWidth = cardwidth;
   const renderItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => { handleProductPress(item, item.categoryName) }}>
       <View style={styles.cardView}>
@@ -85,8 +95,22 @@ const ProductPage = ({ route, navigation }) => {
             <Image key={index} source={{ uri: image }} style={styles.image} />
           )}
           keyExtractor={(image, index) => index.toString()}
-
+          onScroll={(event) => handleScroll(event, item.id)}
         />
+        <View style={styles.dotsContainer}>
+          {item.images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                styles.dot,
+                index === (activeIndexes[item.id] || 0)
+                  ? styles.activeDot
+                  : null,
+              ]}
+            />
+          ))}
+        </View>
+
 
         <Text style={styles.Name}>{item.name}</Text>
         <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
@@ -191,7 +215,7 @@ const styles = StyleSheet.create({
   },
   container2: {
     flex: 1,
-    padding: 10,
+    padding: 5,
     marginBottom: 5,
   },
   heading: {
@@ -208,6 +232,7 @@ const styles = StyleSheet.create({
   checkboxContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    width: '98%'
   },
   headcontener: {
     flexDirection: 'row',
@@ -226,11 +251,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 20,
-
     margin: 5,
   },
   categoryLabel: {
-    fontSize: 16,
+    fontSize: 14,
   },
   selectedCategory: {
     backgroundColor: 'black',
@@ -245,11 +269,37 @@ const styles = StyleSheet.create({
     elevation: 13,
     backgroundColor: 'white',
   },
+  dotsContainer: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: cardheight - 90,
+    //  zIndex: 1
+    //marginBottom:30,
+  },
+  dot: {
+    width: 40,
+    height: 2,
+    marginBottom: 20,
+    // borderRadius: 5,
+    backgroundColor: "black",
+
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    marginBottom: 20,
+    backgroundColor: "white",
+  },
+
+  scrollView: {
+    height: 200,
+  },
   image: {
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
+    position: "relative",
     height: cardheight - 80,
-    width: cardwidth
+    width: cardwidth,
+
   },
   Name: {
     fontSize: 14,
