@@ -3,15 +3,18 @@ import { View, Text, FlatList, StyleSheet, Image, Dimensions, CheckBox, ScrollVi
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import { filterData } from '../data';
+
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
 const cardheight = screenHeight / 2 - 30;
 const cardwidth = width / 2;
-const offer = ({ route, navigation }) => {
-    const  offerData  = route.params;
+
+const Offer = ({ route, navigation }) => {
+    const offerData = route.params;
     console.log(offerData)
     const [indexCheck, setIndexCheck] = useState("0")
     const [activeIndexes, setActiveIndexes] = useState({});
+
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
@@ -23,11 +26,11 @@ const offer = ({ route, navigation }) => {
             } else {
                 navigation.navigate('WomanDetails', { product });
             }
-
         } catch (error) {
             console.error("Error fetching product: ", error);
         }
     };
+
     const renderItem = ({ item, index }) => (
         <TouchableOpacity onPress={() => { handleProductPress(item, item.categoryName) }}>
             <View style={styles.cardView}>
@@ -55,34 +58,73 @@ const offer = ({ route, navigation }) => {
                     ))}
                 </View>
 
+                <View style={{ height: 110 }}>
+                    <Text style={styles.Name}>{item.name}</Text>
+                    {item.offer !== 0 ? (
+                        <>
+                            <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginHorizontal: 10,
+                                    textDecorationLine: "line-through",
+                                    height: 20
+                                }}
+                            >
+                                {item.price} EGP
+                            </Text>
 
-                <Text style={styles.Name}>{item.name}</Text>
-                <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-                    <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.price}EGP</Text>
-
+                            <Text
+                                style={{
+                                    fontSize: 13,
+                                    fontWeight: "bold",
+                                    marginHorizontal: 9,
+                                    color: "#df2600",
+                                    height: 40
+                                }}
+                            >
+                                🏷️ {item.offer}% Discount{" "}
+                                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                                    {Math.floor(
+                                        item.price - item.price / item.offer
+                                    )}{" "}
+                                    EGP
+                                </Text>
+                            </Text>
+                        </>
+                    ) : (
+                        <Text
+                            style={{
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                marginHorizontal: 10,
+                            }}
+                        >
+                            {item.price} EGP
+                        </Text>
+                    )}
                 </View>
             </View>
         </TouchableOpacity>
     );
+
     const handleScroll = (event, productId) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;
         const currentIndex = Math.floor(contentOffsetX / imageWidth);
         setActiveIndexes((prevState) => ({
-          ...prevState,
-          [productId]: currentIndex,
+            ...prevState,
+            [productId]: currentIndex,
         }));
-      };
-    
+    };
+
     return (
         <View style={styles.container}>
-
             <View style={styles.header}>
                 <Text style={styles.Text}> AToZ </Text>
             </View>
             <Search />
 
             <ScrollView>
-
                 <View>
                     <FlatList
                         horizontal={true}
@@ -102,16 +144,17 @@ const offer = ({ route, navigation }) => {
                             </Pressable>
                         )}
                     />
+                </View>
 
-                </View>
                 <View style={styles.containerItem}>
-                <FlatList
-                    numColumns={2}
-                    data={offerData}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderItem}
-                />
+                    <FlatList
+                        numColumns={2}
+                        data={offerData}
+                        keyExtractor={(item) => item.id.toString()}
+                        renderItem={renderItem}
+                    />
                 </View>
+
             </ScrollView>
         </View>
     );
@@ -124,55 +167,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLORS.background,
     },
     containerItem: {
-
         backgroundColor: COLORS.white
-    },
-    container2: {
-        flex: 1,
-        padding: 5,
-        marginBottom: 5,
-    },
-    heading: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    itemcount: {
-        fontSize: 18,
-        marginBottom: 10,
-        color: '#808B96',
-        marginLeft: 'auto',
-    },
-    checkboxContainer: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        width: '98%'
-    },
-    headcontener: {
-        flexDirection: 'row',
-        alignContent: 'space-between',
-    },
-    categoryButton: {
-        borderColor: COLORS.grey,
-        backgroundColor: 'white',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        margin: 5,
-    },
-    selectedcategoryButton: {
-        backgroundColor: 'black',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        margin: 5,
-    },
-    categoryLabel: {
-        fontSize: 14,
-    },
-    selectedCategory: {
-        backgroundColor: 'black',
-        color: 'white',
     },
     cardView: {
         marginBottom: 20,
@@ -188,32 +183,23 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        marginTop: cardheight - 90,
-        //  zIndex: 1
-        //marginBottom:30,
+        marginTop: cardheight - 100,
     },
     dot: {
         width: 40,
         height: 2,
         marginBottom: 20,
-        // borderRadius: 5,
         backgroundColor: "black",
-
         marginHorizontal: 5,
     },
     activeDot: {
         marginBottom: 20,
         backgroundColor: "white",
     },
-
-    scrollView: {
-        height: 200,
-    },
     image: {
         position: "relative",
         height: cardheight - 80,
         width: cardwidth,
-
     },
     Name: {
         fontSize: 14,
@@ -223,7 +209,6 @@ const styles = StyleSheet.create({
         marginLeft: 10,
         marginBottom: 10,
         height: 40
-
     },
     header: {
         flexDirection: "row",
@@ -239,29 +224,18 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         alignItems: 'center',
     },
-    result: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: "#131A2C",
-        marginTop: 5,
-        marginLeft: 10,
-        marginBottom: 10,
-    },smallCard: {
-        // borderRadius: 30,
+    smallCard: {
         backgroundColor: COLORS.background,
         justifyContent: "center",
         alignItems: 'center',
         width: 100,
         height: 70
     },
-
     smallCardText: {
         fontWeight: "bold",
         color: '#131A2C'
     },
-
     selectedCard: {
-
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
@@ -277,4 +251,4 @@ const styles = StyleSheet.create({
         color: 'black',
     },
 });
-export default offer;
+export default Offer;

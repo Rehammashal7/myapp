@@ -3,12 +3,9 @@ import {
     View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
     ScrollView, Dimensions, TouchableWithoutFeedback
 } from 'react-native';
-import Countdown from 'react-native-countdown-component'
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import FoodCard from '../components/Foodcard';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import Food, { Offer, filterData, filterDataa } from '../data';
+import filterData from '../data';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -20,18 +17,13 @@ const { height: screenHeight } = Dimensions.get('window');
 const cardheight = screenHeight / 2 - 30;
 const cardwidth = width / 2;
 
-// Generate required css
-
-
-// Inject stylesheet
-
-
 const HomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [indexCheck, setIndexCheck] = useState("0")
     const [products, setProducts] = useState([]);
     const [userId, setUserId] = useState('');
-
+    const [activeIndexes, setActiveIndexes] = useState({});
+    const imageWidth = cardwidth;
 
     useEffect(() => {
         const getProducts = async () => {
@@ -61,8 +53,7 @@ const HomeScreen = ({ navigation }) => {
         getUserId();
 
     }, []);
-    const [activeIndexes, setActiveIndexes] = useState({});
-    const imageWidth = cardwidth;
+
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
@@ -74,7 +65,6 @@ const HomeScreen = ({ navigation }) => {
             } else {
                 navigation.navigate('WomanDetails', { product });
             }
-
         } catch (error) {
             console.error("Error fetching product: ", error);
         }
@@ -157,26 +147,21 @@ const HomeScreen = ({ navigation }) => {
         { imageUrl: 'https://ashtonscorner.com/cdn/shop/files/ACB_-_Kids_20_Fashion_Sale.jpg?v=1705717296&width=3000' },
         { imageUrl: 'https://img.freepik.com/free-psd/sales-banner-template-with-image_23-2148149654.jpg?size=626&ext=jpg&ga=GA1.1.1224184972.1714003200&semt=ais' },
         { imageUrl: 'https://img.freepik.com/free-photo/big-sale-discounts-products_23-2150336701.jpg' }
-        // Add more slides as needed
     ];
     const carouselRef = useRef(null);
 
     const renderItem = ({ item }) => (
         <View style={{ alignItems: 'center', width: '110%' }}>
             <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 200 }} />
-
         </View>
     );
     return (
         <View style={styles.container}>
-
             <View style={styles.header}>
                 <Text style={styles.Text}> AToZ </Text>
             </View>
             <Search />
-
             <ScrollView>
-
                 <View>
                     <FlatList
                         horizontal={true}
@@ -198,33 +183,22 @@ const HomeScreen = ({ navigation }) => {
                     />
 
                 </View>
+
                 <Carousel
                     ref={carouselRef}
                     data={data}
                     renderItem={renderItem}
                     sliderWidth={width}
                     itemWidth={300}
-                    autoplay={true} // Enable autoplay
-                    autoplayInterval={3000} // Set autoplay interval (in milliseconds)
-                    loop={true} // Optional: enable looping
+                    autoplay={true}
+                    autoplayInterval={3000}
+                    loop={true}
                 />
+
                 <View style={styles.headerTextView}>
                     <Text style={[styles.headerText, { color: 'red' }]}> Discound product : </Text>
                 </View>
-
                 <View>
-
-                    {/* <View style={{ flexDirection: 'row', alignItems: "center" }}>
-                        <Text style={{ marginLeft: 15, fontSize: 16, marginTop: -10, marginRight: 5 }} >Options changing in</Text>
-                        <Countdown
-                            until={3600}
-                            size={14}
-                            digitStyle={{ backgroundColor: 'lightgreen' }}
-                            digitTxtStyle={{ color: '#131A2C' }}
-                            timeToShow={['M', 'S']}
-                            timeLabels={{ m: 'Min', s: 'Sec' }}
-                        />
-                    </View> */}
                     <ScrollView horizontal={true}>
                         <FlatList
                             style={{ marginTop: 10, marginBottom: 10 }}
@@ -233,17 +207,17 @@ const HomeScreen = ({ navigation }) => {
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderProduct}
                             keyExtractor={(item) => item.id}
-
                         />
-                        <TouchableOpacity onPress={() => navigation.navigate('offer' ,products)} style={styles.discoverButton}>
+
+                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
                             <Text style={styles.discoverText}>{'See All >>'}</Text>
                         </TouchableOpacity>
+
                     </ScrollView>
                 </View>
 
-
                 <View style={styles.headerTextView}>
-                    <Text style={styles.headerText}>Promotions available</Text>
+                    <Text style={styles.headerText}>TRENDS </Text>
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -256,26 +230,21 @@ const HomeScreen = ({ navigation }) => {
                             renderItem={renderProduct}
                             keyExtractor={(item) => item.id}
                         />
+
                         <TouchableOpacity onPress={() => navigation.navigate('WOMAN')} style={styles.discoverButton}>
                             <Text style={styles.discoverText}>{'See All >>'} </Text>
                         </TouchableOpacity>
+
                     </ScrollView>
                 </View>
-
                 <View style={styles.bottoms}></View>
             </ScrollView>
-
-
             <BottomNavigator item="Home" navigation={navigation} userId={userId} />
-
-
-
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-
     cardView: {
         marginBottom: 20,
         marginTop: 5,
@@ -306,14 +275,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    heading: {
-        color: COLORS.background,
-        fontSize: 40,
-        alignItems: 'center',
-        marginBottom: 5,
     },
     header: {
         flexDirection: "row",
@@ -327,28 +288,15 @@ const styles = StyleSheet.create({
         bottom: 20
     },
     headerText: {
-
         fontSize: 20,
         fontWeight: "bold",
         alignItems: 'center',
         margin: 10
-
-    },
-
-    scrollView: {
-        height: 200,
     },
     image: {
         position: "relative",
         height: cardheight - 130,
         width: cardwidth,
-
-    },
-    slid: {
-        position: "relative",
-        height: 200,
-        width: width - 50,
-
     },
     Name: {
         fontSize: 14,
@@ -359,14 +307,6 @@ const styles = StyleSheet.create({
         marginBottom: 5,
         height: 40,
         width: cardwidth - 20
-
-    },
-    HeartIcone: {
-        height: 30,
-        width: 30,
-        borderRadius: 20,
-        justifyContent: 'center',
-        alignItems: 'center',
     },
     Text: {
         color: COLORS.darkblue,
@@ -374,76 +314,23 @@ const styles = StyleSheet.create({
         fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
-
-    },
-    address: {
-        fontSize: 12,
-        paddingTop: 5,
-        color: COLORS.dark,
-        paddingVertical: 10
-    },
-    NavContainer: {
-        position: 'absolute',
-        alignItems: 'center',
-        bottom: 5,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-    },
-    Navbar: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.dark,
-        width: width,
-        justifyContent: 'space-evenly',
-        borderRadius: 30,
-        height: 40
-
-    },
-    iconBehave: {
-        padding: 35,
-        bottom: 30
-    },
-    SearchArea: {
-        marginTop: 10,
-        width: "94%",
-        height: 40,
-        backgroundColor: COLORS.background,
-        borderRadius: 30,
-        borderWidth: 1,
-        borderColor: COLORS.grey,
-        flexDirection: "row",
-        alignItems: "center",
-        padding: 10
-    },
-    searchIcon: {
-
-        marginRight: 10,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333333',
     },
     headerTextView: {
         backgroundColor: 'White',
         marginTop: 10
     },
     smallCard: {
-        // borderRadius: 30,
         backgroundColor: COLORS.background,
         justifyContent: "center",
         alignItems: 'center',
         width: 100,
         height: 70
     },
-
     smallCardText: {
         fontWeight: "bold",
         color: '#131A2C'
     },
-
     selectedCard: {
-
         shadowColor: 'black',
         shadowOffset: {
             width: 0,
@@ -458,16 +345,5 @@ const styles = StyleSheet.create({
     selectedCardText: {
         color: 'black',
     },
-    floatButton: {
-        position: 'absolute',
-        bottom: 10, right: 15,
-        backgroundColor: 'white',
-        elevation: 10,
-        width: 60, height: 60,
-        borderRadius: 30,
-        alignItems: 'center'
-    },
-
-
 });
 export default HomeScreen;

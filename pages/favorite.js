@@ -24,7 +24,7 @@ const { height: screenHeight } = Dimensions.get('window');
 const cardheight = screenHeight / 2 - 30;
 const cardwidth = width / 2;
 
-const favorite = ({ navigation }) => {
+const Favorite = ({ navigation }) => {
   const isFocused = useIsFocused();
   const [favList, setFavList] = useState([]);
   const [activeIndexes, setActiveIndexes] = useState({});
@@ -212,31 +212,22 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: cardheight - 90,
-    //  zIndex: 1
-    //marginBottom:30,
   },
   dot: {
     width: 40,
     height: 2,
     marginBottom: 20,
-
     backgroundColor: "black",
-
     marginHorizontal: 5,
   },
   activeDot: {
     marginBottom: 20,
     backgroundColor: "white",
   },
-
-  scrollView: {
-    height: 200,
-  },
   image: {
     position: "relative",
     height: cardheight - 80,
     width: cardwidth,
-
   },
   Name: {
     fontSize: 14,
@@ -272,4 +263,4 @@ const styles = StyleSheet.create({
     bottom: 20
   },
 });
-export default favorite;
+export default Favorite;
