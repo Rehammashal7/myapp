@@ -19,6 +19,7 @@ import {
   updateDoc,
   getDocs,
   getDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
@@ -281,7 +282,10 @@ const ProductsListKids = ({ navigation }) => {
 
 const KidsDetails = ({ route, navigation }) => {
   // const { product } = route.params;
-  const { product } = route.params ? route.params : { product: {} };
+  // const { product } = route.params ? route.params : { product: {} };
+  const { product } = route.params ? route.params : { product: {}};
+  console.log('oroifeo',product);
+  const product_id = product.id;
   // const [products, setProducts] = React.useState('');
   const [productt, setProductt] = React.useState([]);
 
@@ -294,7 +298,9 @@ const KidsDetails = ({ route, navigation }) => {
 
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
-  const product_id = product.id;
+  // const productId = Produnt_id;
+  // const productId = product?.id;
+  console.log("Product ID:", product_id);
   const [showReviews, setShowReviews] = useState(false);
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
@@ -302,6 +308,7 @@ const KidsDetails = ({ route, navigation }) => {
 const [disLike, setDislikes] = useState([0]);
  const [reviews, setReviews] = useState([]);
  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
+ const productId = product.id;
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -312,6 +319,7 @@ const [disLike, setDislikes] = useState([0]);
   const [showPrice, setShowPrice] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const numberOfInitialReviews = 3;
+  const categoryName="Kids";
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
@@ -568,6 +576,72 @@ const handleDislike = async (index) => {
   }
 };
   
+useEffect(() => {
+  console.log("iam in recently use effect ");
+  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
+  // console.log("iam get data ");
+  console.log("produt id",product_id);
+}, []);
+
+const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
+  console.log("I am in save visit");
+  try {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      let updatedRecentlyVisited = [];
+      if (userData.recentlyVisited) {
+        const productExists = userData.recentlyVisited.some(item => item.id === id);
+        if (!productExists) {
+          updatedRecentlyVisited = [
+            {
+              id: id,
+              name: name,
+              categoryName: categoryName,
+              image: images,
+              colors: colors,
+              description: description,
+              offer: offer,
+              price: price,
+              sizes: sizes
+            },
+            ...userData.recentlyVisited
+          ];
+        } else {
+          console.log("Product already exists in recentlyVisited");
+          updatedRecentlyVisited = [...userData.recentlyVisited];
+        }
+      } else {
+        updatedRecentlyVisited = [{
+          id: id,
+          name: name,
+          categoryName: categoryName,
+          image: images,
+          colors: colors,
+          description: description,
+          offer: offer,
+          price: price,
+          sizes: sizes
+        }];
+      }
+      if (updatedRecentlyVisited.length > 10) {
+        updatedRecentlyVisited.splice(10);
+        console.log("More than 10 items, removing the oldest ones.");
+      }
+      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+      console.log("Data added to recentlyVisited successfully");
+    } else {
+      console.log("User document not found");
+    }
+  } catch (error) {
+    console.error('Error', error);
+  }
+};
+
+
+
+
 
 
   return (

@@ -19,7 +19,9 @@ import {
   updateDoc,
   getDocs,
   getDoc,
+  arrayUnion,
 } from "firebase/firestore";
+
 import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
 import Food, { filterData, productt, option, size } from "../../data";
@@ -33,6 +35,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../../components/bar";
 import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
+import category from "../catigory";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
@@ -279,17 +282,20 @@ const ProductsListBaby = ({ navigation }) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const BabyDetails = ({ route, navigation }) => {
+const BabyDetails = ({ route, navigation ,props}) => {
   // const { product } = route.params;
-  const { product } = route.params ? route.params : { product: {} };
+  // const { product } = route.params ? route.params : { product: {} };
+  const { product } = route.params ? route.params : { product: { id: "" } };
+
   // const [products, setProducts] = React.useState('');
   const [productt, setProductt] = React.useState([]);
+  // const {name, description,} = props.product;
 
   const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
   const [selectedfav, setSelectedfav] = React.useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
-  //const navigation = useNavigation();
+  //const navigation = useNavigation(); 
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
 
   const [userId, setUserId] = useState("");
@@ -312,7 +318,7 @@ const [disLike, setDislikes] = useState([0]);
   const [showPrice, setShowPrice] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
   const numberOfInitialReviews = 3;
-
+  // const categoryName="BABY";
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
     <Text style={styles.seeAllText}>
@@ -567,7 +573,90 @@ const handleDislike = async (index) => {
     console.log('Error handling dislike:', error);
   }
 };
+
+useEffect(() => {
+  console.log("iam in recently use effect ");
+  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
+  // console.log("iam get data ");
+  console.log("produt id",product_id);
+}, []);
+
+const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
+  console.log("I am in save visit");
+  try {
+    const userRef = doc(db, "users", auth.currentUser.uid);
+    const userDoc = await getDoc(userRef);
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      let updatedRecentlyVisited = [];
+      if (userData.recentlyVisited) {
+        const productExists = userData.recentlyVisited.some(item => item.id === id);
+        if (!productExists) {
+          updatedRecentlyVisited = [
+            {
+              id: id,
+              name: name,
+              categoryName: categoryName,
+              image: images,
+              colors: colors,
+              description: description,
+              offer: offer,
+              price: price,
+              sizes: sizes
+            },
+            ...userData.recentlyVisited
+          ];
+        } else {
+          console.log("Product already exists in recentlyVisited");
+          updatedRecentlyVisited = [...userData.recentlyVisited];
+        }
+      } else {
+        updatedRecentlyVisited = [{
+          id: id,
+          name: name,
+          categoryName: categoryName,
+          image: images,
+          colors: colors,
+          description: description,
+          offer: offer,
+          price: price,
+          sizes: sizes
+        }];
+      }
+      if (updatedRecentlyVisited.length > 10) {
+        updatedRecentlyVisited.splice(10);
+        console.log("More than 10 items, removing the oldest ones.");
+      }
+      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+      console.log("Data added to recentlyVisited successfully");
+    } else {
+      console.log("User document not found");
+    }
+  } catch (error) {
+    console.error('Error', error);
+  }
+};
+
+
+
+
+
   
+// const saveRecentlyVisited = async (product_id, name, description) => {
+//   console.log("iam in save visit")
+//   try {
+//     await db.collection('recentlyVisited').add({
+//       product_id: product_id,
+//       name: name,
+//       description: description
+//     });
+//     console.log("iam get data ");
+//     console.log("produt id",product_id);
+//     console.log('Done save to data');
+//   } catch (error) {
+//     console.error('Error', error);
+//   }
+// };
 
 
   return (

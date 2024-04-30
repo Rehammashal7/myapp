@@ -37,6 +37,10 @@ import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
+import RecentlyVisited from './pages/RecentlyVisited';
+import AddressScreen from './pages/AddressScreen';
+import AddressInformation from './pages/AddressInformation';
+import AboutUs from './pages/AboutUs';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -89,6 +93,14 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        <Stack.Screen name="RecentlyVisited" component={ RecentlyVisited }/>
+        <Stack.Screen name="AddressScreen" component={ AddressScreen }/>
+        <Stack.Screen name="AddressInformation" component={ AddressInformation }/>
+        <Stack.Screen name="AboutUs" component={ AboutUs }/>
+
+
+
+
 
       </Stack.Navigator>
     </NavigationContainer>
