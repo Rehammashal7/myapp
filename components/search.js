@@ -54,8 +54,16 @@ const Search = () => {
             setUserId(id);
             const userRef = doc(db, 'users', id);
             const userSnap = await getDoc(userRef);
-            setsearchList(userSnap.get('search'));
-            setlength(searchList.length);
+            const searchList = userSnap.get('search');
+            
+            if (searchList ) {
+              setsearchList(searchList);
+              setlength(searchList.length);
+            } else {
+              setsearchList([]);
+              setlength(0);
+            }
+            
         } catch (error) {
             console.error('Error getting search items:', error);
         }
@@ -276,7 +284,7 @@ const Search = () => {
                     </View>
                     <ScrollView>
                         {/* last search */}
-                        <View style={{ height: (length) * 60 }}>
+                        {searchList.length>0 &&(<View style={{ height: (length) * 60 }}>
                             <FlatList
                                 data={Object.values(searchList).flat()}
                                 keyExtractor={item => item.id}
@@ -287,8 +295,9 @@ const Search = () => {
                                     borderBottomColor: 'gray',
                                     borderBottomWidth: 0.5,
                                 }}
+                                
                             />
-                        </View>
+                        </View>)}
                         {/* result search */}
                         <FlatList
                             data={Object.values(data).flat()}

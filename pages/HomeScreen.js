@@ -10,7 +10,7 @@ import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
-import Carousel from 'react-native-snap-carousel';
+// import Carousel from 'react-native-snap-carousel';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -183,7 +183,7 @@ const HomeScreen = ({ navigation }) => {
                     />
 
                 </View>
-
+{/* 
                 <Carousel
                     ref={carouselRef}
                     data={data}
@@ -193,7 +193,7 @@ const HomeScreen = ({ navigation }) => {
                     autoplay={true}
                     autoplayInterval={3000}
                     loop={true}
-                />
+                /> */}
 
                 <View style={styles.headerTextView}>
                     <Text style={[styles.headerText, { color: 'red' }]}> Discound product : </Text>
