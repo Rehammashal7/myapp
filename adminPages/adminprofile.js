@@ -1,105 +1,3 @@
-// import React from 'react';
-// import { View, Text, Image, TouchableOpacity, StyleSheet ,input} from 'react-native';
-// import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
-// import{ auth} from '../firebase';
-// import  { useState ,useEffect} from 'react';
-// import { upload ,useAuth} from '../firebase';
-// import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
-
-
-// const profile = ({ navigation }) => {
-//   const [userLoggedIn, setUserLoggedIn] = useState(false);
-//   const currentUser = useAuth();
-//   const [photo, setPhoto] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [photoURL, setPhotoURL] = useState('https://as1.ftcdn.net/v2/jpg/03/46/83/96/1000_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg');
-
-//   const handleLogOut = () => {
-//     signOut(auth)
-//       .then(() => {
-//         setUserLoggedIn(false);
-//         navigation.navigate('Home')
-//       })
-//       .catch((error) => console.log(error));
-//   };
-//   function handleChange(e) {
-//     if (e.target.files[0]) {
-//       setPhoto(e.target.files[0])
-//     }
-//   };
-//   function handleClick() {
-//     upload(photo, currentUser, setLoading);
-//   };
-//   useEffect(() => {
-//     if (currentUser?.photoURL) {
-//       setPhotoURL(currentUser.photoURL);
-//     }
-//   }, [currentUser])
-
-
-
-
-
-//   return (
-//     <View style={styles.container}>
-//       <Image
-//         style={styles.profileImage}
-//         source={photoURL}
-    
-//       />
-//       <Text style={styles.username}>{auth.currentUser?.email}</Text>
-
-//      <input type="file" onChange={handleChange} />
-
-//      {/* <TouchableOpacity style={styles.logoutButton}disabled={loading || !photo}
-//      onPress={handleClick}>
-//         <Text style={styles.buttonText}>Upload</Text>
-//       </TouchableOpacity> */}
-
-//      <button  disabled={loading || !photo} onClick={handleClick}>Upload</button>
-     
-//       <TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-//         <Text style={styles.buttonText}>Logout</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     alignItems: 'center',
-//     justifyContent: 'center',
-//     backgroundColor: 'white',
-//   },
-//   profileImage: {
-//     width: 150,
-//     height: 150,
-//     borderRadius: 75,
-//     verticalAlign: 'middle',
-//     borderRadius: '50%',
-//     borderWidth: '5px',
-//     borderColor: 'gray',
-//     borderStyle: 'outset',
-//   },
-//   username: {
-//     marginTop: 20,
-//     fontSize: 20,
-//     color: '67738B',
-//   },
- 
-//   logoutButton: {
-//     marginTop: 10,
-//     backgroundColor: '#131A2C',
-//     padding: 10,
-//     borderRadius: 5,
-//   },
-//   buttonText: {
-//     color: '#FFDE9B',
-//     fontWeight: 'bold',
-//   },
-// });
-// export default profile;
-
 
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
@@ -112,6 +10,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
+import BottomNavigator from '../components/adminbar';
 
 const adminProfile = ({navigation}) => {
   const currentUser = useAuth();
@@ -167,6 +66,12 @@ const adminProfile = ({navigation}) => {
     handleChange();
     
   };
+
+  // const handleadd = () => {
+  //   setMode('edit');
+  //   handleChange();
+    
+  // };
 
 
 
@@ -287,16 +192,22 @@ if (docSnap.exists()) {
             <Text style={styles.value2}>{phone}</Text>
           </View>
 
-          <View style={styles.field}>
+          {/* <View style={styles.field}>
           <FontAwesome name="table" color="#333333" size={20} />
             <Text style={styles.label}> birth Date:</Text>
             <Text style={styles.value2} >{birthDate}
             </Text>
-          </View>
-          <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Edit</Text>
+          </View> */}
+          <View style={styles.buttonsRow}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
+        <Text style={styles.buttonText}>Edit Profile</Text>
       </TouchableOpacity></View>
           
+      {/* <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
+        <Text style={styles.buttonText}>Add admin</Text>
+      </TouchableOpacity></View> */}
+
+      
+
           {/* <Button  title="Edit" onPress={handleEdit} /> */}
         </>
       )}
@@ -333,41 +244,47 @@ if (docSnap.exists()) {
             <TextInput style={styles.input} value={phone} onChangeText={setPhone} />
           </View>
 
-          <View style={styles.field}>
+          {/* <View style={styles.field}>
           <FontAwesome name="table" color="#333333" size={20} />
             <Text style={styles.label}> birth Date:</Text>
             <TextInput style={styles.input} value={birthDate} onChangeText={setBirthDate} 
             />
-          </View>
-          <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleSave}>
+          </View> */}
+          <View style={styles.buttonsRow}>
+         
+          <TouchableOpacity style={styles.logoutEdit} onPress={handleSave}>
         <Text style={styles.buttonText}>Save</Text>
-      </TouchableOpacity></View>
-          
+      </TouchableOpacity>
+       </View>
+
           {/* <Button title="Save" onPress={handleSave} /> */}
         </>
       )}
 
 
+
+<View style={styles.buttonsRow}>
+
+<View style={styles.containerButton}>
+  <TouchableOpacity style={styles.logoutadd} onPress={() => navigation.navigate("addadmin")}>
+    <Text style={styles.buttonText}>Add Admin</Text>
+  </TouchableOpacity>
+</View>
+
+<View style={styles.containerButton}>
+  <TouchableOpacity style={styles.logoutadd} onPress={() => navigation.navigate('userr')}>
+    <Text style={styles.buttonText}>Users</Text>
+  </TouchableOpacity>
+</View>
+</View>
+
+
 <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
         <Text style={styles.buttonTextLoggout}>Logout</Text>
-      </TouchableOpacity></View>
+      </TouchableOpacity></View>        
 
-
-      <View style={styles.NavContainer} >
-                <View style={styles.Navbar} >
-                  
-                    <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
-                        <Icon name="user" size={25} color={COLORS.yellow}/>
-                    </Pressable>
-                      <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
-                        <Icon name="plus" size={25} color={COLORS.grey} />
-                      </Pressable>
-                   <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
-                        <Icon name="home" size={25} color={COLORS.grey}/>
-                   </Pressable>
-                 
-                </View>
-            </View>
+      <BottomNavigator item="adminprofile" navigation={navigation} />
+    
     </View>
 
     
@@ -376,6 +293,11 @@ if (docSnap.exists()) {
 };
 
 const styles = StyleSheet.create({
+  buttonsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
   container: {
     flex: 1,
     padding: 16,
@@ -427,46 +349,53 @@ const styles = StyleSheet.create({
     borderStyle: 'outset',
   },
   containerButton:{
-    // display: flex,
-    flexDirection: 'row',
-  //  flex:1,
-  //   alignItems: 'center',
-  //margin:3,
-    justifyContent: 'space-between',
+  //   // display: flex,
+  //   flexDirection: 'row',
+  // //  flex:1,
+  //    alignItems: 'center',
+  // //margin:3,
+  //   justifyContent: 'space-between',
+  
+    flexDirection: 'row', // To place items next to each other in the same row
+    justifyContent: 'space-between', // To evenly distribute items along the horizontal axis
+    paddingHorizontal: 2, // Important for some spacing between buttons
+    marginTop: 10,
+
   },
-    logoutEdit: {
-      flex:1,
-    backgroundColor: '#131A2C',
-    borderRadius: 35,
-    padding: 5,
-    width: '100%',
-    height: 40,
-    alignItems: 'center',
-    margin:5,
-   // marginVertical: 0,
-   // marginBottom:50,
-  },
+    logoutEdit:{
+      backgroundColor: 'black',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      marginHorizontal: 5, // Add space between buttons horizontally
+      borderRadius: 5,
+      alignItems: 'center'
+    },
+    logoutadd:{
+      backgroundColor: 'black',
+      paddingVertical: 10,
+      paddingHorizontal: 20,
+      marginHorizontal: 5, // Add space between buttons horizontally
+      borderRadius: 5,
+      alignItems: 'center'
+    },
+
   logoutButton: {
-    flex:1,
-    backgroundColor: '#FFDE9B',
-    borderRadius: 35,
-    padding: 5,
-    width: '100%',
-    height: 40,
-    alignItems: 'center',
-    //marginTop:10,
-    //marginVertical: 10
-    margin:5,
+    width: 380,
+    marginLeft: 5,
+    backgroundColor: "black",
+    padding: 10,
+    marginTop: 10,
+    alignItems: "center",
   },
   buttonText: {
-    color: '#FFDE9B',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
   },
   buttonTextLoggout: {
-    color: '#131A2C',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
   },
   NavContainer: {
     position: 'absolute',

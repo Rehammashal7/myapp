@@ -76,22 +76,7 @@ return(
         <Text style={styles.buttonText}> Add</Text>
       </TouchableOpacity>
       </View>
-        <View style={styles.NavContainer} >
-               <View style={styles.Navbar} >
-                   {/* <Pressable onPress={() => navigation.navigate("Favorite")} style={styles.iconBehave} >
-                       <Icon name="heart" size={30} color="#FFDE9B" />
-                   </Pressable> */}
-                   <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
-                       <Icon name="user" size={30} color="gray" />
-                   </Pressable>
-                   <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
-                        <Icon name="plus" size={25} color={COLORS.grey} />
-                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
-                       <Icon name="home" size={30} color="gray" />
-                   </Pressable>
-               </View>
-               </View>
+       
     </View>
 )};
 const styles = StyleSheet.create({

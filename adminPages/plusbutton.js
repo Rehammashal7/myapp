@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet,Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
+import BottomNavigator from '../components/adminbar';
 // import plusss from '../assets/plusss.png';
 
 const plusbutton = ({ navigation }) => {
@@ -19,19 +20,7 @@ const plusbutton = ({ navigation }) => {
             <Text style={styles.buttonText}>Add Admin</Text>
           </Pressable>
           </View>
-          <View style={styles.NavContainer} >
-               <View style={styles.Navbar} >
-                   <Pressable onPress={() => navigation.navigate("adminprofile")} style={styles.iconBehave}>
-                       <Icon name="user" size={30} color="gray" />
-                   </Pressable>
-                   <Pressable onPress={() => navigation.navigate("plusbutton")} style={styles.iconBehave} >
-                        <Icon name="plus" size={25} color={COLORS.grey} />
-                    </Pressable>
-                   <Pressable onPress={() => navigation.navigate("adminHome")} style={styles.iconBehave} >
-                       <Icon name="home" size={30} color="gray" />
-                   </Pressable>
-               </View>
-               </View>
+          <BottomNavigator item="plus" navigation={navigation} />
         </View>
       );
 }
