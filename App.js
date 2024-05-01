@@ -11,7 +11,7 @@ import profile from './pages/profile';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/Checkout';
+import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
@@ -38,11 +38,15 @@ import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
 import ProductPage from './pages/ResultSearch';
+import PurchasedProductsScreen from './adminPages/PurchasedProducts';
+import waitingitem from './adminPages/waitingitem';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="PurchasedProductsScreen">
+      <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
+<Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -96,3 +100,8 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+
+
+//reham555tt@gmail.com
+//uytrewsd456

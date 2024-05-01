@@ -296,7 +296,7 @@ const [data, setData] = useState([]);
                         <View style={{ height: (length) * 60 }}>
 
                             <FlatList
-                                data={Object.values(searchList).flat()}
+                               data={Object.values(searchList || {}).flat()}
                                 keyExtractor={item => item.id}
                                 renderItem={renderItem2}
                             />

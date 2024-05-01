@@ -145,12 +145,14 @@ const Checkout = ({ navigation }) => {
         const purchaseData = {
           userId: userId,
           productId: item.id,
-          quantity: item.qty,
+           quantity: item.qty,
           totalPrice: (item.qty || 0) * (item.data.price || 0),
-          timestamp: new Date(),
-          imageUrl: item.data.imageUrl,
+           timestamp: new Date(),
+          imageUrl: item.data.images,
           name: item.data.name,
-          description: item.data.description
+         description: item.data.description,
+         category:item.data.categoryName,
+          delivered: false,
 
         };
         const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
