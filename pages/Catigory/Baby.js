@@ -311,6 +311,10 @@ const [disLike, setDislikes] = useState([0]);
   const [modalVisible, setModalVisible] = useState(false);
   const [showPrice, setShowPrice] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [modalVisibleCart, setModalVisibleCart] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [showGoToCartButton, setShowGoToCartButton] = useState(false);
+
   const numberOfInitialReviews = 3;
 
   const handleSeeAllReviews = () => {
@@ -369,6 +373,13 @@ const [disLike, setDislikes] = useState([0]);
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (modalVisibleCart) {
+      setTimeout(() => {
+        setModalVisibleCart(false);
+      }, 2000);
+    }
+  }, [modalVisibleCart]);
   const imageWidth = width;
   const handleScroll = (event, product_id) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -409,8 +420,24 @@ const [disLike, setDislikes] = useState([0]);
 
     await updateDoc(userRef, { cart });
     getCartItems();
+    if (selectedColor && selectedSize) {
+      setShowGoToCartButton(true);
+      setModalVisibleCart(true);
+
+    }else if (selectedColor || selectedSize) {
+      setShowGoToCartButton(true);
+      setModalVisibleCart(true);
+
+    }
+    else {
+      setModalVisibleCart(true);
+      setShowGoToCartButton(false);
+    }
   };
 
+  const handleGoToCart = () => {
+    navigation.navigate("CartScreen", { userId: userId });
+  };
   const getFavItems = async () => {
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -990,43 +1017,100 @@ const handleDislike = async (index) => {
                         </Text>
                       )}
                     </Text>
-                    <TouchableOpacity
-                      style={styles.addToCartBton2}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
+                    <View style={styles.container}>
+                      <TouchableOpacity
+                        style={styles.addToCartBton2}
+                        onPress={() => {
+                          if (product.colors.length !== 1) {
+                            if (selectedColor && selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
+                            if (selectedColor || selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
+                        }}
+                      >
+                        <Text style={styles.addToCartButtonText}>
+                          Add to Cart
+                        </Text>
+                      </TouchableOpacity>
+                      <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisibleCart}
+                        onRequestClose={() => {
+                          setModalVisibleCart(false);
+                        }}
+                      >
+                        <View style={styles.modalContainer}>
+                          <View style={styles.modalContent}>
+                            {product.colors.length !== 1 ? (
+                              selectedColor && selectedSize ? (
+                                <>
+                                  <Text style={styles.modalText}>
+                                    Item added to cart!
+                                  </Text>
+                                  {setShowGoToCartButton(true)}
+                                </>
+                              ) : (
+                                <Text style={styles.modalText}>
+                                  Please select a size and color if available
+                                </Text>
+                              )
+                            ) : selectedColor || selectedSize ? (
+                              <>
+                                <Text style={styles.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={styles.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )}
+
+                            <TouchableOpacity
+                              style={styles.okButton}
+                              onPress={() => {
+                                setShowGoToCartButton(!showGoToCartButton);
+                              }}
+                            >
+                              {showGoToCartButton ? (
+                                <TouchableOpacity
+                                  style={styles.okButton}
+                                  onPress={handleGoToCart}
+                                >
+                                  <Text style={styles.okButtonText}>
+                                    go to cart
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : (
+                                <TouchableOpacity style={styles.okButton}>
+                                  <Text style={styles.okButtonText}>OK</Text>
+                                </TouchableOpacity>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </Modal>
+                    </View>
                   </View>
                 ) : (
                   <View style={styles.buttonContainer}>
@@ -1037,43 +1121,100 @@ const handleDislike = async (index) => {
                         color={isPressed ? "black" : "grey"}
                       />
                     </Pressable>
-                    <TouchableOpacity
-                      style={styles.addToCartBton1}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
+                    <View style={styles.container}>
+                      <TouchableOpacity
+                        style={styles.addToCartBton1}
+                        onPress={() => {
+                          if (product.colors.length !== 1) {
+                            if (selectedColor && selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
+                            if (selectedColor || selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
+                        }}
+                      >
+                        <Text style={styles.addToCartButtonText}>
+                          Add to Cart
+                        </Text>
+                      </TouchableOpacity>
+                      <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisibleCart}
+                        onRequestClose={() => {
+                          setModalVisibleCart(false);
+                        }}
+                      >
+                        <View style={styles.modalContainer}>
+                          <View style={styles.modalContent}>
+                            {product.colors.length !== 1 ? (
+                              selectedColor && selectedSize ? (
+                                <>
+                                  <Text style={styles.modalText}>
+                                    Item added to cart!
+                                  </Text>
+                                  {setShowGoToCartButton(true)}
+                                </>
+                              ) : (
+                                <Text style={styles.modalText}>
+                                  Please select a size and color if available
+                                </Text>
+                              )
+                            ) : selectedColor || selectedSize ? (
+                              <>
+                                <Text style={styles.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={styles.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )}
+
+                            <TouchableOpacity
+                              style={styles.okButton}
+                              onPress={() => {
+                                setShowGoToCartButton(!showGoToCartButton);
+                              }}
+                            >
+                              {showGoToCartButton ? (
+                                <TouchableOpacity
+                                  style={styles.okButton}
+                                  onPress={handleGoToCart}
+                                >
+                                  <Text style={styles.okButtonText}>
+                                    go to cart
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : (
+                                <TouchableOpacity style={styles.okButton}>
+                                  <Text style={styles.okButtonText}>OK</Text>
+                                </TouchableOpacity>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </Modal>
+                    </View>
                   </View>
                 )}
 
@@ -1131,7 +1272,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
+    // left: 200,
   },
   titlesWrapper: {
     paddingHorizontal: 5,
@@ -1450,7 +1591,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
+    // left: 200,
   },
   line: {
     width: "100%",
@@ -1550,6 +1691,36 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // marginTop:10
     // marginBottom: 8,
+  },
+  addToCartButtonText: {
+    color: "white",
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 30,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  okButton: {
+    backgroundColor: "black",
+    padding: 5,
+    // marginTop: 5,
+    // borderRadius: 5,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: 16,
   },
 });
 export { ProductsListBaby, BabyDetails };

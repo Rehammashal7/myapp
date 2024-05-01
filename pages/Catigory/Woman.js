@@ -299,9 +299,9 @@ const WomanDetails = ({ route, navigation }) => {
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
   const [like, setLike] = useState([0]);
-const [disLike, setDislikes] = useState([0]);
- const [reviews, setReviews] = useState([]);
- const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
+  const [disLike, setDislikes] = useState([0]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -309,8 +309,14 @@ const [disLike, setDislikes] = useState([0]);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalVisibleCart, setModalVisibleCart] = useState(false);
+
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [showPrice, setShowPrice] = useState(false);
   const [showAllReviews, setShowAllReviews] = useState(false);
+  const [showGoToCartButton, setShowGoToCartButton] = useState(false);
+
   const numberOfInitialReviews = 3;
 
   const handleSeeAllReviews = () => {
@@ -353,6 +359,13 @@ const [disLike, setDislikes] = useState([0]);
     getUserId();
   }, []);
 
+  useEffect(() => {
+    if (modalVisibleCart) {
+      setTimeout(() => {
+        setModalVisibleCart(false);
+      }, 2000);
+    }
+  }, [modalVisibleCart]);
 
   const getCartItems = async () => {
     const userRef = doc(db, "users", userId);
@@ -403,13 +416,78 @@ const [disLike, setDislikes] = useState([0]);
 
     if (existingItem) {
       existingItem.qty += 1;
+      setShowGoToCartButton(true);
     } else {
       cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize });
     }
-
     await updateDoc(userRef, { cart });
     getCartItems();
+    if (selectedColor && selectedSize) {
+      setShowGoToCartButton(true);
+      setModalVisibleCart(true);
+
+    }else if (selectedColor || selectedSize) {
+      setShowGoToCartButton(true);
+      setModalVisibleCart(true);
+
+    }
+    else {
+      setModalVisibleCart(true);
+      setShowGoToCartButton(false);
+    }
+
+  
   };
+
+  const handleGoToCart = () => {
+    navigation.navigate("CartScreen", { userId: userId });
+  };
+  // const onAddToCart = async (item, selectedColor, selectedSize) => {
+  //   console.log(userId);
+  //   const userRef = doc(db, "users", userId);
+  //   const userSnap = await getDoc(userRef);
+  //   const { cart = [] } = userSnap.data() ?? {};
+  //   let existingItem = cart.find((itm) => itm.id === item.id);
+
+  //   if (selectedColor && selectedSize) {
+  //     setShowGoToCartButton(true);
+  //     if (existingItem) {
+  //       existingItem.qty += 1;
+  //     } else {
+  //       cart.push({
+  //         ...item,
+  //         qty: 1,
+  //         color: selectedColor,
+  //         size: selectedSize,
+  //       });
+  //     }
+  //     await updateDoc(userRef, { cart });
+  //     getCartItems();
+  //   } else {
+  //     setModalVisibleCart(true);
+  //     setShowGoToCartButton(false);
+  //   }
+
+  //   if (selectedColor || selectedSize) {
+  //     setShowGoToCartButton(true);
+  //     showGoToCartButton = true;
+  //     if (existingItem) {
+  //       existingItem.qty += 1;
+  //     } else {
+  //       cart.push({
+  //         ...item,
+  //         qty: 1,
+  //         color: selectedColor,
+  //         size: selectedSize,
+  //       });
+  //     }
+  //     await updateDoc(userRef, { cart });
+  //     getCartItems();
+  //   } else {
+  //     setModalVisibleCart(true);
+  //     setShowGoToCartButton(false);
+  //   }
+  // };
 
   const getFavItems = async () => {
     const userRef = doc(db, "users", userId);
@@ -465,7 +543,7 @@ const [disLike, setDislikes] = useState([0]);
       setShowPrice(false);
     }
   };
- 
+
   let flagAdmin = false;
   const fetchAllReviews = async () => {
     try {
@@ -491,7 +569,6 @@ const [disLike, setDislikes] = useState([0]);
         setComment(productData.reviews.length);
         setRating(averageRating);
         loadLikesAndDislikes(productData.reviews);
-
       } else {
         setRating(0);
         setComment(0);
@@ -514,62 +591,58 @@ const [disLike, setDislikes] = useState([0]);
           return updatedReview;
         })
       );
-      
+
       setReviewsWithLikes(updatedReviews);
-      setReviews(updatedReviews)
-  
+      setReviews(updatedReviews);
     } catch (error) {
-      console.log('Error loading likes and dislikes:', error);
+      console.log("Error loading likes and dislikes:", error);
     }
   };
 
-
-const handleLike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.like === 0) {
-      updatedReview.like = 1;
-      updatedReview.disLike = 0;
-      await AsyncStorage.setItem(`like${index}`, '1');
-      await AsyncStorage.setItem(`disLike${index}`, '0');
-    } else {
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`like${index}`, '0');
+  const handleLike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.like === 0) {
+        updatedReview.like = 1;
+        updatedReview.disLike = 0;
+        await AsyncStorage.setItem(`like${index}`, "1");
+        await AsyncStorage.setItem(`disLike${index}`, "0");
+      } else {
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`like${index}`, "0");
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log("Error handling like:", error);
     }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
+  };
 
-    
-  } catch (error) {
-    console.log('Error handling like:', error);
-  }
-};
-
-const handleDislike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.disLike === 0) {
-      updatedReview.disLike = 1;
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '1');
-      await AsyncStorage.setItem(`like${index}`, '0');
-    } else {
-      updatedReview.dislike = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '0');
+  const handleDislike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.disLike === 0) {
+        updatedReview.disLike = 1;
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "1");
+        await AsyncStorage.setItem(`like${index}`, "0");
+      } else {
+        updatedReview.dislike = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "0");
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log("Error handling dislike:", error);
     }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-  } catch (error) {
-    console.log('Error handling dislike:', error);
-  }
-};
+  };
+
   
-
-
+  
   return (
     <View style={styles.productContainer}>
       <ScrollView onScroll={handleScroll2}>
@@ -870,7 +943,7 @@ const handleDislike = async (index) => {
 
               <FlatList
                 data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
-                renderItem={({ item ,index}) => (
+                renderItem={({ item, index }) => (
                   <View style={styles.reviewContainer}>
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
@@ -900,14 +973,34 @@ const handleDislike = async (index) => {
                         marginBottom: 5,
                       }}
                     >
-                   <TouchableOpacity onPress={() => handleLike(index)} style={styles.likeButton}>
-    <Icon name={item.like === 1 ? 'thumbs-up' : 'thumbs-o-up'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.like})</Text> 
-  <TouchableOpacity onPress={() => handleDislike(index)} style={styles.dislikeButton}>
-    <Icon name={item.disLike === 1 ? 'thumbs-down' : 'thumbs-o-down'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.disLike})</Text>
+                      <TouchableOpacity
+                        onPress={() => handleLike(index)}
+                        style={styles.likeButton}
+                      >
+                        <Icon
+                          name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
+                          size={20}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10 }}>
+                        ({item.like})
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => handleDislike(index)}
+                        style={styles.dislikeButton}
+                      >
+                        <Icon
+                          name={
+                            item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
+                          }
+                          size={20}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10 }}>
+                        ({item.disLike})
+                      </Text>
                     </View>
                   </View>
                 )}
@@ -990,43 +1083,101 @@ const handleDislike = async (index) => {
                         </Text>
                       )}
                     </Text>
-                    <TouchableOpacity
-                      style={styles.addToCartBton2}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
+
+                    <View style={styles.container}>
+                      <TouchableOpacity
+                        style={styles.addToCartBton2}
+                        onPress={() => {
+                          if (product.colors.length !== 1) {
+                            if (selectedColor && selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
+                            if (selectedColor || selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
+                        }}
+                      >
+                        <Text style={styles.addToCartButtonText}>
+                          Add to Cart
+                        </Text>
+                      </TouchableOpacity>
+                      <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisibleCart}
+                        onRequestClose={() => {
+                          setModalVisibleCart(false);
+                        }}
+                      >
+                        <View style={styles.modalContainer}>
+                          <View style={styles.modalContent}>
+                            {product.colors.length !== 1 ? (
+                              selectedColor && selectedSize ? (
+                                <>
+                                  <Text style={styles.modalText}>
+                                    Item added to cart!
+                                  </Text>
+                                  {setShowGoToCartButton(true)}
+                                </>
+                              ) : (
+                                <Text style={styles.modalText}>
+                                  Please select a size and color if available
+                                </Text>
+                              )
+                            ) : selectedColor || selectedSize ? (
+                              <>
+                                <Text style={styles.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={styles.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )}
+
+                            <TouchableOpacity
+                              style={styles.okButton}
+                              onPress={() => {
+                                setShowGoToCartButton(!showGoToCartButton);
+                              }}
+                            >
+                              {showGoToCartButton ? (
+                                <TouchableOpacity
+                                  style={styles.okButton}
+                                  onPress={handleGoToCart}
+                                >
+                                  <Text style={styles.okButtonText}>
+                                    go to cart
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : (
+                                <TouchableOpacity style={styles.okButton}>
+                                  <Text style={styles.okButtonText}>OK</Text>
+                                </TouchableOpacity>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </Modal>
+                    </View>
                   </View>
                 ) : (
                   <View style={styles.buttonContainer}>
@@ -1037,43 +1188,100 @@ const handleDislike = async (index) => {
                         color={isPressed ? "black" : "grey"}
                       />
                     </Pressable>
-                    <TouchableOpacity
-                      style={styles.addToCartBton1}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
+                    <View style={styles.container}>
+                      <TouchableOpacity
+                        style={styles.addToCartBton1}
+                        onPress={() => {
+                          if (product.colors.length !== 1) {
+                            if (selectedColor && selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
+                            if (selectedColor || selectedSize) {
+                              onAddToCart(
+                                item,
+                                index,
+                                selectedColor,
+                                selectedSize
+                              );
+                            } else {
+                              setModalVisibleCart(true);
+                            }
                           }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
+                        }}
+                      >
+                        <Text style={styles.addToCartButtonText}>
+                          Add to Cart
+                        </Text>
+                      </TouchableOpacity>
+                      <Modal
+                        animationType="slide"
+                        transparent={true}
+                        visible={modalVisibleCart}
+                        onRequestClose={() => {
+                          setModalVisibleCart(false);
+                        }}
+                      >
+                        <View style={styles.modalContainer}>
+                          <View style={styles.modalContent}>
+                            {product.colors.length !== 1 ? (
+                              selectedColor && selectedSize ? (
+                                <>
+                                  <Text style={styles.modalText}>
+                                    Item added to cart!
+                                  </Text>
+                                  {setShowGoToCartButton(true)}
+                                </>
+                              ) : (
+                                <Text style={styles.modalText}>
+                                  Please select a size and color if available
+                                </Text>
+                              )
+                            ) : selectedColor || selectedSize ? (
+                              <>
+                                <Text style={styles.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={styles.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )}
+
+                            <TouchableOpacity
+                              style={styles.okButton}
+                              onPress={() => {
+                                setShowGoToCartButton(!showGoToCartButton);
+                              }}
+                            >
+                              {showGoToCartButton ? (
+                                <TouchableOpacity
+                                  style={styles.okButton}
+                                  onPress={handleGoToCart}
+                                >
+                                  <Text style={styles.okButtonText}>
+                                    go to cart
+                                  </Text>
+                                </TouchableOpacity>
+                              ) : (
+                                <TouchableOpacity style={styles.okButton}>
+                                  <Text style={styles.okButtonText}>OK</Text>
+                                </TouchableOpacity>
+                              )}
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </Modal>
+                    </View>
                   </View>
                 )}
 
@@ -1085,7 +1293,6 @@ const handleDislike = async (index) => {
       </View>
     </View>
   );
-
 };
 const styles = StyleSheet.create({
   headerWrapper: {
@@ -1131,7 +1338,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
+    // left: 200,
   },
   titlesWrapper: {
     paddingHorizontal: 5,
@@ -1450,7 +1657,7 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
+    // left: 200,
   },
   line: {
     width: "100%",
@@ -1550,6 +1757,37 @@ const styles = StyleSheet.create({
     fontSize: 15,
     // marginTop:10
     // marginBottom: 8,
+  },
+
+  addToCartButtonText: {
+    color: "white",
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 30,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  okButton: {
+    backgroundColor: "black",
+    padding: 5,
+    // marginTop: 5,
+    // borderRadius: 5,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: 16,
   },
 });
 export { ProductsListWoman, WomanDetails };
