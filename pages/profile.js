@@ -207,7 +207,10 @@ const profile = ({ navigation }) => {
     navigation.navigate("AddressScreen");
   };
   const handleMyOrderPress = () => {
-    navigation.navigate("OrderHistory");
+    navigation.navigate("HistoryOrder");
+  };
+  const handleMyOrderPressed = () => {
+    navigation.navigate("CancelOrder");
   };
   const handleLogOut = () => {
     signOut(auth)
@@ -293,7 +296,7 @@ const profile = ({ navigation }) => {
                   <Text style={styles.text}> Orders </Text>
                 </View>
               </Pressable>
-              <Pressable style={styles.pressable} onPress={handleMyOrderPress}>
+              <Pressable style={styles.pressable} onPress={handleMyOrderPressed}>
                 <View style={styles.row}>
                 <View style={{ flexDirection: 'column', alignItems: 'center' }}>
   <Fontisto name="shopping-bag-1" size={40} color="black" />

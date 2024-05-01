@@ -40,6 +40,7 @@ const cardwidth = width / 2;
 const RecentlyVisited = ({ navigation }) => {
   const currentUser = useAuth();
   const [recentlyVisited, setRecentlyVisited] = useState([]);
+
   function useAuth() {
     const [currentUser, setCurrentUser] = useState("");
 
@@ -67,7 +68,7 @@ const RecentlyVisited = ({ navigation }) => {
             setRecentlyVisited(updatedRecentlyVisited);
             console.log("recent",updatedRecentlyVisited);
           } else {
-            alert("No recently visited data found.");
+            console.log("No recently visited data found.");
           }
         } else {
           console.log("User document not found.");
@@ -95,16 +96,17 @@ const RecentlyVisited = ({ navigation }) => {
       const productDoc = await getDoc(productRef);
       console.log("product",productDoc);
       if (productDoc.exists()) {
-      
+        // const productData = productDoc.data();
         const productData = { id: productDoc.id, ...productDoc.data() };
 
         console.log("prooo",productData);
         console.log("id",id);
         if (productData && productData.images && productData.images.length > 0) {
           console.log("Product data:", productData); 
-        
+          // استخراج الصورة الأولى فقط
+          // const firstImage = productData.images;
           let detailsPageName;
-        
+          // تحديد اسم الصفحة بناءً على اسم الفئة
           switch (categoryName) {
             case "baby":
               detailsPageName = "BabyDetails";
@@ -122,7 +124,7 @@ const RecentlyVisited = ({ navigation }) => {
               console.log("Unknown category:", categoryName);
               return;
           }
-          
+          // navigation.navigate(detailsPageName,{product_id:id});
           console.log("idddddd",id);
           navigation.navigate(detailsPageName, { product: productData});
         } else {
@@ -148,19 +150,20 @@ const RecentlyVisited = ({ navigation }) => {
       console.error("Error clearing recently visited: ", error);
     }
   };
-  
+
   return (
 <View style={styles.container}>
-  <View style={[{flexDirection:"row"}]}>
+<View style={[{flexDirection:"row"}]}>
   <Text style={styles.header}>Recently Visited Products</Text>
   <View style={styles.clearAllContainer}>
   <Text style={styles.clearAll} onPress={clearAllVisited} >ClearAll</Text>
 </View>
 </View>
-  <ScrollView
+<ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ flexGrow: 1 }}
       >
+
   <View style={styles.productList}>
     {recentlyVisited.map((product, index) => (
       <TouchableOpacity
@@ -174,12 +177,11 @@ const RecentlyVisited = ({ navigation }) => {
           source={{ uri: product.image[0] }}
           style={styles.productImage}
         />
-        <Text style={[styles.productName,{marginLeft:5}]}>{product.name}</Text>
+        <Text style={styles.productName}>{product.name}</Text>
       </TouchableOpacity>
     ))}
   </View>
   </ScrollView>
-
 </View>
 
   );
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "flex-start", 
+    justifyContent: "flex-start", // توجيه العناصر إلى الجزء العلوي من الشاشة
     backgroundColor: COLORS.white,
     // position: "relative",
   },
@@ -205,12 +207,12 @@ const styles = StyleSheet.create({
   },
 
   productList: {
-    flexDirection: "row", 
+    flexDirection: "row",
     flexWrap: "wrap", 
     justifyContent: "flex-start", 
-    marginTop: 10,
+    marginTop: 60,
     textAlign: "center",
-    alignItems: "flex-start",
+    alignItems: "flex-start", 
     // marginHorizontal: 5,
     justifyContent: "space-between",
 
@@ -253,20 +255,7 @@ const styles = StyleSheet.create({
     borderBottomColor:"black",
     borderBottomWidth:1,
   },
-  checkbox: {
-    position: "absolute",
-    top: 5,
-    left: 5,
-    width: 20,
-    height: 20,
-    borderWidth: 1,
-    borderColor: COLORS.black,
-  },
-  checked: {
-    backgroundColor: COLORS.black,
-  },
-  
-  
+
 });
 
 export default RecentlyVisited;

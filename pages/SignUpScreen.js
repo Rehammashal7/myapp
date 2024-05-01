@@ -25,6 +25,9 @@ const SignUpScreen = ({ navigation }) => {
   const [validationEmail , setValidationEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [recentlyVisited, setRecentlyVisited] = useState([]);
+    const [HistoryOrder, setHistoryOrders] = useState([]);
+  const [waitingOrder, setWaitingOrders] = useState([]);
+  const [cancelOrder, setCancelOrders] = useState([]);
 
   const handleCheckEmail = () => {
     let isvalid = true ;
@@ -330,7 +333,7 @@ const styles = StyleSheet.create({
   }, iconContainer: {
     position: 'absolute',
     right: 35,
-    top: '48,5%',
+    top: '48.5%',
     transform:[{translateY: -10}],
     zIndex:1
   },
