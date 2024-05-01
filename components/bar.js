@@ -4,7 +4,6 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import COLORS from '../Consts/Color';
 
 const { width } = Dimensions.get('screen');
-
 const BottomNavigator = ({ item, navigation, userId }) => {
   const [iconHome, setIconHome] = useState("home-outline");
   const [iconprofile, setIconProfile] = useState("person-outline");
@@ -34,7 +33,7 @@ const BottomNavigator = ({ item, navigation, userId }) => {
           <Text style={styles.Text}>profile</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("catigory")} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate("catigory", { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconcategory} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>category</Text>
         </Pressable>
@@ -48,7 +47,7 @@ const BottomNavigator = ({ item, navigation, userId }) => {
           <Text style={styles.Text}>favorite</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("CartScreen", { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate('CartScreen', { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconcart} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>Cart</Text>
         </Pressable>

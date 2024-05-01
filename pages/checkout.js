@@ -117,8 +117,8 @@ const Checkout = ({ navigation }) => {
 
   const getTotal = () => {
     let total = 0;
-    cartList.map((item) => {
-      let existingItem = cartList.find((itm) => itm.id === item.id);
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
       total = total + existingItem.qty * item.data.price;
     });
     return total;
@@ -135,10 +135,8 @@ const Checkout = ({ navigation }) => {
 
   const deliveryprice = () => {
     if (IconName) {
-      setdelprice(getTotal() * 0.1);
-    } else {
-      setdelprice(0);
-    }
+      setdelprice((getTotal() * 0.05));
+    } else { setdelprice(0); }
   };
   useEffect(() => {
     deliveryprice();
@@ -333,10 +331,8 @@ const Checkout = ({ navigation }) => {
                 {"Delivery to address "}
               </Text>
             </View>
-            <Text
-              style={{ color: COLORS.dark, fontWeight: "600", fontSize: 20 }}
-            >
-              {getTotal() * 0.1 + " EGP"}
+            <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {(getTotal() * 0.05 ).toFixed(2)+ ' EGP'}
             </Text>
           </View>
           <View style={styles.total}>
@@ -450,10 +446,8 @@ const Checkout = ({ navigation }) => {
         </Text>
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
-            <Text
-              style={{ color: COLORS.dark, fontWeight: "600", fontSize: 20 }}
-            >
-              {"Total: " + (getTotal() + delprice) + " EGP"}
+            <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {'Total: ' + (getTotal() + delprice- getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconArr(!IconArr)}>
               <Icon
@@ -472,7 +466,7 @@ const Checkout = ({ navigation }) => {
               </View>
               <View style={styles.row}>
                 <Text style={{ fontSize: 18 }}>Delivery</Text>
-                <Text style={{ fontSize: 18 }}>{delprice + " EGP"}</Text>
+                <Text style={{ fontSize: 18 }}>{delprice.toFixed(2) + ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: "bold" }}>
@@ -483,27 +477,20 @@ const Checkout = ({ navigation }) => {
                 </Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "green" }}
-                >
-                  20% Discound{" "}
-                </Text>
-                <Text
-                  style={{ fontSize: 18, fontWeight: "bold", color: "green" }}
-                >
-                  {"-" + getTotal() * 0.2 + " EGP"}
-                </Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>20% Discound </Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + getTotalOfers() + ' EGP'}</Text>
               </View>
             </>
           )}
         </View>
+        <View style={styles.bottoms}></View>
       </ScrollView>
       {/* button */}
 
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
-          <Text style={{ color: COLORS.dark, fontWeight: "600" }}>
-            {"Items(" + getTotalItems() + ")\nTotal: $" + getTotal()}
+          <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
+            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice- getTotalOfers()).toFixed(2)}
           </Text>
           <TouchableOpacity
             style={styles.checkButton}
@@ -595,7 +582,7 @@ const styles = StyleSheet.create({
     borderColor: COLORS.grey,
     borderWidth: 0.1,
     borderRadius: 1,
-    elevation: 13,
+    elevation: 5,
     flexDirection: "column",
     backgroundColor: COLORS.white,
     marginBottom: 10,
@@ -605,10 +592,10 @@ const styles = StyleSheet.create({
     width: "90%",
     height: 60,
     backgroundColor: COLORS.white,
-    elevation: 5,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+
   },
   row: {
     flexDirection: "row",
@@ -664,7 +651,7 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: "#fff",
     position: "absolute",
-    bottom: 60,
+    bottom: 0,
     elevation: 5,
     flexDirection: "row",
     justifyContent: "space-evenly",
@@ -676,6 +663,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: COLORS.dark,
+
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 70,
+    bottom: 0
   },
 });
 

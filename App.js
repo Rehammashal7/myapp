@@ -6,8 +6,8 @@ import HomeScreen from './pages/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/favorite';
-import profile from './pages/profile';
+import Favorite from './pages/Favorite';
+import Profile from './pages/profile';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
@@ -15,7 +15,6 @@ import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
-
 import { OfferDetailsAdmin, ProductsListOfferAdmin, EditOfferPage } from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
 import adminHome from './adminPages/adminHome'
@@ -26,9 +25,8 @@ import AddReviewWoman from './pages/AddReviews/AddReview-woman';
 import AddReviewMen from './pages/AddReviews/AddReview-men';
 import AddReviewKids from './pages/AddReviews/AddReview-kids';
 import AddReviewBaby from './pages/AddReviews/AddReview-baby';
-import category from './pages/catigory';
+import {Category,  CatigoryResult } from './pages/catigory';
 import DeleteAccount from './pages/DeleteAccount';
-// import MapScreen from './pages/MapScreen';
 import OrderHistory from './pages/OrderHistory';
 import HistoryOrder from './pages/Orders/HistoryOrder';
 import WaitingOrder from './pages/Orders/WaitingOrder';
@@ -40,6 +38,8 @@ import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
+import ProductPage from './pages/ResultSearch';
+import Offer from './pages/offers';
 import RecentlyVisited from './pages/RecentlyVisited';
 import AddressScreen from './pages/AddressScreen';
 import AddressInformation from './pages/AddressInformation';
@@ -72,7 +72,7 @@ export default function App() {
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
-        <Stack.Screen name="favorite" component={favorite} />
+        <Stack.Screen name="favorite" component={Favorite} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={adminprofile} />
@@ -88,8 +88,8 @@ export default function App() {
         <Stack.Screen name="adminCoffee" component={ ProductsListCoffeeAdmin }/>
         <Stack.Screen name="EditCoffeePage" component={ EditCoffeePage }/>
         <Stack.Screen name="PizzaDetailsAdmin" component={ PizzaDetailsAdmin }/>
-        <Stack.Screen name="profile" component={ profile }/>
-        <Stack.Screen name="catigory" component={ category }/>
+        <Stack.Screen name="profile" component={ Profile }/>
+        <Stack.Screen name="catigory" component={ Category }/>
         <Stack.Screen name="EditProfile" component={ EditProfile }/>
         <Stack.Screen name="DeleteAccount" component={ DeleteAccount }/>
         <Stack.Screen name="adminPizza" component={ ProductsListPizzaAdmin }/>
@@ -98,6 +98,9 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        <Stack.Screen name="SearchResultsPage" component={ ProductPage }/>
+        <Stack.Screen name="offer" component={ Offer }/>
+        <Stack.Screen name="categoryresult" component= {CatigoryResult}/>
         <Stack.Screen name="RecentlyVisited" component={ RecentlyVisited }/>
         <Stack.Screen name="AddressScreen" component={ AddressScreen }/>
         <Stack.Screen name="AddressInformation" component={ AddressInformation }/>

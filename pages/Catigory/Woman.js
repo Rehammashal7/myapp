@@ -410,6 +410,8 @@ const WomanDetails = ({ route, navigation }) => {
   //   getCartItems();
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
+    const newDate = new Date();
+     newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -420,7 +422,7 @@ const WomanDetails = ({ route, navigation }) => {
       existingItem.qty += 1;
       setShowGoToCartButton(true);
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize });
+      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize ,delivery: newDate});
     }
     await updateDoc(userRef, { cart });
     getCartItems();
@@ -513,6 +515,22 @@ const WomanDetails = ({ route, navigation }) => {
     getFavItems();
   };
   const [isPressed, setIsPressed] = useState("");
+  const handelHeart = async (item) => {
+    const userRef = doc(db, "users", userId);
+    const userSnap = await getDoc(userRef);
+    const { fav = [] } = userSnap.data() ?? {};
+    const existingItem = fav.find(itm => itm.id === item.id);
+    
+    setIsPressed(!!existingItem); 
+  };
+  
+  useEffect(() => {
+    handelHeart(product);
+  }, [handelHeart]); 
+  useEffect(() => {
+    console.log(isPressed);
+  }, [isPressed]); 
+
   const [Newprice, setNewprice] = useState(product.price);
 
   const handlePrice = (pl) => {
