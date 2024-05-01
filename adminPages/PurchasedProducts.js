@@ -1,45 +1,114 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
+import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Import your Firebase configuration
 
-const PurchasedProductsScreen = () => {
+const { width } = Dimensions.get('window');
+
+const PurchasedProductsScreen = ({ navigation }) => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
+  const [activeTab, setActiveTab] = useState('waiting'); // 'Delivered' or 'waiting'
 
   useEffect(() => {
     fetchPurchasedProducts();
   }, []);
-
+  const handleItemPress = (items) => {
+    // Navigate to DetailedItemScreen with the list of items
+    navigation.navigate('waitingitem', { items });
+  };
   const fetchPurchasedProducts = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'purchasedProducts'));
-      const data = [];
-      querySnapshot.forEach((doc) => {
-        data.push(doc.data());
-      });
+      const querySnapshot = await getDocs(collection(db, 'userPurchasedProducts'));
+      const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setPurchasedProducts(data);
     } catch (error) {
       console.error('Error fetching purchased products:', error);
     }
   };
 
+  const toggleTab = (tab) => {
+    setActiveTab(tab);
+  };
+
+  const handleMarkAsDone = async (itemId) => {
+    try {
+      const purchasedProductRef = doc(db, 'userPurchasedProducts', itemId);
+      await updateDoc(purchasedProductRef, { delivered: true });
+
+      // Remove the delivered item from the waiting list
+      setPurchasedProducts(prevProducts =>
+        prevProducts.filter(product => product.id !== itemId)
+      );
+
+      console.log('Item marked as delivered:', itemId);
+    } catch (error) {
+      console.error('Error marking item as delivered:', error);
+    }
+  };
+
+  const calculateTotalPrice = (items) => {
+    return items.reduce((total, item) => total + (item.totalPrice || 0), 0);
+  };
+
+  const renderItem = ({ item }) => {
+    const { userId, items, timestamp, delivered } = item;
+    const totalPrice = calculateTotalPrice(items);
+
+    return (
+      <TouchableOpacity
+        style={styles.itemContainer}
+        onPress={() => handleItemPress(items)}
+      
+      >
+        <View style={styles.itemInfoContainer}>
+          <Text style={styles.itemText}>Number of Items: {items.length}</Text>
+          <Text style={styles.itemText}>Order Time: {timestamp.toDate().toLocaleString()}</Text>
+          <Text style={styles.itemText}>Total Price: ${totalPrice.toFixed(2)}</Text>
+          {!delivered && (
+            <TouchableOpacity style={styles.doneButton} onPress={() => handleMarkAsDone(item.id)}>
+              <Text style={styles.doneButtonText}>Delivered</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+      </TouchableOpacity>
+    );
+  };
+  
   return (
     <View style={styles.container}>
+      <View style={styles.tabContainer}>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'Delivered' ? styles.activeTabButton : null,
+            { width: width / 2 }
+          ]}
+          onPress={() => toggleTab('Delivered')}
+        >
+          <Text style={[styles.tabText, activeTab === 'Delivered' ? styles.activeTabText : null]}>
+            Delivered
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            activeTab === 'waiting' ? styles.activeTabButton : null,
+            { width: width / 2 }
+          ]}
+          onPress={() => toggleTab('waiting')}
+        >
+          <Text style={[styles.tabText, activeTab === 'waiting' ? styles.activeTabText : null]}>
+            Waiting List
+          </Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
-        data={purchasedProducts}
-        keyExtractor={(item) => item.productId}
-        renderItem={({ item }) => (
-          <View style={styles.itemContainer}>
-            <Image source={{ uri: item.imageUrl }} style={styles.itemImage} />
-            <View style={styles.itemInfoContainer}>
-              <Text style={styles.itemText}>Product Name: {item.name}</Text>
-              <Text style={styles.itemText}>Description: {item.description}</Text>
-              <Text style={styles.itemText}>Price: ${item.totalPrice}</Text>
-              <Text style={styles.itemText}>Quantity: {item.quantity}</Text>
-              <Text style={styles.itemText}>Timestamp: {item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : 'N/A'}</Text>
-            </View>
-          </View>
-        )}
+        data={activeTab === 'waiting' ? purchasedProducts.filter(item => !item.delivered) : purchasedProducts.filter(item => item.delivered)}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContent}
+        ListEmptyComponent={<Text style={styles.emptyText}>No items in {activeTab === 'waiting' ? 'Waiting List' : 'Delivered'}</Text>}
       />
     </View>
   );
@@ -48,32 +117,71 @@ const PurchasedProductsScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 10,
     backgroundColor: '#fff',
+    paddingHorizontal: 10,
+    paddingTop: 10,
   },
-  itemContainer: {
-    flexDirection: 'row', // Arrange items horizontally
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 10,
-    padding: 10,
+  tabContainer: {
+    flexDirection: 'row',
     marginBottom: 10,
   },
-  itemImage: {
-    width: 100, // Adjust image width as needed
-    height: 100, // Adjust image height as needed
-    resizeMode: 'cover',
-    marginRight: 10, // Add spacing between image and text
+  tabButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
   },
-  itemInfoContainer: {
-    flex: 1, // Take remaining space
+  activeTabButton: {
+    backgroundColor: 'black',
+    borderColor: 'black',
   },
-  itemText: {
+  tabText: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 5,
+    color: 'black',
+  },
+  activeTabText: {
+    color: 'white',
+  },
+  flatListContent: {
+    paddingBottom: 10,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    marginBottom: 10,
+    backgroundColor: '#f9f9f9',
+    overflow: 'hidden',
+    padding: 10,
+  },
+  itemInfoContainer: {
+    flex: 1,
+  },
+  itemText: {
+    fontSize: 14,
+    marginBottom: 3,
+  },
+  doneButton: {
+    backgroundColor: 'black',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+    marginTop: 5,
+    alignItems: 'center',
+  },
+  doneButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
+  },
+  emptyText: {
+    textAlign: 'center',
+    fontSize: 16,
+    marginTop: 20,
   },
 });
-
 
 export default PurchasedProductsScreen;

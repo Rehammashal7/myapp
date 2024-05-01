@@ -10,7 +10,7 @@ const BottomNavigator = ({ item, navigation, userId }) => {
   const [iconprofile, setIconProfile] = useState("person-outline");
   const [iconheart, setIconHeart] = useState("heart-outline");
   const [iconcart, setIconCart] = useState("cart-outline");
-  const [iconcategory, setIconCategory] = useState("grid-outline");
+ 
 
   useEffect(() => {
     if (item === "Home") {
@@ -21,8 +21,6 @@ const BottomNavigator = ({ item, navigation, userId }) => {
       setIconHeart("heart");
     } else if (item === "cart") {
       setIconCart("cart");
-    } else if (item === "catigory") {
-      setIconCategory("grid");
     }
   }, [item]);
 
@@ -34,10 +32,6 @@ const BottomNavigator = ({ item, navigation, userId }) => {
           <Text style={styles.Text}>profile</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("catigory")} style={styles.iconBehave}>
-          <Icon name={iconcategory} size={25} color={COLORS.dark} style={styles.iconBehave} />
-          <Text style={styles.Text}>category</Text>
-        </Pressable>
         <Pressable onPress={() => navigation.navigate("Home")} style={styles.iconBehave}>
           <Icon name={iconHome} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>Home</Text>

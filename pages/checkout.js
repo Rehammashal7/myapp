@@ -103,7 +103,14 @@ const Checkout = ({ navigation }) => {
   const onError = (err) => {
     setError(err.message);
   };
-
+  const getTotalOfers = () => {
+    let total = 0;
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
+      total = total + (item.data.offer/100 * item.data.price*existingItem.qty);
+    });
+    return total.toFixed(2);
+  };
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
@@ -124,39 +131,117 @@ const Checkout = ({ navigation }) => {
 
   const deliveryprice = () => {
     if (IconName) {
-      setdelprice(getTotal() * 0.10);
+      setdelprice((getTotal() * 0.05));
     } else { setdelprice(0); }
   };
   useEffect(() => {
     deliveryprice()
   }, [deliveryprice]);
-
   const handleCheckout = async () => {
     try {
-      // Loop through the products and add them to the purchasedProducts collection
-      cartList.forEach(async (item) => {
-        const purchaseData = {
-          userId: userId,
-          productId: item.id,
-          quantity: item.qty,
-          totalPrice: (item.qty || 0) * (item.data.price || 0),
-          timestamp: new Date(),
-          imageUrl: item.data.imageUrl,
-          name: item.data.name,
-          description: item.data.description
-
-        };
-        const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
-        await setDoc(purchasedProductRef, purchaseData);
+      // Prepare an array to hold data for each purchased item
+      const items = [];
+  
+      // Calculate total price and gather data for each item
+      cartList.forEach((item) => {
+        const { id, qty, data } = item;
+        const totalPrice = (qty || 0) * (data.price || 0);
+  
+        items.push({
+          productId: id,
+          quantity: qty,
+          totalPrice: totalPrice,
+          imageUrl: data.images,
+          name: data.name,
+          description: data.description,
+          category: data.categoryName,
+        });
       });
-
+  
+      // Create a reference to the user's purchased products document
+      const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
+  
+      // Set the document data with aggregated items, userId, timestamp, and delivery status
+      await setDoc(userPurchasedProductsRef, {
+        
+        items: items,
+        userId: userId,
+        timestamp: new Date(),
+        delivered: false, // Initial delivery status is set to false
+      });
+  
       console.log('Purchased products saved to Firestore successfully');
-      // After successful checkout, you can navigate to the checkout screen or do any other necessary action
+  
+      // Navigate to the checkout screen or perform other actions after successful checkout
       navigation.navigate('checkout');
     } catch (error) {
       console.error('Error saving purchased products to Firestore:', error);
     }
   };
+  
+  // const handleCheckout = async () => {
+  //   try {
+  //     // Prepare an array to hold all purchased items
+  //     const purchasedItems = [];
+  
+  //     // Loop through cartList to collect data for each item
+  //     cartList.forEach((item) => {
+  //       const purchaseData = {
+  //         userId:userId,
+  //         productId: item.id,
+  //         quantity: item.qty,
+  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
+  //         imageUrl: item.data.images,
+  //         name: item.data.name,
+  //         description: item.data.description,
+  //         category: item.data.categoryName,
+  //         delivered: false,
+  //       };
+  //       purchasedItems.push(purchaseData);
+  //     });
+  
+  //     // Create a reference to the purchased products collection for the user
+  //     const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
+  
+  //     // Set the aggregated purchased items data as a single document for the user
+  //     await setDoc(userPurchasedProductsRef, { items: purchasedItems, timestamp: new Date() });
+  
+  //     console.log('Purchased products saved to Firestore successfully');
+  //     // After successful checkout, navigate to the checkout screen or perform other actions
+  //     navigation.navigate('checkout');
+  //   } catch (error) {
+  //     console.error('Error saving purchased products to Firestore:', error);
+  //   }
+  // };
+  
+  // const handleCheckout = async () => {
+  //   try {
+  //     // Loop through the products and add them to the purchasedProducts collection
+  //     cartList.forEach(async (item) => {
+  //       const purchaseData = {
+  //         userId: userId,
+  //         productId: item.id,
+  //          quantity: item.qty,
+  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
+  //          timestamp: new Date(),
+  //         imageUrl: item.data.images,
+  //         name: item.data.name,
+  //        description: item.data.description,
+  //        category:item.data.categoryName,
+  //         delivered: false,
+
+  //       };
+  //       const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
+  //       await setDoc(purchasedProductRef, purchaseData);
+  //     });
+
+  //     console.log('Purchased products saved to Firestore successfully');
+  //     // After successful checkout, you can navigate to the checkout screen or do any other necessary action
+  //     navigation.navigate('checkout');
+  //   } catch (error) {
+  //     console.error('Error saving purchased products to Firestore:', error);
+  //   }
+  // };
   const deleteAllItems = async () => {
     try {
       const userRef = doc(db, 'users', userId);
@@ -236,7 +321,7 @@ const Checkout = ({ navigation }) => {
               </Text>
             </View>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {getTotal() * 0.10 + ' EGP'}
+              {(getTotal() * 0.05 ).toFixed(2)+ ' EGP'}
             </Text>
           </View>
           <View style={styles.total}>
@@ -290,7 +375,7 @@ const Checkout = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'Total: ' + (getTotal() + delprice) + ' EGP'}
+              {'Total: ' + (getTotal() + delprice- getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconArr(!IconArr)}>
               <Icon name={IconArr ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
@@ -304,26 +389,27 @@ const Checkout = ({ navigation }) => {
               </View>
               <View style={styles.row}>
                 <Text style={{ fontSize: 18 }}>Delivery</Text>
-                <Text style={{ fontSize: 18 }}>{delprice + ' EGP'}</Text>
+                <Text style={{ fontSize: 18 }}>{delprice.toFixed(2) + ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total(VAT included)</Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{getTotal() + delprice + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{(getTotal() + delprice ).toFixed(2)+ ' EGP'}</Text>
               </View>
               <View style={[styles.row, styles.totalRow]}>
                 <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>20% Discound </Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + (getTotal() * 0.20) + ' EGP'}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{'-' + getTotalOfers() + ' EGP'}</Text>
               </View>
             </>
           )}
         </View>
+        <View style={styles.bottoms}></View>
       </ScrollView>
       {/* button */}
 
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
           <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
-            {'Items(' + getTotalItems() + ')\nTotal: $' + getTotal()}
+            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice- getTotalOfers()).toFixed(2)}
           </Text>
           <TouchableOpacity
             style=
@@ -487,7 +573,7 @@ const styles = StyleSheet.create({
     height: 60,
     backgroundColor: '#fff',
     position: 'absolute',
-    bottom: 60,
+    bottom: 0,
     elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
@@ -500,6 +586,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: COLORS.dark,
 
+  }, bottoms: {
+    flexDirection: "row",
+    backgroundColor: COLORS.white,
+    height: 70,
+    bottom: 0
   },
 });
 

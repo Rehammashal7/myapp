@@ -42,11 +42,16 @@ import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
+import ProductPage from './pages/ResultSearch';
+import PurchasedProductsScreen from './adminPages/PurchasedProducts';
+import waitingitem from './adminPages/waitingitem';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="PurchasedProductsScreen">
+      <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
+<Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
@@ -86,6 +91,7 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        <Stack.Screen name="SearchResultsPage" component={ ProductPage }/>
 
 
 
@@ -105,4 +111,3 @@ export default function App() {
   );
 }
 
-//
