@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase'; // Import your Firebase configuration
 
@@ -7,15 +7,18 @@ const { width } = Dimensions.get('window');
 
 const PurchasedProductsScreen = ({ navigation }) => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState('Delivered'); // 'purchased' or 'waiting'
+  const [activeTab, setActiveTab] = useState('waiting'); // 'Delivered' or 'waiting'
 
   useEffect(() => {
     fetchPurchasedProducts();
   }, []);
-
+  const handleItemPress = (items) => {
+    // Navigate to DetailedItemScreen with the list of items
+    navigation.navigate('waitingitem', { items });
+  };
   const fetchPurchasedProducts = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, 'purchasedProducts'));
+      const querySnapshot = await getDocs(collection(db, 'userPurchasedProducts'));
       const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
       setPurchasedProducts(data);
     } catch (error) {
@@ -27,51 +30,43 @@ const PurchasedProductsScreen = ({ navigation }) => {
     setActiveTab(tab);
   };
 
-  
-  
-  
-  
-  
-
   const handleMarkAsDone = async (itemId) => {
     try {
-      const purchasedProductRef = doc(db, 'purchasedProducts', itemId);
+      const purchasedProductRef = doc(db, 'userPurchasedProducts', itemId);
       await updateDoc(purchasedProductRef, { delivered: true });
-      console.log('Item marked as done:', itemId);
-      // Refetch the purchased products to reflect changes
-      fetchPurchasedProducts();
+
+      // Remove the delivered item from the waiting list
+      setPurchasedProducts(prevProducts =>
+        prevProducts.filter(product => product.id !== itemId)
+      );
+
+      console.log('Item marked as delivered:', itemId);
     } catch (error) {
-      console.error('Error marking item as done:', error);
+      console.error('Error marking item as delivered:', error);
     }
   };
 
+  const calculateTotalPrice = (items) => {
+    return items.reduce((total, item) => total + (item.totalPrice || 0), 0);
+  };
+
   const renderItem = ({ item }) => {
-    const firstImageUrl = item.imageUrl && item.imageUrl.length > 0 ? item.imageUrl[0] : null;
-  
-    // Determine if the item is clickable based on its delivery status
-    const isItemClickable = activeTab === 'waiting' && !item.delivered;
-  
+    const { userId, items, timestamp, delivered } = item;
+    const totalPrice = calculateTotalPrice(items);
+
     return (
       <TouchableOpacity
         style={styles.itemContainer}
-        onPress={isItemClickable ? () => navigation.navigate('waitingitem', { item }) : null}
-        disabled={!isItemClickable}
+        onPress={() => handleItemPress(items)}
+      
       >
-        {firstImageUrl ? (
-          <Image source={{ uri: firstImageUrl }} style={styles.itemImage} />
-        ) : (
-          <View style={[styles.itemImage, styles.noImage]}>
-            <Text>No Image Available</Text>
-          </View>
-        )}
-  
         <View style={styles.itemInfoContainer}>
-          <Text style={styles.itemName}>{item.name}</Text>
-          <Text style={styles.itemText}>Price: ${item.totalPrice}</Text>
-          <Text style={styles.itemText}>Quantity: {item.quantity}</Text>
-          {activeTab === 'waiting' && !item.delivered && (
+          <Text style={styles.itemText}>Number of Items: {items.length}</Text>
+          <Text style={styles.itemText}>Order Time: {timestamp.toDate().toLocaleString()}</Text>
+          <Text style={styles.itemText}>Total Price: ${totalPrice.toFixed(2)}</Text>
+          {!delivered && (
             <TouchableOpacity style={styles.doneButton} onPress={() => handleMarkAsDone(item.id)}>
-              <Text style={styles.doneButtonText}>Done</Text>
+              <Text style={styles.doneButtonText}>Delivered</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -91,7 +86,7 @@ const PurchasedProductsScreen = ({ navigation }) => {
           onPress={() => toggleTab('Delivered')}
         >
           <Text style={[styles.tabText, activeTab === 'Delivered' ? styles.activeTabText : null]}>
-          Delivered
+            Delivered
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -108,23 +103,13 @@ const PurchasedProductsScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {activeTab === 'Delivered' ? (
-        <FlatList
-          data={purchasedProducts.filter(item => item.delivered)}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.flatListContent}
-          ListEmptyComponent={<Text style={styles.emptyText}>No purchased items found</Text>}
-        />
-      ) : (
-        <FlatList
-          data={purchasedProducts.filter(item => !item.delivered)}
-          keyExtractor={item => item.id}
-          renderItem={renderItem}
-          contentContainerStyle={styles.flatListContent}
-          ListEmptyComponent={<Text style={styles.emptyText}>No items in Waiting List</Text>}
-        />
-      )}
+      <FlatList
+        data={activeTab === 'waiting' ? purchasedProducts.filter(item => !item.delivered) : purchasedProducts.filter(item => item.delivered)}
+        keyExtractor={item => item.id}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContent}
+        ListEmptyComponent={<Text style={styles.emptyText}>No items in {activeTab === 'waiting' ? 'Waiting List' : 'Delivered'}</Text>}
+      />
     </View>
   );
 };
@@ -171,37 +156,19 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     backgroundColor: '#f9f9f9',
     overflow: 'hidden',
-    height: 120,
-  },
-  itemImage: {
-    width: 120,
-    height: '100%',
-    resizeMode: 'cover',
-  },
-  noImage: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#ddd',
-    width: 120,
-    height: '100%',
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
+    padding: 10,
   },
   itemInfoContainer: {
     flex: 1,
-    padding: 10,
   },
   itemText: {
     fontSize: 14,
     marginBottom: 3,
   },
   doneButton: {
-    backgroundColor: 'black', // Change button background color to black
+    backgroundColor: 'black',
     paddingVertical: 5,
-    paddingHorizontal: 8, // Adjust padding to make the button narrower
+    paddingHorizontal: 10,
     borderRadius: 5,
     marginTop: 5,
     alignItems: 'center',
@@ -216,6 +183,5 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
 });
-
 
 export default PurchasedProductsScreen;

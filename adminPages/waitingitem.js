@@ -1,52 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Import your Firebase configuration
 
-const WaitingItemDetailScreen = ({ route }) => {
-  const { item } = route.params;
-  const [userName, setUserName] = useState(null);
 
-  useEffect(() => {
-    const fetchUserName = async () => {
-      try {
-        // Fetch the user document from Firestore based on the userId
-        const userDocRef = doc(db, 'users', item.userId);
-        const userDocSnapshot = await getDoc(userDocRef);
+import React from 'react';
+import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 
-        if (userDocSnapshot.exists()) {
-          // Extract the first name and last name from the user document
-          const userData = userDocSnapshot.data();
-          const { fName, lName } = userData;
+const waitingitem = ({ route }) => {
+  const { items } = route.params; // Get the items array passed from navigation
 
-          // Construct the full name
-          const fullName = `${fName} ${lName}`;
+  // Function to extract the first image URL from the images array
+  const getFirstImageUrl = (item) => {
+    return item.imageUrl && item.imageUrl.length > 0 ? item.imageUrl[0] : null;
+  };
 
-          // Set the full name in the state
-          setUserName(fullName);
-        } else {
-          console.log('User document not found');
-          setUserName('Unknown'); // Set a default name if user not found
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      }
-    };
+  const renderItem = ({ item }) => {
+    const firstImageUrl = getFirstImageUrl(item);
 
-    // Call the fetchUserName function when component mounts
-    fetchUserName();
-  }, [item.userId]); // Re-run effect when userId changes
-
- 
-
+    return (
+      <View style={styles.itemContainer}>
+        {/* Left-aligned image */}
+        {firstImageUrl && (
+          <Image source={{ uri: firstImageUrl }} style={styles.itemImage} />
+        )}
+        <View style={styles.itemDetails}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.price}>Price: {item.totalPrice} EGP</Text>
+          <Text style={styles.quantity}>Quantity: {item.quantity}</Text>
+        </View>
+      </View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.userInfo}>User: {userName || 'Loading...'}</Text>
-      <Text style={styles.orderInfo}>Ordered At: {item.timestamp.toDate().toLocaleString()}</Text>
-      <Image source={{ uri: item.imageUrl[0] }} style={styles.image} />
-      <Text style={styles.productName}>Product: {item.name}</Text>
-      
+      <FlatList
+        data={items}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
+        renderItem={renderItem}
+        contentContainerStyle={styles.flatListContent}
+      />
     </View>
   );
 };
@@ -54,42 +44,45 @@ const WaitingItemDetailScreen = ({ route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     backgroundColor: '#fff',
     paddingHorizontal: 20,
+    paddingTop: 20,
   },
-  userInfo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
+  itemContainer: {
+    flexDirection: 'row', // Align items in a row
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    backgroundColor: '#f9f9f9',
+    overflow: 'hidden', // Ensure images do not overflow container
   },
-  orderInfo: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  image: {
-    width: 200,
-    height: 200,
+  itemImage: {
+    width: 150, // Fixed width for the image
+    height: '100%', // Take full height of the container
     resizeMode: 'cover',
-    marginBottom: 20,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
   },
-  productName: {
-    fontSize: 18,
+  itemDetails: {
+    flex: 1,
+    padding: 10,
+  },
+  name: {
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 20,
+    marginBottom: 5,
   },
-  markAsDoneButton: {
-    backgroundColor: 'black',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-  },
-  markAsDoneText: {
-    color: 'white',
-    fontWeight: 'bold',
+  price: {
     fontSize: 16,
+    marginBottom: 5,
+  },
+  quantity: {
+    fontSize: 14,
+  },
+  flatListContent: {
+    paddingBottom: 20,
   },
 });
 
-export default WaitingItemDetailScreen;
+export default waitingitem;

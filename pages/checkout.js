@@ -137,35 +137,111 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice()
   }, [deliveryprice]);
-
   const handleCheckout = async () => {
     try {
-      // Loop through the products and add them to the purchasedProducts collection
-      cartList.forEach(async (item) => {
-        const purchaseData = {
-          userId: userId,
-          productId: item.id,
-           quantity: item.qty,
-          totalPrice: (item.qty || 0) * (item.data.price || 0),
-           timestamp: new Date(),
-          imageUrl: item.data.images,
-          name: item.data.name,
-         description: item.data.description,
-         category:item.data.categoryName,
-          delivered: false,
-
-        };
-        const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
-        await setDoc(purchasedProductRef, purchaseData);
+      // Prepare an array to hold data for each purchased item
+      const items = [];
+  
+      // Calculate total price and gather data for each item
+      cartList.forEach((item) => {
+        const { id, qty, data } = item;
+        const totalPrice = (qty || 0) * (data.price || 0);
+  
+        items.push({
+          productId: id,
+          quantity: qty,
+          totalPrice: totalPrice,
+          imageUrl: data.images,
+          name: data.name,
+          description: data.description,
+          category: data.categoryName,
+        });
       });
-
+  
+      // Create a reference to the user's purchased products document
+      const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
+  
+      // Set the document data with aggregated items, userId, timestamp, and delivery status
+      await setDoc(userPurchasedProductsRef, {
+        
+        items: items,
+        userId: userId,
+        timestamp: new Date(),
+        delivered: false, // Initial delivery status is set to false
+      });
+  
       console.log('Purchased products saved to Firestore successfully');
-      // After successful checkout, you can navigate to the checkout screen or do any other necessary action
+  
+      // Navigate to the checkout screen or perform other actions after successful checkout
       navigation.navigate('checkout');
     } catch (error) {
       console.error('Error saving purchased products to Firestore:', error);
     }
   };
+  
+  // const handleCheckout = async () => {
+  //   try {
+  //     // Prepare an array to hold all purchased items
+  //     const purchasedItems = [];
+  
+  //     // Loop through cartList to collect data for each item
+  //     cartList.forEach((item) => {
+  //       const purchaseData = {
+  //         userId:userId,
+  //         productId: item.id,
+  //         quantity: item.qty,
+  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
+  //         imageUrl: item.data.images,
+  //         name: item.data.name,
+  //         description: item.data.description,
+  //         category: item.data.categoryName,
+  //         delivered: false,
+  //       };
+  //       purchasedItems.push(purchaseData);
+  //     });
+  
+  //     // Create a reference to the purchased products collection for the user
+  //     const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
+  
+  //     // Set the aggregated purchased items data as a single document for the user
+  //     await setDoc(userPurchasedProductsRef, { items: purchasedItems, timestamp: new Date() });
+  
+  //     console.log('Purchased products saved to Firestore successfully');
+  //     // After successful checkout, navigate to the checkout screen or perform other actions
+  //     navigation.navigate('checkout');
+  //   } catch (error) {
+  //     console.error('Error saving purchased products to Firestore:', error);
+  //   }
+  // };
+  
+  // const handleCheckout = async () => {
+  //   try {
+  //     // Loop through the products and add them to the purchasedProducts collection
+  //     cartList.forEach(async (item) => {
+  //       const purchaseData = {
+  //         userId: userId,
+  //         productId: item.id,
+  //          quantity: item.qty,
+  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
+  //          timestamp: new Date(),
+  //         imageUrl: item.data.images,
+  //         name: item.data.name,
+  //        description: item.data.description,
+  //        category:item.data.categoryName,
+  //         delivered: false,
+
+  //       };
+  //       const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
+  //       await setDoc(purchasedProductRef, purchaseData);
+  //     });
+
+  //     console.log('Purchased products saved to Firestore successfully');
+  //     // After successful checkout, you can navigate to the checkout screen or do any other necessary action
+  //     navigation.navigate('checkout');
+  //   } catch (error) {
+  //     console.error('Error saving purchased products to Firestore:', error);
+  //   }
+  // };
   const deleteAllItems = async () => {
     try {
       const userRef = doc(db, 'users', userId);
