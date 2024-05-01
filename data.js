@@ -72,6 +72,11 @@ export default Food;
                     {name:"KIDS",id:"3"},
                     {name:"BABY",id:"4"},
                 ];
+                export const filterOrder = [      
+                    {name:"HistoryOrder",id:"1"},
+                    {name:"WaitingOrder",id:"2"},
+                    {name:"CancelOrder",id:"3"},
+                ];
 export const Burger=[
     {
         restaurantName: ' Basic Burger',

@@ -11,7 +11,7 @@ import profile from './pages/profile';
 import { adminBurgerDetails, adminProductsListBurger, EditProductPage } from './adminPages/adminBurger'
 import { CoffeeDetailsAdmin, ProductsListCoffeeAdmin, EditCoffeePage } from './adminPages/adminDrink';
 import { PizzaDetailsAdmin, ProductsListPizzaAdmin, EditPizzaPage } from './adminPages/adminPizza';
-import Checkout from './pages/Checkout';
+import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 import products from './pages/AddProducts'
@@ -30,6 +30,9 @@ import category from './pages/catigory';
 import DeleteAccount from './pages/DeleteAccount';
 // import MapScreen from './pages/MapScreen';
 import OrderHistory from './pages/OrderHistory';
+import HistoryOrder from './pages/Orders/HistoryOrder';
+import WaitingOrder from './pages/Orders/WaitingOrder';
+import CancelOrder from './pages/Orders/CancelOrder';
 import AddProducts from './pages/AddProducts';
 import AllReviewsPage from './pages/Catigory/AllReviewsPage';
 import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
@@ -37,6 +40,10 @@ import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
 import { KidsDetails,ProductsListKids } from './pages/Catigory/Kids';
 import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
+import RecentlyVisited from './pages/RecentlyVisited';
+import AddressScreen from './pages/AddressScreen';
+import AddressInformation from './pages/AddressInformation';
+import AboutUs from './pages/AboutUs';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -60,7 +67,9 @@ export default function App() {
         <Stack.Screen name="AllReviewsPage" component={AllReviewsPage} />
         <Stack.Screen name="adminBurgers" component={adminProductsListBurger} />
         <Stack.Screen name='AddProducts' component={AddProducts}/>
-        <Stack.Screen name='OrderHistory' component={OrderHistory}/>
+        <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
+        <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
+        <Stack.Screen name='CancelOrder' component={CancelOrder}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="adminBurgerDetails" component={adminBurgerDetails}  />
         <Stack.Screen name="favorite" component={favorite} />
@@ -89,6 +98,14 @@ export default function App() {
         <Stack.Screen name="plusbutton" component={ plusbutton }/>
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
+        <Stack.Screen name="RecentlyVisited" component={ RecentlyVisited }/>
+        <Stack.Screen name="AddressScreen" component={ AddressScreen }/>
+        <Stack.Screen name="AddressInformation" component={ AddressInformation }/>
+        <Stack.Screen name="AboutUs" component={ AboutUs }/>
+
+
+
+
 
       </Stack.Navigator>
     </NavigationContainer>

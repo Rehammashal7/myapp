@@ -19,6 +19,7 @@ import {
   updateDoc,
   getDocs,
   getDoc,
+  arrayUnion,
 } from "firebase/firestore";
 import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
@@ -318,6 +319,7 @@ const WomanDetails = ({ route, navigation }) => {
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
+  const categoryName="Women";
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
@@ -620,29 +622,29 @@ const WomanDetails = ({ route, navigation }) => {
     }
   };
 
-  const handleDislike = async (index) => {
-    try {
-      const updatedReviews = [...reviewsWithLikes];
-      const updatedReview = { ...updatedReviews[index] };
-      if (updatedReview.disLike === 0) {
-        updatedReview.disLike = 1;
-        updatedReview.like = 0;
-        await AsyncStorage.setItem(`disLike${index}`, "1");
-        await AsyncStorage.setItem(`like${index}`, "0");
-      } else {
-        updatedReview.dislike = 0;
-        await AsyncStorage.setItem(`disLike${index}`, "0");
-      }
-      updatedReviews[index] = updatedReview;
-      setReviewsWithLikes(updatedReviews);
-      setReviews(updatedReviews);
-    } catch (error) {
-      console.log("Error handling dislike:", error);
+const handleDislike = async (index) => {
+  try {
+    const updatedReviews = [...reviewsWithLikes];
+    const updatedReview = { ...updatedReviews[index] };
+    if (updatedReview.disLike === 0) {
+      updatedReview.disLike = 1;
+      updatedReview.like = 0;
+      await AsyncStorage.setItem(`disLike${index}`, '1');
+      await AsyncStorage.setItem(`like${index}`, '0');
+    } else {
+      updatedReview.dislike = 0;
+      await AsyncStorage.setItem(`disLike${index}`, '0');
     }
-  };
+    updatedReviews[index] = updatedReview;
+    setReviewsWithLikes(updatedReviews);
+    setReviews(updatedReviews);
+  } catch (error) {
+    console.log('Error handling dislike:', error);
+  }
+};
+  
 
-  
-  
+
   return (
     <View style={styles.productContainer}>
       <ScrollView onScroll={handleScroll2}>
