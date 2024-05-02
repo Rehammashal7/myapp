@@ -4,9 +4,8 @@ import React from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 
 const waitingitem = ({ route }) => {
-  const { items } = route.params; // Get the items array passed from navigation
+  const { items } = route.params; 
 
-  // Function to extract the first image URL from the images array
   const getFirstImageUrl = (item) => {
     return item.imageUrl && item.imageUrl.length > 0 ? item.imageUrl[0] : null;
   };
@@ -16,7 +15,6 @@ const waitingitem = ({ route }) => {
 
     return (
       <View style={styles.itemContainer}>
-        {/* Left-aligned image */}
         {firstImageUrl && (
           <Image source={{ uri: firstImageUrl }} style={styles.itemImage} />
         )}
@@ -49,17 +47,17 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   itemContainer: {
-    flexDirection: 'row', // Align items in a row
+    flexDirection: 'row',
     marginBottom: 20,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 10,
     backgroundColor: '#f9f9f9',
-    overflow: 'hidden', // Ensure images do not overflow container
+    overflow: 'hidden', 
   },
   itemImage: {
-    width: 150, // Fixed width for the image
-    height: '100%', // Take full height of the container
+    width: 150, 
+    height: '100%', 
     resizeMode: 'cover',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
