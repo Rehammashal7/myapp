@@ -139,10 +139,8 @@ const Checkout = ({ navigation }) => {
   }, [deliveryprice]);
   const handleCheckout = async () => {
     try {
-      // Prepare an array to hold data for each purchased item
       const items = [];
   
-      // Calculate total price and gather data for each item
       cartList.forEach((item) => {
         const { id, qty, data } = item;
         const totalPrice = (qty || 0) * (data.price || 0);
@@ -158,21 +156,18 @@ const Checkout = ({ navigation }) => {
         });
       });
   
-      // Create a reference to the user's purchased products document
       const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
   
-      // Set the document data with aggregated items, userId, timestamp, and delivery status
       await setDoc(userPurchasedProductsRef, {
         
         items: items,
         userId: userId,
         timestamp: new Date(),
-        delivered: false, // Initial delivery status is set to false
+        delivered: false, 
       });
   
       console.log('Purchased products saved to Firestore successfully');
   
-      // Navigate to the checkout screen or perform other actions after successful checkout
       navigation.navigate('checkout');
     } catch (error) {
       console.error('Error saving purchased products to Firestore:', error);
