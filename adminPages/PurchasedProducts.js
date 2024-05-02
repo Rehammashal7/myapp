@@ -1,19 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
-import { db } from '../firebase'; // Import your Firebase configuration
+import { db } from '../firebase'; 
 
 const { width } = Dimensions.get('window');
 
 const PurchasedProductsScreen = ({ navigation }) => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState('waiting'); // 'Delivered' or 'waiting'
-
+  const [activeTab, setActiveTab] = useState('waiting'); 
   useEffect(() => {
     fetchPurchasedProducts();
   }, []);
   const handleItemPress = (items) => {
-    // Navigate to DetailedItemScreen with the list of items
     navigation.navigate('waitingitem', { items });
   };
   const fetchPurchasedProducts = async () => {
@@ -35,7 +33,6 @@ const PurchasedProductsScreen = ({ navigation }) => {
       const purchasedProductRef = doc(db, 'userPurchasedProducts', itemId);
       await updateDoc(purchasedProductRef, { delivered: true });
 
-      // Remove the delivered item from the waiting list
       setPurchasedProducts(prevProducts =>
         prevProducts.filter(product => product.id !== itemId)
       );
