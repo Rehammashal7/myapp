@@ -93,7 +93,9 @@ const HomeScreen = ({ navigation }) => {
                     onScroll={(event) => handleScroll(event, item.id)}
                 />
                 <View style={{ height: 110 }}>
-                    <Text style={styles.Name}>{item.name}</Text>
+                <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+              {item.name}
+            </Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text
@@ -157,12 +159,12 @@ const HomeScreen = ({ navigation }) => {
     );
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
+            <View >
                 <Text style={styles.Text}> AToZ </Text>
             </View>
             <Search />
             <ScrollView>
-                <View>
+                <View style={styles.header} >
                     <FlatList
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -251,7 +253,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         borderRadius: 15,
         width: cardwidth,
-        height: cardheight - 30,
+        height: cardheight + 30,
         elevation: 13,
         backgroundColor: 'white',
     },
@@ -261,7 +263,7 @@ const styles = StyleSheet.create({
         marginRight: 5,
         borderRadius: 15,
         width: cardwidth,
-        height: cardheight - 30,
+        height: cardheight + 30,
         elevation: 13,
         backgroundColor: '#ECF0F1',
     },
@@ -270,7 +272,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
         color: COLORS.dark,
-        marginTop: (cardheight - 30) / 2
+        marginTop: (cardheight + 30) / 2
     },
     container: {
         flex: 1,
@@ -295,7 +297,7 @@ const styles = StyleSheet.create({
     },
     image: {
         position: "relative",
-        height: cardheight - 130,
+        height: cardheight  ,
         width: cardwidth,
     },
     Name: {
