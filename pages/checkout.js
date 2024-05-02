@@ -114,7 +114,14 @@ const Checkout = ({ navigation }) => {
   const onError = (err) => {
     setError(err.message);
   };
-
+  const getTotalOfers = () => {
+    let total = 0;
+    cartList.map(item => {
+      let existingItem = cartList.find(itm => itm.id === item.id)
+      total = total + (item.data.offer / 100 * item.data.price * existingItem.qty);
+    });
+    return total.toFixed(2);
+  };
   const getTotal = () => {
     let total = 0;
     cartList.map(item => {
