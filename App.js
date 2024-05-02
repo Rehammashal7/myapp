@@ -30,14 +30,13 @@ import AddReviewWoman from './pages/AddReviews/AddReview-woman';
 import AddReviewMen from './pages/AddReviews/AddReview-men';
 import AddReviewKids from './pages/AddReviews/AddReview-kids';
 import AddReviewBaby from './pages/AddReviews/AddReview-baby';
-import category from './pages/catigory';
-import admincategory from './adminPages/admincatigory';
+import {Category,  CatigoryResult } from './pages/catigory';import admincategory from './adminPages/admincatigory';
 import DeleteAccount from './pages/DeleteAccount';
 import OrderHistory from './pages/OrderHistory';
 import HistoryOrder from './pages/Orders/HistoryOrder';
 import WaitingOrder from './pages/Orders/WaitingOrder';
 import CancelOrder from './pages/Orders/CancelOrder';
-import AddProducts from './pages/AddProducts';
+//import AddProducts from './pages/AddProducts';
 import AllReviewsPage from './pages/Catigory/AllReviewsPage';
 import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
 import { MenDetails,ProductsListMen } from './pages/Catigory/Men';
@@ -75,28 +74,25 @@ export default function App() {
         <Stack.Screen name="BabyDetails" component={BabyDetails} />
         <Stack.Screen name='AddReviewBaby' component={AddReviewBaby}/>
         <Stack.Screen name="AllReviewsPage" component={AllReviewsPage} />
-        {/* <Stack.Screen name='AddProducts' component={AddProducts}/> */}
+        {/* { <Stack.Screen name='AddProducts' component={AddProducts}/> } */}
         <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="favorite" component={favorite} />
-        <Stack.Screen name='AddProducts' component={AddProducts}/>
         <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
         <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
-        <Stack.Screen name="AddProductForm" component={AddProductForm} />
-        <Stack.Screen name="favorite" component={Favorite} />
+        
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={adminprofile} />
         {/* <Stack.Screen name="products" component={products} /> */}
         <Stack.Screen name="CartScreen" component={CartScreen} />
-        <Stack.Screen name="AddProductForm " component={AddProductForm } /> 
         <Stack.Screen name="adminHome" component={ adminHome }/>
         <Stack.Screen name="OfferDetailsAdmin" component={ OfferDetailsAdmin }/>
         <Stack.Screen name="adminOffer" component={ ProductsListOfferAdmin }/>
         <Stack.Screen name="EditOfferPage" component={ EditOfferPage }/>
         <Stack.Screen name="profile" component={ profile }/>
-        <Stack.Screen name="catigory" component={ category }/>
+        <Stack.Screen name="catigory" component={ Category }/>
         <Stack.Screen name="admincatigory" component={admincategory }/>
        
         <Stack.Screen name="EditProfile" component={ EditProfile }/>
