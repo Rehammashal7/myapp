@@ -21,6 +21,7 @@ import {
 } from "react-native";
 import { upload, useAuth } from "../firebase";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { Entypo } from "@expo/vector-icons";
@@ -30,7 +31,12 @@ import * as ImagePicker from "expo-image-picker";
 import BottomNavigator from "../components/bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
+
 const { width } = Dimensions.get("screen");
+const { height } = Dimensions.get("screen");
+
+const cardwidth = width / 2;
+
 const profile = ({ navigation }) => {
   const currentUser = useAuth();
   const [fristName, setFristName] = useState("");
@@ -50,7 +56,6 @@ const profile = ({ navigation }) => {
   );
   const [profilePhoto, setProfilePhoto] = useState(null);
   // const [orderedItems, setOrderedItems] = useState([]);
-  const [recentlyVisited, setRecentlyVisited] = useState([]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -81,9 +86,7 @@ const profile = ({ navigation }) => {
   else{
     console.log("data not found")
   }
-  if (mode === "loggedIn") {
-    setRecentlyVisited([]);
-  }
+  
     
   },[getData , mode]);
   
@@ -106,14 +109,14 @@ const profile = ({ navigation }) => {
       }
     }, [currentUser]);
     
-    function handleChange(imagepath) {
-      if (imagepath && imagepath.length > 0 ) {
-        const image = imagepath[0];
-        setPhotoURL(imagepath.uri);
-        setPhoto(imagepath);
-        handleChoosePhoto();
-      }
-    }
+    // function handleChange() {
+    //   // if (imagepath && imagepath.length > 0 ) {
+    //   //   const image = imagepath[0];
+    //   //   setPhotoURL(imagepath.uri);
+    //   //   setPhoto(imagepath);
+    //   //   handleChoosePhoto();
+    //   // }
+    // }
     const handleChoosePhoto = async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status !== "granted") {
@@ -134,22 +137,17 @@ const profile = ({ navigation }) => {
       
     };
 
-    const handleProductVisit = (productName) => {
-      if (mode === "loggedIn") {
-        setRecentlyVisited([...recentlyVisited, productName]);
-      }
-    };
 
-    const handleRecentlyVisitedPress = () => {
-      if (mode === "loggedIn") {
-        if (recentlyVisited.length > 0) {
-          const lastVisitedProduct = recentlyVisited[recentlyVisited.length - 1];
-          alert(`Last visited product: ${lastVisitedProduct}`);
-        } else {
-          alert("No recently visited products.");
-        }
-      }
-    };
+    // const handleRecentlyVisitedPress = () => {
+    //   if (mode === "loggedIn") {
+    //     if (recentlyVisited.length > 0) {
+    //       const lastVisitedProduct = recentlyVisited[recentlyVisited.length - 1];
+    //       alert(`Last visited product: ${lastVisitedProduct}`);
+    //     } else {
+    //       alert("No recently visited products.");
+    //     }
+    //   }
+    // };
   function handleClick() {
     upload(photo, currentUser, setLoading);
   }
@@ -176,7 +174,7 @@ const profile = ({ navigation }) => {
       
       if (docSnap.exists()) {
         const data = docSnap.data();
-        setFristName(data.fName); 
+        setFristName(data.fName);
         setLastName(data.lName); 
         setBouns((data.boun||0)); 
         setGetData(false);
@@ -199,15 +197,20 @@ const profile = ({ navigation }) => {
   const handleSignUp = () => {
     navigation.navigate("SignUp");
   };
+  const handleAboutUs = () => {
+    navigation.navigate("AboutUs");
+  };
   const handleEditProfile = () => {
     navigation.navigate("EditProfile");
-    handleChange();
   };
   const handleMyAddressPress = () => {
-    // navigation.navigate("MapScreen");
+    navigation.navigate("AddressScreen");
   };
   const handleMyOrderPress = () => {
-    navigation.navigate("OrderHistory");
+    navigation.navigate("HistoryOrder");
+  };
+  const handleMyOrderPressed = () => {
+    navigation.navigate("CancelOrder");
   };
   const handleLogOut = () => {
     signOut(auth)
@@ -217,7 +220,10 @@ const profile = ({ navigation }) => {
       })
       .catch((error) => console.log(error));
   };
+  const handleRecentlyVisitedPress = () => {
+    navigation.navigate("RecentlyVisited");
 
+  };
   return (
     <>
       {mode === "loggedIn" && (
@@ -290,7 +296,7 @@ const profile = ({ navigation }) => {
                   <Text style={styles.text}> Orders </Text>
                 </View>
               </Pressable>
-              <Pressable style={styles.pressable} onPress={handleMyOrderPress}>
+              <Pressable style={styles.pressable} onPress={handleMyOrderPressed}>
                 <View style={styles.row}>
                 <View style={{ flexDirection: 'column', alignItems: 'center' }}>
   <Fontisto name="shopping-bag-1" size={40} color="black" />
@@ -304,6 +310,15 @@ const profile = ({ navigation }) => {
           {showBouns && (
   <Text style={styles.bounsText}>Bouns: {bounspoint}</Text>
 )}
+ <TouchableOpacity onPress={handleAboutUs}>
+  <View style={styles.aboutuscontainer}>
+    <MaterialIcons name="stars" size={30} color="black" />
+    <Text style={styles.abouttext}>About Us</Text>
+    <View>
+      <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{padding:10,marginLeft:"70%"}]}/>
+    </View>
+  </View>
+</TouchableOpacity>
            <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
           <Text style={styles.logoutButtonText}>LogOut</Text>
         </TouchableOpacity>
@@ -313,7 +328,6 @@ const profile = ({ navigation }) => {
         <View style={styles.container}>
           <View style={styles.welcomecontainer}>
             <Text style={[styles.welcomeinput, { marginLeft: 10 }]}>
-              {" "}
               Welcome to AtoZ
             </Text>
             <View style={styles.pressableContainer}>
@@ -391,7 +405,18 @@ const profile = ({ navigation }) => {
               </Pressable>
             </View>
           </View>
+          <TouchableOpacity onPress={handleAboutUs}>
+  <View style={styles.aboutuscontainer}>
+    <MaterialIcons name="stars" size={30} color="black" />
+    <Text style={styles.abouttext}>About Us</Text>
+    <View>
+      <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{padding:10,marginLeft:"70%"}]}/>
+    </View>
+  </View>
+</TouchableOpacity>
+
         </View>
+        
       )}
       <BottomNavigator item="profile" navigation={navigation} />
     </>
@@ -441,7 +466,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   logoutButton: {
-    width: 380,
+    width: width-10,
+    height:"7%",
     marginLeft: 5,
     backgroundColor: "black",
     padding: 10,
@@ -476,18 +502,7 @@ const styles = StyleSheet.create({
     //margin:3,
     justifyContent: "space-between",
   },
-  logoutEdit: {
-    flex: 1,
-    backgroundColor: "#131A2C",
-    borderRadius: 35,
-    padding: 5,
-    width: "100%",
-    height: 40,
-    alignItems: "center",
-    margin: 5,
-    // marginVertical: 0,
-    // marginBottom:50,
-  },
+ 
   
   buttonTextLoggout: {
     color: "#131A2C",
@@ -515,8 +530,8 @@ const styles = StyleSheet.create({
   },
   welcomecontainer: {
     backgroundColor: "#ffffff",
-    width: 380,
-    height: 145,
+    width: width-10,
+    height: "20%",
     justifyContent: "flex-start",
     alignItems: "flex-start",
     alignSelf: "flex-start",
@@ -582,8 +597,8 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 20,
     // borderRadius: 0,
     marginHorizontal: 5,
-    width: 185,
-    height: 40,
+    width: cardwidth-10,
+    height: height-790,
     borderWidth: 1,
     borderColor: "black",
     textAlign: "center",
@@ -595,8 +610,8 @@ const styles = StyleSheet.create({
   },
   ordercontainer: {
     backgroundColor: "#ffffff",
-    width: 380,
-    height: 145,
+    width: width-10,
+    height: "20%",
     justifyContent: "center",
     alignItems: "flex-start",
     alignSelf: "flex-start",
@@ -628,9 +643,9 @@ const styles = StyleSheet.create({
   bounsText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "black", // لون النص هنا
-    marginTop: 10, // تباعد النص عن الأعلى
-    marginLeft: 10, // تباعد النص عن اليسار
+    color: "black", 
+    marginTop: 10, 
+    marginLeft: 10, 
   },
  
   pencil: {
@@ -638,6 +653,25 @@ const styles = StyleSheet.create({
     top: 15,
     // left: 200,
     right: 15,
+  },
+  aboutuscontainer:{
+    flexDirection: "row" ,
+    width:width-10,
+    height:height-780,
+    alignItems:"center",
+    marginLeft:5,
+    marginTop:10,
+    backgroundColor: "#ffffff",
+    borderStyle: "solid",
+    borderColor: "black",
+    // borderWidth: 0.5,
+
+  },
+  abouttext:{
+    fontSize:20,
+    marginLeft:10,
+
+
   },
 });
 export default profile;

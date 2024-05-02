@@ -19,10 +19,16 @@ const SignUpScreen = ({ navigation }) => {
   const [fristName, setFristName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState('');
-  const [birthDate, setBirthDate] = useState('');
+  const [birthDate, setBirthDate] = useState(new Date());
+  const [verification ,setVerifivation]=useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [validationEmail , setValidationEmail] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [recentlyVisited, setRecentlyVisited] = useState([]);
+    const [HistoryOrder, setHistoryOrders] = useState([]);
+  const [waitingOrder, setWaitingOrders] = useState([]);
+  const [cancelOrder, setCancelOrders] = useState([]);
+
   const handleCheckEmail = () => {
     let isvalid = true ;
     let re = /\S+@\S+\.\S+/; 
@@ -85,7 +91,9 @@ const SignUpScreen = ({ navigation }) => {
       birthDate:birthDate,
       userId:userId ,
       cart: [],
-         isAdmin:false,
+      recentlyVisited:[],
+      isAdmin:false,
+      verification:false,
     });
     
 
@@ -325,7 +333,7 @@ const styles = StyleSheet.create({
   }, iconContainer: {
     position: 'absolute',
     right: 35,
-    top: '48,5%',
+    top: '48.5%',
     transform:[{translateY: -10}],
     zIndex:1
   },

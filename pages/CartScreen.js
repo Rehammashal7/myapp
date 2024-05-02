@@ -19,8 +19,12 @@ import BottomNavigator from '../components/bar';
 import Search from '../components/search';
 import COLORS from '../Consts/Color';
 import Icon from 'react-native-vector-icons/Ionicons';
+
 const { width } = Dimensions.get('screen');
+const { height: screenHeight } = Dimensions.get('window');
+const cardheight = screenHeight / 2 - 30;
 const cardwidth = width / 2;
+
 //parseInt()تحويل 
 const CartScreen = ({ navigation }) => {
   const isFocused = useIsFocused();
@@ -33,6 +37,7 @@ const CartScreen = ({ navigation }) => {
   const [totalPrice, settotalPrice] = React.useState(0);
   useEffect(() => {
     getCartItems();
+    recommended()
     //console.log(userId);
   }, [isFocused]);
   const [activeIndexes, setActiveIndexes] = useState({});
@@ -74,32 +79,98 @@ const CartScreen = ({ navigation }) => {
     getbouns();
   }, []);
 
+  const [collectionName, setCollection] = useState([]);
+  const [type, setType] = useState([])
+
+  const [indices,setindices]=useState([]);
+
+  useEffect(() => {
+    console.log(Recomendproduct);
+    recommended();
+   setindices(Array.from({ length: cartList.length }, (_, index) => index));
+   console.log("length",indices);
+  }, [cartList]);
+
+  const [Recomendproduct, setRecomendproduct] = useState([])
+  const recommended = async () => {
+    try {
+      const categories = cartList.map(item => item.data.categoryName);
+      const types = cartList.map(item => item.data.type);
+      const prices =cartList.map(item => item.data.price);
+      setCollection(categories);
+      console.log("Category Names:", categories);
+
+      console.log("Types:", types);
+      setType(types);
+
+      // Fetch recommended products for each category and type
+      const recommendedProductsPromises = categories.map((item, index) =>
+        getRecommendProduct(item, types[index],prices[index])
+      );
+
+      // Wait for all fetches to complete
+      const recommendedProducts = await Promise.all(recommendedProductsPromises);
+      setRecomendproduct(recommendedProducts);
+      console.log("Recommended Products:", recommendedProducts);
+      console.log(Recomendproduct);
+    } catch (error) {
+      console.error("Error fetching recommended products: ", error);
+    }
+  };
+
+  const getRecommendProduct = async (item, types,prices) => {
+    console.log("Category Name:", item);
+    console.log("Type:", types);
+
+    const collectname = item.toLowerCase();
+    try {
+      const productsCollection = collection(db, collectname);
+      const productsSnapshot = await getDocs(productsCollection);
+      const productsData = productsSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      let filteredProducts = [];
+      // if (types === 't-shirt' || types === 'shirt') {
+      //   filteredProducts = productsData.filter(product => product.type === 'trousers' && product.price < prices );
+      // } else if (types === 'boy' || types === 'girl' || types === 'dress' || types === 'skirt' ) {
+        filteredProducts = productsData.filter(product => product.type === types && product.price < prices &&product.price ===prices+100);
+      // } else if (types === 'trousers') {
+      //   if (collectname === 'woman') {
+      //     filteredProducts = productsData.filter(product => product.type === 't-shirt' && product.price < prices);
+      //   } else if (collectname === 'men') {
+      //     filteredProducts = productsData.filter(product => product.type === 't-shirt' && product.type === 'shirt' && product.price < prices);
+      //   }
+      // }
+
+      console.log("Filtered Products:", filteredProducts);
+      return filteredProducts;
+    } catch (error) {
+      console.error("Error fetching products: ", error);
+      throw error;
+    }
+  };
+
   const getCartItems = async () => {
-    //const userId = await AsyncStorage.getItem('USERID');
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     setCartList(userSnap.get('cart'));
   };
 
-
   useEffect(() => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem('USERID');
       setUserId(id);
-
     };
     getUserId();
   }, []);
-
-
 
   const addItem = async item => {
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     const user = userSnap.data();
-
     let tempCart = [...user.cart];
-
     const existingItemIndex = tempCart.findIndex(cartItem => cartItem.id === item.id);
 
     if (existingItemIndex !== -1) {
@@ -269,9 +340,71 @@ const CartScreen = ({ navigation }) => {
 
       const formattedDate = `${year}-${month}-${day}`;
       return formattedDate;
-    }
-
+    };
   };
+
+  const renderProduct = ({ item }) => (
+    <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
+      <View style={styles.cardView2}>
+        <FlatList
+          vertical={true}
+          data={item.images}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item: image, index }) => (
+            <Image key={index} source={{ uri: image }} style={styles.image} />
+          )}
+          keyExtractor={(image, index) => index.toString()}
+          onScroll={(event) => handleScroll(event, item.id)}
+        />
+        <View style={{ height: 110 }}>
+          <Text style={styles.Name}>{item.name}</Text>
+          {item.offer !== 0 ? (
+            <>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: "bold",
+                  marginHorizontal: 10,
+                  textDecorationLine: "line-through",
+                  height: 20
+                }}
+              >
+                {item.price} EGP
+              </Text>
+
+              <Text
+                style={{
+                  fontSize: 13,
+                  fontWeight: "bold",
+                  marginHorizontal: 9,
+                  color: "#df2600",
+                  height: 40
+                }}
+              >
+                🏷️ {item.offer}% Discount{" "}
+                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                  {Math.floor(
+                    item.price - item.price / item.offer
+                  )}{" "}
+                  EGP
+                </Text>
+              </Text>
+            </>
+          ) : (
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                marginHorizontal: 10,
+              }}
+            >
+              {item.price} EGP
+            </Text>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -309,7 +442,7 @@ const CartScreen = ({ navigation }) => {
 
 
                 <View style={styles.cardView}>
-                  <Pressable onPress={() => deleteItem(index)} style={styles.iconBehave}>
+                  <Pressable onPress={() => deleteItem(index)} style={[styles.iconBehave, { marginLeft: 5 }]}>
                     <Icon name='trash-outline' size={25} color={COLORS.dark} style={styles.iconBehave} />
                   </Pressable>
                   <FlatList
@@ -336,7 +469,7 @@ const CartScreen = ({ navigation }) => {
                       </Text>
                       {item.data.offer !== 0 && (
                         <Text style={styles.discountText}>
-                          {' - '+(item.data.offer / 100 * item.data.price).toFixed(2) + 'EGP'}
+                          {' - ' + (item.data.offer / 100 * item.data.price).toFixed(2) + 'EGP'}
                         </Text>
                       )}
                     </View>
@@ -373,7 +506,7 @@ const CartScreen = ({ navigation }) => {
                         style={[
                           styles.addToCartBtn,
                           {
-                            width: 30,
+                            width: 35,
                             justifyContent: 'center',
                             alignItems: 'center',
                             marginLeft: 20,
@@ -454,6 +587,33 @@ const CartScreen = ({ navigation }) => {
             </>
           )}
         </View>
+        {Recomendproduct.length>0 &&
+        (<View>
+        <View style={styles.headerTextView}>
+                    <Text style={[styles.headerText, { color: COLORS.dark }]}> Recommended for you   </Text>
+                </View>
+        <ScrollView horizontal={true}>
+        {indices.map((index) => (
+           (
+          <FlatList
+            key={index}
+            style={{ marginTop: 10, marginBottom: 10 }}
+            horizontal={true}
+            data={Recomendproduct[index]}
+            showsHorizontalScrollIndicator={false}
+            renderItem={renderProduct}
+            keyExtractor={(item) => item.id.toString()} // Ensure key is a string
+          />
+          )
+      ))}
+
+          {/* <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
+                            <Text style={styles.discoverText}>{'See All >>'}</Text>
+                        </TouchableOpacity> */}
+
+        </ScrollView>
+      </View>)}
+
         <View style={styles.bottoms}></View>
       </ScrollView>
       {cartList.length > 0 && (
@@ -476,6 +636,7 @@ const CartScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
+     
       <BottomNavigator item="cart" navigation={navigation} userId={userId} />
     </View>
   );
@@ -520,6 +681,15 @@ const styles = StyleSheet.create({
     marginLeft: width / 2 - 80
 
   },
+  headerTextView: {
+    backgroundColor: 'White',
+    marginTop: 10
+},headerText: {
+        fontSize: 20,
+        fontWeight: "bold",
+        alignItems: 'center',
+        margin: 10
+    },
   deliveryText: {
     marginLeft: 60,
     fontSize: 18,
@@ -528,6 +698,7 @@ const styles = StyleSheet.create({
   },
   iconBehave: {
     marginTop: 50,
+    marginLeft: 10,
     marginRight: 10
   },
   cardView: {
@@ -541,6 +712,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     marginLeft: 20,
   },
+  cardView2: {
+    marginBottom: 20,
+    marginTop: 5,
+    marginRight: 5,
+    borderRadius: 15,
+    width: cardwidth,
+    height: cardheight - 30,
+    elevation: 13,
+    backgroundColor: 'white',
+},
   itemView: {
     flexDirection: 'row',
     width: '90%',
@@ -555,22 +736,25 @@ const styles = StyleSheet.create({
     marginLeft: 70,
   },
   itemImage: {
-    width: cardwidth - 50,
-    height: 200,
-    margin: 5,
+    width: cardwidth - 90,
+    height: 210,
+    marginLeft: 5,
+    marginRight: 5
   },
   nameView: {
     width: '50%',
     margin: 10,
+    height: 90
+
   },
   priceView: {
     flexDirection: 'row',
     alignItems: 'center',
   },
   nameText: {
-    fontSize: 20,
+    fontSize: 18,
     color: COLORS.dark,
-    fontWeight: '700',
+    fontWeight: '500',
     marginBottom: 10
   },
   descText: {
@@ -630,10 +814,24 @@ const styles = StyleSheet.create({
     width: '90%',
     height: 60,
     backgroundColor: COLORS.white,
-    elevation: 5,
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
 
+  },
+  image: {
+    position: "relative",
+    height: cardheight - 130,
+    width: cardwidth,
+  },
+  Name: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: "#131A2C",
+    marginTop: 5,
+    marginLeft: 10,
+    marginBottom: 5,
+    height: 40,
+    width: cardwidth - 20
   },
 });

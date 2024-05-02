@@ -18,43 +18,52 @@ const Search = () => {
     const isFocused = useIsFocused();
     const [modalVisible, setModalVisible] = useState(false);
     const [textInputFocused, setTextInputFocused] = useState(true);
-    const [searchQuery, setSearchQuery] = useState([]);
-const [data, setData] = useState([]);
-   
+    const [data, setData] = useState([]);
     const [products, setProducts] = useState({});
     const [userId, setUserId] = useState('');
     const textInput = useRef(null);
     const [searchList, setsearchList] = useState([]);
     const [length, setlength] = useState(0);
     const [isempty, setisempty] = useState(true);
-    const contains = ({ name }, query) => {
-        return name.toLowerCase().includes(query.toLowerCase());
-    };
+    const [searchText, setText] = useState("");
+
     useEffect(() => {
         getsearchItems();
-
         fetchData();
     }, [getsearchItems, isFocused]);
+
     useEffect(() => {
         if (!isempty) {
             setlength(0)
         }
     }, [isempty])
+
     useEffect(() => {
         if (isempty) {
             getsearchItems();
         }
     }, [isempty])
+
+    const contains = ({ name }, query) => {
+        return name.toLowerCase().includes(query.toLowerCase());
+    };
+
     const getsearchItems = async () => {
         try {
-
             const id = await AsyncStorage.getItem('USERID');
             setUserId(id);
             const userRef = doc(db, 'users', id);
             const userSnap = await getDoc(userRef);
-            setsearchList(userSnap.get('search'));
-            setlength(searchList.length);
-            console.log('Search List:', searchList);
+            const searchList = userSnap.get('search');
+            
+            if (searchList ) {
+              setsearchList(searchList);
+              setlength(searchList.length);
+            } else {
+              setsearchList([]);
+              setlength(0);
+            }
+            
         } catch (error) {
             console.error('Error getting search items:', error);
         }
@@ -74,11 +83,9 @@ const [data, setData] = useState([]);
         } catch (error) {
             console.error('Error adding to search:', error);
         }
-
     };
 
     const deleteItem = async (index) => {
-        //const userId = await AsyncStorage.getItem('USERID');
         try {
             const userRef = doc(db, 'users', userId);
             const userSnap = await getDoc(userRef);
@@ -91,11 +98,6 @@ const [data, setData] = useState([]);
         }
     };
 
-    useEffect(() => {
-
-    }, []);
-
-
     const fetchData = async () => {
         try {
             const collectionNames = ['woman', 'kids', 'baby', 'men'];
@@ -107,64 +109,57 @@ const [data, setData] = useState([]);
             });
             const dataArray = await Promise.all(dataPromises);
             const mergedData = dataArray.reduce((acc, curr) => ({ ...acc, ...curr }), {});
-
             setProducts(mergedData);
-            console.log('Fetched data:', mergedData);
         } catch (error) {
             console.error('Error fetching data:', error);
         }
     };
 
-    
-  const getProductById = async (categoryId, itemId) => {
-    try {
-      const productsCollection = collection(db, categoryId);
-      const querySnapshot = await getDocs(productsCollection);
-      const productsData = querySnapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .find((product) => product.id === itemId);
-  
-      return productsData;
-    } catch (error) {
-      console.error("Error fetching product: ", error);
-      return null; // Return null if an error occurs
-    }
-  };
-  
-  const handleProductPress = async (product, Category) => {
-    console.log(Category);
-    onAddTosearch(product);
-    try {
-      const categoryId = Category ? Category.toLowerCase() : "woman"; 
-    const retrievedProduct = await getProductById(categoryId, product.id);
-      
-      if (retrievedProduct) {
-        if (Category === "KIDS") {
-          navigation.navigate('KidsDetails', { product: retrievedProduct });setModalVisible(false)
-          setTextInputFocused(true)
-        } else if (Category === "MEN") {
-          navigation.navigate('MenDetails', { product: retrievedProduct });setModalVisible(false)
-          setTextInputFocused(true)
-        } else if (Category === "BABY") {
-          navigation.navigate('BabyDetails', { product: retrievedProduct });setModalVisible(false)
-          setTextInputFocused(true)
-        } else {
-          navigation.navigate('WomanDetails', { product: retrievedProduct });setModalVisible(false)
-          setTextInputFocused(true)
+    const getProductById = async (categoryId, itemId) => {
+        try {
+            const productsCollection = collection(db, categoryId);
+            const querySnapshot = await getDocs(productsCollection);
+            const productsData = querySnapshot.docs
+                .map((doc) => ({
+                    id: doc.id,
+                    ...doc.data(),
+                }))
+                .find((product) => product.id === itemId);
+
+            return productsData;
+        } catch (error) {
+            console.error("Error fetching product: ", error);
+            return null;
         }
-      } else {
-        console.error("Product not found!");
-        // Handle case when product is not found
-      }
-    } catch (error) {
-      console.error("Error fetching product: ", error);
-      // Handle error
-    }
-  };
-    
+    };
+
+    const handleProductPress = async (product, Category) => {
+        onAddTosearch(product);
+        try {
+            const categoryId = Category ? Category.toLowerCase() : "woman";
+            const retrievedProduct = await getProductById(categoryId, product.id);
+
+            if (retrievedProduct) {
+                if (Category === "KIDS") {
+                    navigation.navigate('KidsDetails', { product: retrievedProduct }); setModalVisible(false)
+                    setTextInputFocused(true)
+                } else if (Category === "MEN") {
+                    navigation.navigate('MenDetails', { product: retrievedProduct }); setModalVisible(false)
+                    setTextInputFocused(true)
+                } else if (Category === "BABY") {
+                    navigation.navigate('BabyDetails', { product: retrievedProduct }); setModalVisible(false)
+                    setTextInputFocused(true)
+                } else {
+                    navigation.navigate('WomanDetails', { product: retrievedProduct }); setModalVisible(false)
+                    setTextInputFocused(true)
+                }
+            } else {
+                console.error("Product not found!");
+            }
+        } catch (error) {
+            console.error("Error fetching product: ", error);
+        }
+    };
 
     const handleSearch = async (text) => {
         if (text.trim() !== '') {
@@ -176,6 +171,7 @@ const [data, setData] = useState([]);
             setData(filteredData);
             setisempty(false);
             setlength(0);
+            setText(text);
         } else {
             setisempty(true);
             getsearchItems();
@@ -185,43 +181,38 @@ const [data, setData] = useState([]);
     };
 
     const renderItem = ({ item }) => (
-        <TouchableOpacity onPress={() => { handleProductPress(item,item.categoryName), getsearchItems() }}>
+        <TouchableOpacity onPress={() => { handleProductPress(item, item.categoryName), getsearchItems() }}>
             <View style={styles.view2}>
                 <Text>{item.name}</Text>
             </View>
         </TouchableOpacity>
     );
-    const renderItem2 = ({ item, index }) => (
 
+    const renderItem2 = ({ item, index }) => (
         <View style={styles.total}>
             <View style={{ flexDirection: 'row' }}>
                 <Pressable style={{ alignItems: 'center', }}>
                     <Icon name='refresh-outline' size={20} color={COLORS.grey} style={{ alignItems: 'center', }} />
                 </Pressable>
-                <TouchableOpacity onPress={() => handleProductPress(item,item.categoryName)}>
-                    <Text>{item.name}</Text>
+                <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
+                    <Text style={{width:width-60}}>{item.name}</Text>
                 </TouchableOpacity>
             </View>
             <Pressable onPress={() => deleteItem(index)} style={{ alignItems: 'center', }}>
                 <Icon name='trash' size={25} color={COLORS.dark} style={{ alignItems: 'center', }} />
             </Pressable>
         </View>
-
-
     );
 
     const handleSearchNavigate = () => {
-        if (!isempty) {
-            navigation.navigate("SearchResultsPage");setModalVisible(false)
-            setTextInputFocused(true)
-        } else {
-            navigation.navigate("SearchResultsPage");setModalVisible(false)
-            setTextInputFocused(true)
-        }
-       
+        navigation.navigate("SearchResultsPage", { searchData: data, searchTexts: searchText });
+        setModalVisible(false);
+        setTextInputFocused(true);
     };
+
     return (
         <View style={{ alignItems: "center" }}>
+            {/* search */}
             <TouchableWithoutFeedback
                 onPress={() => {
                     setModalVisible(true);
@@ -250,7 +241,6 @@ const [data, setData] = useState([]);
                             >
                                 <Icon name="arrow-back"
                                     onPress={() => {
-
                                         navigation.navigate("Home");
                                         setModalVisible(false)
                                         setTextInputFocused(true)
@@ -259,7 +249,7 @@ const [data, setData] = useState([]);
                                 />
                             </Animatable.View>
                             <TextInput
-                                style={{ width: '80%', borderWidth: 0, borderColor: 'transparent' ,height:25,padding:10}}
+                                style={styles.searchInput}
                                 ref={textInput}
                                 autoFocus={false}
                                 placeholder="Search"
@@ -271,7 +261,7 @@ const [data, setData] = useState([]);
                                 onBlur={() => {
                                     setTextInputFocused(false);
                                 }}
-                                onSubmitEditing={handleSearchNavigate} 
+                                onSubmitEditing={handleSearchNavigate}
                             />
                             <Animatable.View
                                 animation={textInputFocused ? "fadeInLeft" : ""}
@@ -293,21 +283,22 @@ const [data, setData] = useState([]);
                         </View>
                     </View>
                     <ScrollView>
-                        <View style={{ height: (length) * 60 }}>
-
+                        {/* last search */}
+                        {searchList.length>0 &&(<View style={{ height: (length) * 60 }}>
                             <FlatList
                                data={Object.values(searchList || {}).flat()}
                                 keyExtractor={item => item.id}
                                 renderItem={renderItem2}
                             />
-
                             <View
                                 style={{
                                     borderBottomColor: 'gray',
                                     borderBottomWidth: 0.5,
                                 }}
+                                
                             />
-                        </View>
+                        </View>)}
+                        {/* result search */}
                         <FlatList
                             data={Object.values(data).flat()}
                             keyExtractor={item => item.id}
@@ -315,6 +306,7 @@ const [data, setData] = useState([]);
                         />
                     </ScrollView>
                 </View>
+                {/* navigation bar */}
                 <View style={styles.NavContainer}>
                     <View style={styles.Navbar}>
                         <Pressable onPress={() => {
@@ -325,8 +317,6 @@ const [data, setData] = useState([]);
                             <Icon name="person-outline" size={25} color={COLORS.dark} style={styles.iconBehave} />
                             <Text style={styles.Text}>profile</Text>
                         </Pressable>
-
-                       
                         <Pressable onPress={() => {
                             navigation.navigate("Home");
                             setModalVisible(false)
@@ -335,7 +325,6 @@ const [data, setData] = useState([]);
                             <Icon name="home-outline" size={25} color={COLORS.dark} style={styles.iconBehave} />
                             <Text style={styles.Text}>Home</Text>
                         </Pressable>
-
                         <Pressable onPress={() => {
                             navigation.navigate("favorite", { userId: userId });
                             setModalVisible(false)
@@ -344,7 +333,6 @@ const [data, setData] = useState([]);
                             <Icon name="heart-outline" size={25} color={COLORS.dark} style={styles.iconBehave} />
                             <Text style={styles.Text}>favorite</Text>
                         </Pressable>
-
                         <Pressable onPress={() => {
                             navigation.navigate("CartScreen", { userId: userId });
                             setModalVisible(false)
@@ -353,7 +341,6 @@ const [data, setData] = useState([]);
                             <Icon name="cart-outline" size={25} color={COLORS.dark} style={styles.iconBehave} />
                             <Text style={styles.Text}>Cart</Text>
                         </Pressable>
-
                     </View>
                 </View>
             </Modal>
@@ -362,19 +349,12 @@ const [data, setData] = useState([]);
 }
 
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1
-    },
-    text1: {
-        color: COLORS.grey,
-        fontSize: 16
-    },
+const styles = StyleSheet.create({  
     total: {
         width: '90%',
         height: 60,
         backgroundColor: COLORS.white,
-        elevation: 5,
+        marginLeft:5,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -446,7 +426,14 @@ const styles = StyleSheet.create({
     Text: {
         fontWeight: "bold",
         color: COLORS.dark
-    }
+    },
+    searchInput: {
+        width: '80%',
+        borderWidth: 0,
+        borderColor: 'transparent',
+        height: 25,
+        padding: 0,
+      },
 });
 
 export default Search;

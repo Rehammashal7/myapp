@@ -33,8 +33,10 @@ import AddReviewBaby from './pages/AddReviews/AddReview-baby';
 import category from './pages/catigory';
 import admincategory from './adminPages/admincatigory';
 import DeleteAccount from './pages/DeleteAccount';
-// import MapScreen from './pages/MapScreen';
 import OrderHistory from './pages/OrderHistory';
+import HistoryOrder from './pages/Orders/HistoryOrder';
+import WaitingOrder from './pages/Orders/WaitingOrder';
+import CancelOrder from './pages/Orders/CancelOrder';
 import AddProducts from './pages/AddProducts';
 import AllReviewsPage from './pages/Catigory/AllReviewsPage';
 import {WomanDetails, ProductsListWoman } from './pages/Catigory/Woman';
@@ -45,11 +47,16 @@ import PayWithCard from './pages/PayWithCard';
 import ProductPage from './pages/ResultSearch';
 import PurchasedProductsScreen from './adminPages/PurchasedProducts';
 import waitingitem from './adminPages/waitingitem';
+import Offer from './pages/offers';
+import RecentlyVisited from './pages/RecentlyVisited';
+import AddressScreen from './pages/AddressScreen';
+import AddressInformation from './pages/AddressInformation';
+import AboutUs from './pages/AboutUs';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="PurchasedProductsScreen">
+      <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
@@ -72,6 +79,12 @@ export default function App() {
         <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
         <Stack.Screen name="favorite" component={favorite} />
+        <Stack.Screen name='AddProducts' component={AddProducts}/>
+        <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
+        <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
+        <Stack.Screen name='CancelOrder' component={CancelOrder}/>
+        <Stack.Screen name="AddProductForm" component={AddProductForm} />
+        <Stack.Screen name="favorite" component={Favorite} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={adminprofile} />
@@ -85,6 +98,7 @@ export default function App() {
         <Stack.Screen name="profile" component={ profile }/>
         <Stack.Screen name="catigory" component={ category }/>
         <Stack.Screen name="admincatigory" component={admincategory }/>
+       
         <Stack.Screen name="EditProfile" component={ EditProfile }/>
         <Stack.Screen name="DeleteAccount" component={ DeleteAccount }/>
         <Stack.Screen name="addadmin" component={ addadmin }/>
@@ -92,6 +106,16 @@ export default function App() {
         <Stack.Screen name="checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
         <Stack.Screen name="SearchResultsPage" component={ ProductPage }/>
+        <Stack.Screen name="offer" component={ Offer }/>
+        <Stack.Screen name="categoryresult" component= {CatigoryResult}/>
+        <Stack.Screen name="RecentlyVisited" component={ RecentlyVisited }/>
+        <Stack.Screen name="AddressScreen" component={ AddressScreen }/>
+        <Stack.Screen name="AddressInformation" component={ AddressInformation }/>
+        <Stack.Screen name="AboutUs" component={ AboutUs }/>
+
+
+
+
 
 
 
