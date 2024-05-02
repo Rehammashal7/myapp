@@ -55,7 +55,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="adminHome">
+      <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
