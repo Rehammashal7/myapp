@@ -59,7 +59,7 @@ const Offer = ({ route, navigation }) => {
                 </View>
 
                 <View style={{ height: 110 }}>
-                    <Text style={styles.Name}>{item.name}</Text>
+                    <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text

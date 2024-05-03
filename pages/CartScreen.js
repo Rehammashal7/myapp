@@ -131,18 +131,9 @@ const CartScreen = ({ navigation }) => {
         ...doc.data(),
       }));
 
-      let filteredProducts = [];
-      // if (types === 't-shirt' || types === 'shirt') {
-      //   filteredProducts = productsData.filter(product => product.type === 'trousers' && product.price < prices );
-      // } else if (types === 'boy' || types === 'girl' || types === 'dress' || types === 'skirt' ) {
-        filteredProducts = productsData.filter(product => product.type === types && product.price < prices &&product.price ===prices+100);
-      // } else if (types === 'trousers') {
-      //   if (collectname === 'woman') {
-      //     filteredProducts = productsData.filter(product => product.type === 't-shirt' && product.price < prices);
-      //   } else if (collectname === 'men') {
-      //     filteredProducts = productsData.filter(product => product.type === 't-shirt' && product.type === 'shirt' && product.price < prices);
-      //   }
-      // }
+      console.log("Filtered Products:", productsData);
+
+        let filteredProducts = productsData.filter(product => product.type === types || product.price < prices ||product.price ===prices+100);
 
       console.log("Filtered Products:", filteredProducts);
       return filteredProducts;
@@ -357,7 +348,9 @@ const CartScreen = ({ navigation }) => {
           onScroll={(event) => handleScroll(event, item.id)}
         />
         <View style={{ height: 110 }}>
-          <Text style={styles.Name}>{item.name}</Text>
+          <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+            {item.name}
+          </Text>
           {item.offer !== 0 ? (
             <>
               <Text
@@ -833,5 +826,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     height: 40,
     width: cardwidth - 20
-  },
+},
 });

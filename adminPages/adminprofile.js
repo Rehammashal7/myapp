@@ -31,7 +31,7 @@ const adminProfile = ({navigation}) => {
     signOut(auth)
       .then(() => {
         setUserLoggedIn(false);
-        navigation.navigate('Welcome')
+        navigation.navigate('Login')
       })
       .catch((error) => console.log(error));
   };

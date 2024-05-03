@@ -3,7 +3,7 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile,
-    // useAuth,
+  // useAuth,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useEffect } from "react";
@@ -46,7 +46,7 @@ const profile = ({ navigation }) => {
   const [mode, setMode] = useState("unlogginUser");
   const [showBouns, setShowBouns] = useState(false);
   const [bounspoint, setBouns] = useState("");
-  const [getData,setGetData] = useState(false);
+  const [getData, setGetData] = useState(false);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
   // const [order, setOrder] = useState("");
   const [photo, setPhoto] = useState(null);
@@ -62,14 +62,14 @@ const profile = ({ navigation }) => {
       // Set getData to true when the profile page is focused
       setGetData(true);
     });
-  
+
     // Clean up the listener when the component is unmounted
     return unsubscribe;
   }, [navigation]);
- 
+
   function useAuth() {
     const [currentUser, setCurrentUser] = useState("");
-    
+
     useEffect(() => {
       const unsub = onAuthStateChanged(auth, user => setCurrentUser(user));
       return unsub;
@@ -79,116 +79,116 @@ const profile = ({ navigation }) => {
     return currentUser;
   }
   useEffect(() => {
-  if (getData){
-    getUserData(); 
-    console.log("iam in useEffect 2");
-  }
-  else{
-    console.log("data not found")
-  }
-  
-    
-  },[getData , mode]);
-  
-    useEffect(() => {
-      if (currentUser) {
-        
-        setMode("loggedIn");
-        console.log("iam in useEffect 3");
-
-      } else {
-        setMode("unlogginUser");
-        console.log("iam in useEffect 3");
-
-      }
-    }, [currentUser]);
-
-    useEffect(() => {
-      if (currentUser?.photoURL) {
-        setPhotoURL(currentUser.photoURL);
-      }
-    }, [currentUser]);
-    
-    // function handleChange() {
-    //   // if (imagepath && imagepath.length > 0 ) {
-    //   //   const image = imagepath[0];
-    //   //   setPhotoURL(imagepath.uri);
-    //   //   setPhoto(imagepath);
-    //   //   handleChoosePhoto();
-    //   // }
-    // }
-    const handleChoosePhoto = async () => {
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      if (status !== "granted") {
-        alert("Sorry, we need camera roll permissions to make this work!");
-        return;
-      }
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setPhotoURL(result.uri);
-      
-      }
-  
-      
-    };
+    if (getData) {
+      getUserData();
+      console.log("iam in useEffect 2");
+    }
+    else {
+      console.log("data not found")
+    }
 
 
-    // const handleRecentlyVisitedPress = () => {
-    //   if (mode === "loggedIn") {
-    //     if (recentlyVisited.length > 0) {
-    //       const lastVisitedProduct = recentlyVisited[recentlyVisited.length - 1];
-    //       alert(`Last visited product: ${lastVisitedProduct}`);
-    //     } else {
-    //       alert("No recently visited products.");
-    //     }
-    //   }
-    // };
+  }, [getData, mode]);
+
+  useEffect(() => {
+    if (currentUser) {
+
+      setMode("loggedIn");
+      console.log("iam in useEffect 3");
+
+    } else {
+      setMode("unlogginUser");
+      console.log("iam in useEffect 3");
+
+    }
+  }, [currentUser]);
+
+  useEffect(() => {
+    if (currentUser?.photoURL) {
+      setPhotoURL(currentUser.photoURL);
+    }
+  }, [currentUser]);
+
+  // function handleChange() {
+  //   // if (imagepath && imagepath.length > 0 ) {
+  //   //   const image = imagepath[0];
+  //   //   setPhotoURL(imagepath.uri);
+  //   //   setPhoto(imagepath);
+  //   //   handleChoosePhoto();
+  //   // }
+  // }
+  const handleChoosePhoto = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Sorry, we need camera roll permissions to make this work!");
+      return;
+    }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      setPhotoURL(result.uri);
+
+    }
+
+
+  };
+
+
+  // const handleRecentlyVisitedPress = () => {
+  //   if (mode === "loggedIn") {
+  //     if (recentlyVisited.length > 0) {
+  //       const lastVisitedProduct = recentlyVisited[recentlyVisited.length - 1];
+  //       alert(`Last visited product: ${lastVisitedProduct}`);
+  //     } else {
+  //       alert("No recently visited products.");
+  //     }
+  //   }
+  // };
   function handleClick() {
     upload(photo, currentUser, setLoading);
   }
   async function upload(file, currentUser, setLoading) {
     const storage = getStorage();
 
-    const fileRef = ref(storage,currentUser.uid + '.png');
-  
+    const fileRef = ref(storage, currentUser.uid + '.png');
+
     setLoading(true);
-    
+
     const snapshot = await uploadBytes(fileRef, file);
     const photoURL = await getDownloadURL(fileRef);
-  
-    updateProfile(currentUser, {photoURL});
-    
+
+    updateProfile(currentUser, { photoURL });
+
     setLoading(false);
     alert("Uploaded file!");
   };
-  
-  
+
+
   const getUserData = async () => {
-      const docRef = doc(db, "users", auth.currentUser.uid);
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        setFristName(data.fName);
-        setLastName(data.lName); 
-        setBouns((data.boun||0)); 
-        setGetData(false);
-        console.log("getdata done");
+    const docRef = doc(db, "users", auth.currentUser.uid);
+    const docSnap = await getDoc(docRef);
+
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      setFristName(data.fName);
+      setLastName(data.lName);
+      setBouns((data.boun || 0));
+      setGetData(false);
+      console.log("getdata done");
 
     }
   };
 
 
- 
 
-    {
-      mode === "loggedIn" ? getUserData() : null;
-    }
+
+  {
+    mode === "loggedIn" ? getUserData() : null;
+  }
 
 
   const handleLogin = () => {
@@ -216,7 +216,7 @@ const profile = ({ navigation }) => {
     signOut(auth)
       .then(() => {
         setUserLoggedIn(false);
-        navigation.navigate("Welcome");
+        navigation.navigate("Login");
       })
       .catch((error) => console.log(error));
   };
@@ -276,7 +276,7 @@ const profile = ({ navigation }) => {
           </View>
 
           <View style={styles.ordercontainer}>
-            <Text style={[styles.welcomeinput, { marginLeft:10, fontWeight: "normal" }]}>
+            <Text style={[styles.welcomeinput, { marginLeft: 10, fontWeight: "normal" }]}>
               My Orders
             </Text>
             <Text style={[styles.SeeAll, { fontWeight: "normal" }]} onPress={handleMyOrderPress}>
@@ -284,7 +284,7 @@ const profile = ({ navigation }) => {
             </Text>
 
             <View style={styles.pressableContainer}>
-              <Pressable style={styles.pressable} onPress={()=> setShowBouns(!showBouns)}>
+              <Pressable style={styles.pressable} onPress={() => setShowBouns(!showBouns)}>
                 <View style={styles.row}>
                   <Entypo name="star-outlined" size={35} color="black" />
                   <Text style={styles.text}> Bouns </Text>
@@ -298,30 +298,30 @@ const profile = ({ navigation }) => {
               </Pressable>
               <Pressable style={styles.pressable} onPress={handleMyOrderPressed}>
                 <View style={styles.row}>
-                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-  <Fontisto name="shopping-bag-1" size={40} color="black" />
-  <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
-</View>
+                  <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                    <Fontisto name="shopping-bag-1" size={40} color="black" />
+                    <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
+                  </View>
                   <Text style={styles.text}> Cancle Order </Text>
                 </View>
               </Pressable>
             </View>
           </View>
           {showBouns && (
-  <Text style={styles.bounsText}>Bouns: {bounspoint}</Text>
-)}
- <TouchableOpacity onPress={handleAboutUs}>
-  <View style={styles.aboutuscontainer}>
-    <MaterialIcons name="stars" size={30} color="black" />
-    <Text style={styles.abouttext}>About Us</Text>
-    <View>
-      <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{padding:10,marginLeft:"70%"}]}/>
-    </View>
-  </View>
-</TouchableOpacity>
-           <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
-          <Text style={styles.logoutButtonText}>LogOut</Text>
-        </TouchableOpacity>
+            <Text style={styles.bounsText}>Bouns: {bounspoint}</Text>
+          )}
+          <TouchableOpacity onPress={handleAboutUs}>
+            <View style={styles.aboutuscontainer}>
+              <MaterialIcons name="stars" size={30} color="black" />
+              <Text style={styles.abouttext}>About Us</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ padding: 10, marginLeft: "70%" }]} />
+              </View>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
+            <Text style={styles.logoutButtonText}>LogOut</Text>
+          </TouchableOpacity>
         </View>
       )}
       {mode === "unlogginUser" && (
@@ -373,7 +373,7 @@ const profile = ({ navigation }) => {
           </View>
 
           <View style={styles.ordercontainer}>
-            <Text style={[styles.welcomeinput, {marginLeft:10, fontWeight: "normal" }]}>
+            <Text style={[styles.welcomeinput, { marginLeft: 10, fontWeight: "normal" }]}>
               My Orders
             </Text>
             <Text style={[styles.SeeAll, { fontWeight: "normal" }]} onPress={handleSignUp}>
@@ -396,27 +396,27 @@ const profile = ({ navigation }) => {
               </Pressable>
               <Pressable style={styles.pressable} onPress={handleSignUp} >
                 <View style={styles.row}>
-                <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-  <Fontisto name="shopping-bag-1" size={40} color="black" />
-  <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
-</View>
+                  <View style={{ flexDirection: 'column', alignItems: 'center' }}>
+                    <Fontisto name="shopping-bag-1" size={40} color="black" />
+                    <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
+                  </View>
                   <Text style={styles.text}> Cancel Order </Text>
                 </View>
               </Pressable>
             </View>
           </View>
           <TouchableOpacity onPress={handleAboutUs}>
-  <View style={styles.aboutuscontainer}>
-    <MaterialIcons name="stars" size={30} color="black" />
-    <Text style={styles.abouttext}>About Us</Text>
-    <View>
-      <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{padding:10,marginLeft:"70%"}]}/>
-    </View>
-  </View>
-</TouchableOpacity>
+            <View style={styles.aboutuscontainer}>
+              <MaterialIcons name="stars" size={30} color="black" />
+              <Text style={styles.abouttext}>About Us</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ padding: 10, marginLeft: "70%" }]} />
+              </View>
+            </View>
+          </TouchableOpacity>
 
         </View>
-        
+
       )}
       <BottomNavigator item="profile" navigation={navigation} />
     </>
@@ -466,8 +466,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
   logoutButton: {
-    width: width-10,
-    height:"7%",
+    width: width - 10,
+    height: "7%",
     marginLeft: 5,
     backgroundColor: "black",
     padding: 10,
@@ -502,8 +502,8 @@ const styles = StyleSheet.create({
     //margin:3,
     justifyContent: "space-between",
   },
- 
-  
+
+
   buttonTextLoggout: {
     color: "#131A2C",
     fontSize: 16,
@@ -530,7 +530,7 @@ const styles = StyleSheet.create({
   },
   welcomecontainer: {
     backgroundColor: "#ffffff",
-    width: width-10,
+    width: width - 10,
     height: "20%",
     justifyContent: "flex-start",
     alignItems: "flex-start",
@@ -597,8 +597,8 @@ const styles = StyleSheet.create({
     // paddingHorizontal: 20,
     // borderRadius: 0,
     marginHorizontal: 5,
-    width: cardwidth-10,
-    height: height-790,
+    width: cardwidth - 10,
+    height: height - 800,
     borderWidth: 1,
     borderColor: "black",
     textAlign: "center",
@@ -610,7 +610,7 @@ const styles = StyleSheet.create({
   },
   ordercontainer: {
     backgroundColor: "#ffffff",
-    width: width-10,
+    width: width - 10,
     height: "20%",
     justifyContent: "center",
     alignItems: "flex-start",
@@ -643,33 +643,33 @@ const styles = StyleSheet.create({
   bounsText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "black", 
-    marginTop: 10, 
-    marginLeft: 10, 
+    color: "black",
+    marginTop: 10,
+    marginLeft: 10,
   },
- 
+
   pencil: {
     position: "absolute",
     top: 15,
     // left: 200,
     right: 15,
   },
-  aboutuscontainer:{
-    flexDirection: "row" ,
-    width:width-10,
-    height:height-780,
-    alignItems:"center",
-    marginLeft:5,
-    marginTop:10,
+  aboutuscontainer: {
+    flexDirection: "row",
+    width: width - 10,
+    height: height - 780,
+    alignItems: "center",
+    marginLeft: 5,
+    marginTop: 10,
     backgroundColor: "#ffffff",
     borderStyle: "solid",
     borderColor: "black",
     // borderWidth: 0.5,
 
   },
-  abouttext:{
-    fontSize:20,
-    marginLeft:10,
+  abouttext: {
+    fontSize: 20,
+    marginLeft: 10,
 
 
   },

@@ -576,10 +576,16 @@ const Checkout = ({ navigation }) => {
               handleSomeAction();
               deleteAllItems();
               handleCheckout();
-              if (IconName4) {
-                navigation.navigate("pay", { userId: userId });
+              if (IconName4) {+-
+                setTimeout(() => {
+                  navigation.navigate("pay", { userId: userId });
+                }, 2000);
+                
               } else {
-                navigation.navigate("CreditCard", { userId: userId });
+                setTimeout(() => {
+                  navigation.navigate("CreditCard", { userId: userId });
+                }, 2000);
+                
               }
             }}
           >

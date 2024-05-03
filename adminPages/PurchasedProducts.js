@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 import { collection, getDocs, doc, updateDoc } from 'firebase/firestore';
@@ -9,12 +8,10 @@ const { width } = Dimensions.get('window');
 const PurchasedProductsScreen = ({ navigation }) => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
   const [activeTab, setActiveTab] = useState('waiting'); 
-
   useEffect(() => {
     fetchPurchasedProducts();
   }, []);
   const handleItemPress = (items) => {
-   
     navigation.navigate('waitingitem', { items });
   };
   const fetchPurchasedProducts = async () => {

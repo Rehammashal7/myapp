@@ -3,13 +3,16 @@ import {
     View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
     ScrollView, Dimensions, TouchableWithoutFeedback
 } from 'react-native';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import filterData from '../data';
+// import filterData from '../data';
+import Food, { filterData, productt, option, size } from "../data";
+
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
+import { useIsFocused } from '@react-navigation/native';
 // import Carousel from 'react-native-snap-carousel';
 
 const { width } = Dimensions.get('screen');
@@ -24,6 +27,10 @@ const HomeScreen = ({ navigation }) => {
     const [userId, setUserId] = useState('');
     const [activeIndexes, setActiveIndexes] = useState({});
     const imageWidth = cardwidth;
+    const isFocused = useIsFocused();
+    useEffect(() => {
+        getUser();
+      }, [isFocused]);
 
     useEffect(() => {
         const getProducts = async () => {
@@ -54,6 +61,20 @@ const HomeScreen = ({ navigation }) => {
 
     }, []);
 
+    const getUser = async () => {
+        const docRef = doc(db, "users", auth.currentUser.uid);
+        const docSnap = await getDoc(docRef);
+    
+        if (docSnap.exists()) {
+    
+          const data = docSnap.data();
+          if (data.isAdmin === true) {
+            navigation.navigate('adminHome');
+          } else {
+            navigation.navigate('Home');
+          }
+        }
+      };
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
@@ -175,9 +196,9 @@ const HomeScreen = ({ navigation }) => {
                             <Pressable
                                 onPress={() => navigation.navigate(item.name)}
                             >
-                                <View style={[styles.smallCard, indexCheck === item.id ? styles.selectedCard : null]}>
+                                <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
                                     <View>
-                                        <Text style={[styles.smallCardText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
+                                        <Text style={[styles.regularText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
                                     </View>
                                 </View>
                             </Pressable>
@@ -281,7 +302,7 @@ const styles = StyleSheet.create({
     header: {
         flexDirection: "row",
         backgroundColor: COLORS.background,
-        height: '10%',
+        height: 70,
     },
     bottoms: {
         flexDirection: "row",
@@ -293,7 +314,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         alignItems: 'center',
-        margin: 10
+        
     },
     image: {
         position: "relative",
@@ -319,33 +340,45 @@ const styles = StyleSheet.create({
     },
     headerTextView: {
         backgroundColor: 'White',
-        marginTop: 10
+        // marginTop: 10
     },
     smallCard: {
-        backgroundColor: COLORS.background,
+        // borderRadius: 30,
+        backgroundColor: "white",
         justifyContent: "center",
-        alignItems: 'center',
+        alignItems: "center",
         width: 100,
-        height: 70
-    },
-    smallCardText: {
+        height: 70,
+        borderBottomColor: "transparent",
+        borderBottomWidth: 2,
+      },
+      smallCardSelected: {
+        backgroundColor: "#FFFFFF",
+        justifyContent: "center",
+        alignItems: "center",
+        width: 100,
+        height: 70,
+        shadowColor: "black",
+        borderBottomColor: "black",
+        borderBottomWidth: 2,
+      },
+      smallCardTextSected: {
+        color: "#131A2C",
+      },
+      regularText: {
+        fontWeight: "normal",
+        fontSize: 16,
+      },
+      boldText: {
         fontWeight: "bold",
-        color: '#131A2C'
-    },
-    selectedCard: {
-        shadowColor: 'black',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    smallCardText: {
-    },
-    selectedCardText: {
-        color: 'black',
-    },
+        fontSize: 18,
+      },
+    
+      smallCardText: {
+        fontSize: 14,
+        color: "black",
+        textAlign: "center",
+        marginTop: 5,
+      },
 });
 export default HomeScreen;

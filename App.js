@@ -6,7 +6,7 @@ import HomeScreen from './pages/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/favorite';
+import favorite from './pages/Favorite';
 import profile from './pages/profile';
 import userr from './adminPages/userr';
 
@@ -15,7 +15,7 @@ import { adminBabyDetails,adminProductsListBaby }  from './adminPages/adminBaby'
 import { adminKidsDetails,adminProductsListKids } from './adminPages/adminKids' ;
 import { EditProductPage ,adminMenDetails,adminProductsListMen } from './adminPages/adminMen' ;
 
-import Checkout from './pages/Checkout';
+import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 // import products from './pages/AddProducts';
@@ -51,6 +51,7 @@ import RecentlyVisited from './pages/RecentlyVisited';
 import AddressScreen from './pages/AddressScreen';
 import AddressInformation from './pages/AddressInformation';
 import AboutUs from './pages/AboutUs';
+import pay from './pages/pay';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -81,6 +82,7 @@ export default function App() {
         <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
         <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
+        <Stack.Screen name="pay" component={pay} />
         
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
