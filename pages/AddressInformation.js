@@ -323,40 +323,40 @@ const AddressInformation = ({navigation,route}) => {
     console;
     if (firstName.trim() === "") {
       setFirstNameError(true);
-      //   return;
+         return;
     } else {
       setFirstNameError(false);
     }
 
     if (lastName.trim() === "") {
       setLastNameError(true);
-      //   return;
+         return;
     } else {
       setLastNameError(false);
     }
 
     if (phone.trim() === "") {
       setPhoneError(true);
-      //   return;
+         return;
     } else {
       setPhoneError(false);
     }
 
     if (address.trim() === "") {
       setAddressError(true);
-      // return;
+       return;
     } else {
       setAddressError(false);
     }
     if (district.trim() === "") {
       setDistrictError(true);
-      // return;
+       return;
     } else {
       setDistrictError(false);
     }
     if (addressTitle.trim() === "") {
       setAddressTitleError(true);
-      // return;
+       return;
     } else {
       setAddressTitleError(false);
     }
@@ -679,7 +679,7 @@ const styles = StyleSheet.create({
   input: {
     fontSize: 18,
     width: cardwidth - 12,
-    height: height - 790,
+    height: height/20,
     borderColor: "white",
     borderWidth: 1,
     marginTop: 20,
@@ -690,7 +690,7 @@ const styles = StyleSheet.create({
   },
   dropdownButtonStyle: {
     width: width - 15,
-    height: height - 780,
+    height:  height/20,
     marginLeft: 5,
     // backgroundColor: '#E9ECEF',
     // borderRadius: 12,
@@ -768,7 +768,7 @@ const styles = StyleSheet.create({
   inputAdd: {
     fontSize: 18,
     width: width - 15,
-    height: height - 790,
+    height:  height/20,
     borderColor: "white",
     borderWidth: 1,
     marginTop: 20,
@@ -793,13 +793,13 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     backgroundColor: "#f2f2f2",
     width: cardwidth - 110,
-    height: height - 780,
+    height:  height/20,
     borderBottomColor: "black",
     borderBottomWidth: 1,
   },
   dropdownButtonStyleNUM: {
     width: cardwidth - 110,
-    height: height - 7900,
+    height:  height/20,
     // backgroundColor: '#E9ECEF',
     // borderRadius: 12,
     flexDirection: "row",
@@ -809,7 +809,7 @@ const styles = StyleSheet.create({
   },
   dropdownButtonTxtStyleNUM: {
     // flex: 1,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "500",
     color: "#393e46",
   },
@@ -819,7 +819,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     backgroundColor: "#f2f2f2",
     width: cardwidth - 110,
-    height: height - 780,
+    height:  height/20,
     borderEndColor: "white",
     borderBottomColor: "black",
     borderBottomWidth: 1,
@@ -837,8 +837,8 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   inputphone: {
-    width: cardwidth,
-    height: height - 780,
+    width: cardwidth-20,
+    height:  height/20,
     marginLeft: 5,
     marginRight: 5,
     borderColor: "white",

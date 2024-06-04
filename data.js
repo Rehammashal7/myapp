@@ -74,8 +74,7 @@ export default Food;
                 ];
                 export const filterOrder = [      
                     {name:"HistoryOrder",id:"1"},
-                    {name:"WaitingOrder",id:"2"},
-                    {name:"CancelOrder",id:"3"},
+                    {name:"CancelOrder",id:"2"},
                 ];
 export const Burger=[
     {

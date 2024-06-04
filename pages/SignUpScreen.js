@@ -26,8 +26,8 @@ const SignUpScreen = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [recentlyVisited, setRecentlyVisited] = useState([]);
     const [HistoryOrder, setHistoryOrders] = useState([]);
-  const [waitingOrder, setWaitingOrders] = useState([]);
   const [cancelOrder, setCancelOrders] = useState([]);
+  const [walet , setWalet] = useState(Math.ceil(Math.random()*(25000-20000 + 1)+20000));
 
   const handleCheckEmail = () => {
     let isvalid = true ;
@@ -94,6 +94,9 @@ const SignUpScreen = ({ navigation }) => {
       recentlyVisited:[],
       isAdmin:false,
       verification:false,
+      walet:walet,
+      cancelOrder:cancelOrder,
+      HistoryOrder:HistoryOrder,
     });
     
 

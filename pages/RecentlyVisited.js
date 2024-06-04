@@ -153,7 +153,7 @@ const RecentlyVisited = ({ navigation }) => {
 
   return (
 <View style={styles.container}>
-<View style={[{flexDirection:"row"}]}>
+<View style={[{flexDirection:"row" , marginBottom:10}]}>
   <Text style={styles.header}>Recently Visited Products</Text>
   <View style={styles.clearAllContainer}>
   <Text style={styles.clearAll} onPress={clearAllVisited} >ClearAll</Text>
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     // position: "absolute",
     // top: 0,
     // left: 0,
-    marginLeft: 0,
+   // marginLeft: 0,
     marginTop: 10,
   },
 
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap", 
     justifyContent: "flex-start", 
-    marginTop: 60,
+    marginTop: 40,
     textAlign: "center",
     alignItems: "flex-start", 
     // marginHorizontal: 5,
@@ -240,18 +240,19 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   clearAllContainer: {
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    marginTop: 10,
+      position: "absolute",
+      top: 15,
+      // left: 200,
+      right: 15,
+    
   },
   clearAll: {
+    position: "absolute",
     fontSize: 16,
     fontWeight: "bold",
     // marginRight: 0,
     marginTop:30,
-    marginLeft:30,
+    marginLeft:20,
     borderBottomColor:"black",
     borderBottomWidth:1,
   },

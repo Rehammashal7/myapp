@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Dimensions,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
@@ -15,7 +16,11 @@ import {
 } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { deleteUser } from "firebase/auth";
+const { width } = Dimensions.get("screen");
+  const { height } = Dimensions.get("screen");
 
+  const cardwidth = width / 2;
+  const cardheight = height / 2;
 const DeleteAccount = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -82,6 +87,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
+    backgroundColor: "#ffffff",
+
   },
   title: {
     fontSize: 24,
@@ -97,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 20,
-    width: 350,
+    width: width-20,
   },
   input: {
     flex: 1,
@@ -110,7 +117,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   deleteButton: {
-    width: 350,
+    width: width-20,
     backgroundColor: "black",
     padding: 10,
     marginTop: 10,

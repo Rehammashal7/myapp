@@ -257,6 +257,37 @@ const Checkout = ({ navigation }) => {
       console.error("Error deleting all items:", error);
     }
   };
+  const updatewallet = async () => {
+    try {
+      // استرجاع قيمة المحفظة من قاعدة البيانات
+      const userRef = doc(db, "users", userId);
+      const userSnap = await getDoc(userRef);
+      const walletAmount = userSnap.data().walet || 0;
+  
+      // حساب القيمة التي يجب خصمها من المحفظة
+      const totalAmountToDeduct = (getTotal() + delprice - getTotalOfers()).toFixed(2);
+  
+      // التحقق من أن قيمة المحفظة كافية لإتمام الدفع
+      if (walletAmount >= totalAmountToDeduct) {
+        // تحديث قيمة المحفظة بعد الخصم
+        const updatedAmount = walletAmount - totalAmountToDeduct;
+        await updateDoc(userRef, { walet: updatedAmount });
+  
+        console.log("Wallet value updated successfully");
+        AddOrderHistory();
+              handleSomeAction();
+              deleteAllItems();
+              handleCheckout();
+        alert("You can recover the amount in 24 hours only");
+
+    } else {
+      alert("Error: Insufficient balance in the wallet");
+    }
+  } catch (error) {
+    console.error("An error occurred while updating the wallet:", error);
+  }
+};
+
   // const AddOrderHistory = async () => {
   //   console.log("Executing AddOrderHistory function...");
 
@@ -314,12 +345,12 @@ const Checkout = ({ navigation }) => {
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
       if (userSnap.exists()) {
-        const userOrders = userSnap.data().waitingOrder || [];
+        const userOrders = userSnap.data().HistoryOrder || [];
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString();
         const addressIndex = userOrders.length;
         // const addressIndex = updatedUserData.dataAddress.length;
-
+        console.log("addresssssIndex :",addressIndex);
         cartList.forEach((cartItem, index) => {
           const newOrder = {
             index: addressIndex + index,
@@ -336,7 +367,7 @@ const Checkout = ({ navigation }) => {
           userOrders.push(newOrder);
         });
 
-        await updateDoc(userRef, { waitingOrder: userOrders });
+        await updateDoc(userRef, { HistoryOrder: userOrders });
         console.log("Order history updated successfully");
       } else {
         console.log("User does not exist!");
@@ -503,7 +534,7 @@ const Checkout = ({ navigation }) => {
               <Text
                 style={{ color: COLORS.dark, fontWeight: "600", fontSize: 20 }}
               >
-                {"cash on delivery "}
+                {"Cash from my Wallet "}
               </Text>
             </View>
           </View>
@@ -572,21 +603,19 @@ const Checkout = ({ navigation }) => {
           <TouchableOpacity
             style={styles.checkButton}
             onPress={() => {
-              AddOrderHistory();
-              handleSomeAction();
-              deleteAllItems();
-              handleCheckout();
-              if (IconName4) {+-
-                setTimeout(() => {
-                  navigation.navigate("pay", { userId: userId });
-                }, 2000);
+              
+              updatewallet();
+              // if (IconName4) {+-
+              //   setTimeout(() => {
+              //     navigation.navigate("pay", { userId: userId });
+              //   }, 2000);
                 
-              } else {
-                setTimeout(() => {
-                  navigation.navigate("CreditCard", { userId: userId });
-                }, 2000);
+              // } else {
+              //   setTimeout(() => {
+              //     navigation.navigate("CreditCard", { userId: userId });
+              //   }, 2000);
                 
-              }
+              // }
             }}
           >
             <Text style={{ color: "#fff" }}>pay</Text>

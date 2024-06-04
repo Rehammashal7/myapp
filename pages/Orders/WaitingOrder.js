@@ -44,7 +44,7 @@ const WaitingOrder = ({ navigation }) => {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
       console.log(userData);
-      const userOrders = userData.waitingOrder || [];
+      const userOrders = userData.HistoryOrder || [];
 
       setOrderList(userOrders);
       console.log(userOrders);
@@ -70,8 +70,8 @@ const WaitingOrder = ({ navigation }) => {
   };
 
   const deleteAddress = (index) => {
-    const updatedwaitingOrder = OrderList.filter((_, i) => i !== index);
-    setOrderList(updatedwaitingOrder);
+    const updatedHistoryOrder = OrderList.filter((_, i) => i !== index);
+    setOrderList(updatedHistoryOrder);
   };
 
   
@@ -86,25 +86,25 @@ const WaitingOrder = ({ navigation }) => {
 
 
           const cancelOrders = userData.cancelOrder || [];
-          const currentOrders = userData.waitingOrder || [];
+          const currentOrders = userData.HistoryOrder || [];
           const selectedProduct = currentOrders[index];
           if (!cancelOrders.includes(selectedProduct)) {
             await updateDoc(userDocRef, { cancelOrder: [...cancelOrders, selectedProduct] });
           }
 
 
-          let updatedwaitingOrder = userData.waitingOrder.filter(
+          let updatedHistoryOrder = userData.HistoryOrder.filter(
             (item, i) => i !== index
           );
   
           
-          updatedwaitingOrder = updatedwaitingOrder.map((item, i) => ({
+          updatedHistoryOrder = updatedHistoryOrder.map((item, i) => ({
             ...item,
             index: i,
           }));
   
           
-          await updateDoc(userDocRef, { waitingOrder: updatedwaitingOrder });
+          await updateDoc(userDocRef, { HistoryOrder: updatedHistoryOrder });
   
           alert("Order deleted successfully");
           deleteAddress(index);

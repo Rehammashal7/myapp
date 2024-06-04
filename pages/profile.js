@@ -31,10 +31,11 @@ import * as ImagePicker from "expo-image-picker";
 import BottomNavigator from "../components/bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
+import { Ionicons } from '@expo/vector-icons';
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
-
+const cardheight = height / 2;
 const cardwidth = width / 2;
 
 const profile = ({ navigation }) => {
@@ -45,6 +46,9 @@ const profile = ({ navigation }) => {
   const [phone, setPhone] = useState();
   const [mode, setMode] = useState("unlogginUser");
   const [showBouns, setShowBouns] = useState(false);
+  const [wallet, setWallet] = useState("");
+  const [showWallet, setShowWallet] = useState(false);
+
   const [bounspoint, setBouns] = useState("");
   const [getData, setGetData] = useState(false);
   const [userLoggedIn, setUserLoggedIn] = useState(false);
@@ -178,6 +182,7 @@ const profile = ({ navigation }) => {
       setLastName(data.lName);
       setBouns((data.boun || 0));
       setGetData(false);
+      setWallet(data.walet);
       console.log("getdata done");
 
     }
@@ -229,11 +234,9 @@ const profile = ({ navigation }) => {
       {mode === "loggedIn" && (
         <View style={styles.container}>
           <View style={styles.welcomecontainer}>
-            <TouchableOpacity onPress={handleChoosePhoto}>
               <View>
                 <Image style={styles.profileImage} source={{ uri: photoURL }} />
               </View>
-            </TouchableOpacity>
             <Text style={styles.welcomeinput}>
               Welcome,{fristName} {lastName}
             </Text>
@@ -313,11 +316,31 @@ const profile = ({ navigation }) => {
           <TouchableOpacity onPress={handleAboutUs}>
             <View style={styles.aboutuscontainer}>
               <MaterialIcons name="stars" size={30} color="black" />
-              <Text style={styles.abouttext}>About Us</Text>
+              <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ padding: 10, marginLeft: "70%" }]} />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
               </View>
             </View>
+          </TouchableOpacity >
+         <Pressable onPress={() => setShowWallet(!showWallet)}>
+         <View style={styles.aboutuscontainer} >
+          <Ionicons name="wallet-outline" size={24} color="black" />
+          <Text style={styles.abouttext}>MyWallet</Text>
+          <View>
+          {!showWallet && (
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
+              )}
+              {showWallet && (
+                <MaterialIcons name="keyboard-arrow-down" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
+              )}
+              </View>
+          </View>
+         </Pressable>
+          <TouchableOpacity>
+          {showWallet && (
+            
+            <Text style={styles.walletText}>MyWallet: {wallet}</Text>
+          )}
           </TouchableOpacity>
           <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
             <Text style={styles.logoutButtonText}>LogOut</Text>
@@ -408,9 +431,9 @@ const profile = ({ navigation }) => {
           <TouchableOpacity onPress={handleAboutUs}>
             <View style={styles.aboutuscontainer}>
               <MaterialIcons name="stars" size={30} color="black" />
-              <Text style={styles.abouttext}>About Us</Text>
+              <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ padding: 10, marginLeft: "70%" }]} />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
               </View>
             </View>
           </TouchableOpacity>
@@ -467,7 +490,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     width: width - 10,
-    height: "7%",
+    height: cardheight/10,
     marginLeft: 5,
     backgroundColor: "black",
     padding: 10,
@@ -598,7 +621,7 @@ const styles = StyleSheet.create({
     // borderRadius: 0,
     marginHorizontal: 5,
     width: cardwidth - 10,
-    height: height - 800,
+    height: height/20,
     borderWidth: 1,
     borderColor: "black",
     textAlign: "center",
@@ -606,7 +629,11 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000",
     fontSize: 20,
-    textAlign: "center",
+    marginTop:3,
+    // textAlign: "center",
+    justifyContent: "center",
+    alignItems: "center",
+    alignSelf: "center",
   },
   ordercontainer: {
     backgroundColor: "#ffffff",
@@ -623,13 +650,12 @@ const styles = StyleSheet.create({
     borderWidth: 0.5,
   },
   SeeAll: {
-    flex: 1,
+    position: "absolute",
+    top: 10,
+    right: 15,
     alignSelf: "flex-end",
     color: "black",
-    marginRight: 15,
-    paddingTop: 0,
-    marginTop: -40,
-    fontSize: 16,
+    marginRight: 5,
     textDecorationLine: "underline",
   },
   offer: {
@@ -647,6 +673,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginLeft: 10,
   },
+  walletText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "black",
+    marginTop: 10,
+    marginLeft: 30,
+  },
 
   pencil: {
     position: "absolute",
@@ -657,7 +690,7 @@ const styles = StyleSheet.create({
   aboutuscontainer: {
     flexDirection: "row",
     width: width - 10,
-    height: height - 780,
+    height: height /18,
     alignItems: "center",
     marginLeft: 5,
     marginTop: 10,
