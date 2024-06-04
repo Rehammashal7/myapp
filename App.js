@@ -40,14 +40,18 @@ import PayWithCard from './pages/PayWithCard';
 import ProductPage from './pages/ResultSearch';
 import PurchasedProductsScreen from './adminPages/PurchasedProducts';
 import waitingitem from './adminPages/waitingitem';
+import WeatherSearch from './pages/WeatherSearch';
+import suggtions from './pages/suggtions';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="PurchasedProductsScreen">
+      <Stack.Navigator initialRouteName="suggtions">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
+<Stack.Screen name='suggtions' component={suggtions}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
+      <Stack.Screen name="WeatherSearch" component={WeatherSearch}/>
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
