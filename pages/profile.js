@@ -37,7 +37,7 @@ const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
 
-const profile = ({ navigation }) => {
+const Profile = ({ navigation }) => {
   const currentUser = useAuth();
   const [fristName, setFristName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -674,4 +674,4 @@ const styles = StyleSheet.create({
 
   },
 });
-export default profile;
+export default Profile;

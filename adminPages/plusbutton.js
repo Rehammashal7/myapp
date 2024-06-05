@@ -5,7 +5,7 @@ import COLORS from '../Consts/Color';
 import BottomNavigator from '../components/adminbar';
 // import plusss from '../assets/plusss.png';
 
-const plusbutton = ({ navigation }) => {
+const Plusbutton = ({ navigation }) => {
      
     return (
         <View style={styles.container}>
@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
     // },
   });
 
-export default plusbutton;
+export default Plusbutton;

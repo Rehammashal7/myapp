@@ -12,7 +12,7 @@ import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 import BottomNavigator from '../components/adminbar';
 
-const adminProfile = ({navigation}) => {
+const AdminProfile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -418,4 +418,4 @@ iconBehave: {
     bottom: 30
 },
 });
-export default adminProfile;
+export default AdminProfile;

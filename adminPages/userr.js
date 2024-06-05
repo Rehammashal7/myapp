@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'; // Import Firestore functions
 import { db } from "../firebase";
 
-const userr = () => {
+const Userr = () => {
   const [users, setUsers] = useState([]);
 
   const getUserData = async () => {
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default userr;
+export default Userr;
 
 
 

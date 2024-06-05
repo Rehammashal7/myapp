@@ -43,7 +43,7 @@ const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
 let iconcolor;
-const adminProductsListMen = ({ navigation }) => {
+const AdminProductsListMen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
@@ -283,7 +283,7 @@ const adminProductsListMen = ({ navigation }) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const adminMenDetails = ({ route, navigation }) => {
+const AdminMenDetails = ({ route, navigation }) => {
   // const { product } = route.params;
   const { product } = route.params ? route.params : { product: {} };
   // const [products, setProducts] = React.useState('');
@@ -2366,4 +2366,4 @@ const EditProductPage = ({ route, navigation }) => {
     );
   };
 
-export { EditProductPage,adminProductsListMen, adminMenDetails } ;
+export { EditProductPage,AdminProductsListMen, AdminMenDetails } ;

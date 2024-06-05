@@ -14,7 +14,7 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
 
-const addadmin = ({navigation}) => {
+const Addadmin = ({navigation}) => {
     
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -140,4 +140,4 @@ const styles = StyleSheet.create({
       },
 });
 
-export default addadmin;
+export default Addadmin;
