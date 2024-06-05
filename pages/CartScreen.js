@@ -15,8 +15,8 @@ import { useIsFocused, useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
-import BottomNavigator from '../components/bar';
-import Search from '../components/search';
+import BottomNavigator from '../components/Bar';
+import Search from '../components/Search';
 import COLORS from '../Consts/Color';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -668,7 +668,7 @@ const styles = StyleSheet.create({
   }, Text: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: 'SofiaRegular',
+   // fontFamily: 'SofiaRegular',
     fontWeight: "bold",
     alignItems: 'center',
     marginLeft: width / 2 - 80

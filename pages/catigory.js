@@ -6,8 +6,8 @@ import {
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
-import BottomNavigator from '../components/bar';
+import Search from '../components/Search';
+import BottomNavigator from '../components/Bar';
 import { useRoute } from '@react-navigation/native';
 
 const { width } = Dimensions.get('screen');
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
     Text: {
         color: COLORS.darkblue,
         fontSize: 35,
-        fontFamily: 'SofiaRegular',
+        //fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
     },

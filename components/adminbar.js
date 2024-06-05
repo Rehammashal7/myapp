@@ -27,17 +27,17 @@ const BottomNavigator = ({ item, navigation, userId }) => {
   return (
     <View style={styles.NavContainer}>
       <View style={styles.Navbar}>
-        <Pressable onPress={() => navigation.navigate('adminprofile', { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate('Adminprofile', { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconProfile} size={25} color={COLORS.dark} />
           <Text style={styles.Text}>Profile</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate('admincatigory')} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate('Admincatigory')} style={styles.iconBehave}>
           <Icon name={iconCategory} size={25} color={COLORS.dark} />
           <Text style={styles.Text}>Category</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate('adminHome')} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate('AdminHome')} style={styles.iconBehave}>
           <Icon name={iconHome} size={25} color={COLORS.dark} />
           <Text style={styles.Text}>Home</Text>
         </Pressable>

@@ -28,7 +28,7 @@ import { Entypo } from "@expo/vector-icons";
 import { auth, db, storage } from "../firebase";
 import COLORS from "../Consts/Color";
 import * as ImagePicker from "expo-image-picker";
-import BottomNavigator from "../components/bar";
+import BottomNavigator from "../components/Bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
@@ -38,7 +38,7 @@ const { height } = Dimensions.get("screen");
 const cardheight = height / 2;
 const cardwidth = width / 2;
 
-const profile = ({ navigation }) => {
+const Profile = ({ navigation }) => {
   const currentUser = useAuth();
   const [fristName, setFristName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -707,4 +707,4 @@ const styles = StyleSheet.create({
 
   },
 });
-export default profile;
+export default Profile;

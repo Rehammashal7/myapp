@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity, StyleSheet,Pressable } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import COLORS from '../Consts/Color';
-import BottomNavigator from '../components/adminbar';
+import BottomNavigator from '../components/Adminbar';
 // import plusss from '../assets/plusss.png';
 
-const plusbutton = ({ navigation }) => {
+const Plusbutton = ({ navigation }) => {
      
     return (
         <View style={styles.container}>
@@ -73,4 +73,4 @@ const styles = StyleSheet.create({
     // },
   });
 
-export default plusbutton;
+export default Plusbutton;

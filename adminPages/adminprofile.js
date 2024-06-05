@@ -10,9 +10,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
-import BottomNavigator from '../components/adminbar';
+import BottomNavigator from '../components/Adminbar';
 
-const adminProfile = ({navigation}) => {
+const AdminProfile = ({navigation}) => {
   const currentUser = useAuth();
     const [fristName, setFristName] = useState('');
     const [lastName, setLastName] = useState('');
@@ -418,4 +418,4 @@ iconBehave: {
     bottom: 30
 },
 });
-export default adminProfile;
+export default AdminProfile;

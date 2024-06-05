@@ -28,12 +28,12 @@ const BottomNavigator = ({ item, navigation, userId }) => {
   return (
     <View style={styles.NavContainer}>
       <View style={styles.Navbar}>
-        <Pressable onPress={() => navigation.navigate("profile", { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate("Profile", { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconprofile} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>profile</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("catigory", { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate("Catigory", { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconcategory} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>category</Text>
         </Pressable>
@@ -42,7 +42,7 @@ const BottomNavigator = ({ item, navigation, userId }) => {
           <Text style={styles.Text}>Home</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate("Favorite", { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconheart} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>favorite</Text>
         </Pressable>

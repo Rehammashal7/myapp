@@ -4,14 +4,14 @@ import {
     ScrollView, Dimensions, TouchableWithoutFeedback
 } from 'react-native';
 import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { db } from '../firebase';
+import { db ,auth} from '../firebase';
 // import filterData from '../data';
 import Food, { filterData, productt, option, size } from "../data";
 
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
+import Search from '../components/Search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomNavigator from '../components/bar';
+import BottomNavigator from '../components/Bar';
 import { useIsFocused } from '@react-navigation/native';
 // import Carousel from 'react-native-snap-carousel';
 
@@ -60,21 +60,45 @@ const HomeScreen = ({ navigation }) => {
         getUserId();
 
     }, []);
-
     const getUser = async () => {
-        const docRef = doc(db, "users", auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-    
-        if (docSnap.exists()) {
-    
-          const data = docSnap.data();
-          if (data.isAdmin === true) {
-            navigation.navigate('adminHome');
-          } else {
-            navigation.navigate('Home');
-          }
+        try {
+            if (auth.currentUser) {
+                const docRef = doc(db, "users", auth.currentUser.uid);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.isAdmin === true) {
+                        navigation.navigate('AdminHome');
+                    } else {
+                        navigation.navigate('Home');
+                    }
+                } else {
+                    console.log("No such document!");
+                }
+            } else {
+                console.log("No user is currently signed in.");
+            }
+        } catch (error) {
+            console.error("Error getting document: ", error);
         }
-      };
+    };
+    
+    // const getUser = async () => {
+    //     const docRef = doc(db, "users", auth.currentUser.uid);
+    
+    //     const docSnap = await getDoc(docRef);
+    
+    //     if (docSnap.exists()) {
+    
+    //       const data = docSnap.data();
+    //       if (data.isAdmin === true) {
+    //         navigation.navigate('adminHome');
+    //       } else {
+    //         navigation.navigate('Home');
+    //       }
+    //     }
+    //   };
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
@@ -334,7 +358,7 @@ const styles = StyleSheet.create({
     Text: {
         color: COLORS.darkblue,
         fontSize: 35,
-        fontFamily: 'SofiaRegular',
+       // fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
     },

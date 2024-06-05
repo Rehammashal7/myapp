@@ -8,19 +8,27 @@ import {
   Pressable,
   Dimensions,
   ScrollView,
-} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { useIsFocused, useRoute } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "firebase/firestore";
-import { auth, db, storage } from '../firebase';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import BottomNavigator from '../components/bar';
-import COLORS from '../Consts/Color';
-import Search from '../components/search';
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { useIsFocused, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  doc,
+  collection,
+  where,
+  setDoc,
+  updateDoc,
+  getDocs,
+  getDoc,
+} from "firebase/firestore";
+import { auth, db, storage } from "../firebase";
+import Icon from "react-native-vector-icons/FontAwesome";
+import BottomNavigator from "../components/Bar";
+import COLORS from "../Consts/Color";
+import Search from "../components/Search";
 
-const { width } = Dimensions.get('screen');
-const { height: screenHeight } = Dimensions.get('window');
+const { width } = Dimensions.get("screen");
+const { height: screenHeight } = Dimensions.get("window");
 const cardheight = screenHeight / 2 - 30;
 const cardwidth = width / 2;
 
@@ -38,7 +46,7 @@ const Favorite = ({ navigation }) => {
 
   useEffect(() => {
     const getUserId = async () => {
-      const id = await AsyncStorage.getItem('USERID');
+      const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
     };
     getUserId();
@@ -53,13 +61,13 @@ const Favorite = ({ navigation }) => {
     }));
   };
   const getFavItems = async () => {
-    const userRef = doc(db, 'users', userId);
+    const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
-    setFavList(userSnap.get('fav'));
+    setFavList(userSnap.get("fav"));
   };
 
   const deleteItem = async (index) => {
-    const userRef = doc(db, 'users', userId);
+    const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     let tempfav = userSnap.data().fav;
     tempfav.splice(index, 1);
@@ -91,13 +99,13 @@ const Favorite = ({ navigation }) => {
 
       if (retrievedProduct) {
         if (Category === "KIDS") {
-          navigation.navigate('KidsDetails', { product: retrievedProduct });
+          navigation.navigate("KidsDetails", { product: retrievedProduct });
         } else if (Category === "MEN") {
-          navigation.navigate('MenDetails', { product: retrievedProduct });
+          navigation.navigate("MenDetails", { product: retrievedProduct });
         } else if (Category === "BABY") {
-          navigation.navigate('BabyDetails', { product: retrievedProduct });
+          navigation.navigate("BabyDetails", { product: retrievedProduct });
         } else {
-          navigation.navigate('WomanDetails', { product: retrievedProduct });
+          navigation.navigate("WomanDetails", { product: retrievedProduct });
         }
       } else {
         console.error("Product not found!");
@@ -110,7 +118,7 @@ const Favorite = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.Text, { textAlign: 'center' }]}> Favorite </Text>
+        <Text style={[styles.Text, { textAlign: "center" }]}> Favorite </Text>
       </View>
       <Search />
       <ScrollView>
@@ -119,7 +127,9 @@ const Favorite = ({ navigation }) => {
           data={favList}
           renderItem={({ item, index }) => {
             return (
-              <TouchableOpacity onPress={() => handleProductPress(item, item.data.categoryName)}>
+              <TouchableOpacity
+                onPress={() => handleProductPress(item, item.data.categoryName)}
+              >
                 <View style={styles.container}>
                   <View style={styles.cardView}>
                     <FlatList
@@ -127,7 +137,11 @@ const Favorite = ({ navigation }) => {
                       data={item.data.images}
                       showsHorizontalScrollIndicator={false}
                       renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={styles.image} />
+                        <Image
+                          key={index}
+                          source={{ uri: image }}
+                          style={styles.image}
+                        />
                       )}
                       keyExtractor={(image, index) => index.toString()}
                       onScroll={(event) => handleScroll(event, item.id)}
@@ -146,23 +160,43 @@ const Favorite = ({ navigation }) => {
                       ))}
                     </View>
                     <Text style={styles.Name}>{item.data.name}</Text>
-                    <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}</Text>
-                 
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}> <Text>EGP</Text> </Text>
-                </View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        marginTop: 10,
+                        marginHorizontal: 10,
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                        {item.data.price}
+                      </Text>
+
+                      <Text style={{ fontSize: 18, fontWeight: "bold" }}>
+                        
+                        <Text>EGP</Text>
+                      </Text>
+                    </View>
 
                     <View style={styles.containerHeart}>
                       <Pressable
                         onPress={() => {
-                          let existingItem = favList.find(itm => itm.id === item.id)
+                          let existingItem = favList.find(
+                            (itm) => itm.id === item.id
+                          );
                           if (existingItem.qty >= 1) {
                             deleteItem(index);
                           } else {
                             deleteItem(index);
                           }
-                        }} style={styles.addToFavBtn}>
-                        <Icon name="heart" size={25} color={item.qty >= 1 ? COLORS.dark : 'gray'} />
+                        }}
+                        style={styles.addToFavBtn}
+                      >
+                        <Icon
+                          name="heart"
+                          size={25}
+                          color={item.qty >= 1 ? COLORS.dark : "gray"}
+                        />
                       </Pressable>
                     </View>
                   </View>
@@ -170,7 +204,8 @@ const Favorite = ({ navigation }) => {
               </TouchableOpacity>
             );
           }}
-        /> <View style={styles.bottoms}></View>
+        />
+        <View style={styles.bottoms}></View>
       </ScrollView>
       <BottomNavigator item="fav" navigation={navigation} userId={userId} />
     </View>
@@ -180,22 +215,22 @@ const Favorite = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white
+    backgroundColor: COLORS.white,
   },
   header: {
     flexDirection: "row",
     backgroundColor: COLORS.background,
-    height: '10%',
-    alignItems: 'center',
-    textAlign: 'center'
+    height: "10%",
+    alignItems: "center",
+    textAlign: "center",
   },
   Text: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: 'SofiaRegular',
+   // fontFamily: "SofiaRegular",
     fontWeight: "bold",
-    alignItems: 'center',
-    marginLeft: width / 2 - 80
+    alignItems: "center",
+    marginLeft: width / 2 - 80,
   },
   cardView: {
     marginBottom: 20,
@@ -204,7 +239,7 @@ const styles = StyleSheet.create({
     width: cardwidth,
     height: cardheight + 20,
     elevation: 13,
-    backgroundColor: 'white',
+    backgroundColor: "white",
   },
   dotsContainer: {
     position: "absolute",
@@ -231,36 +266,36 @@ const styles = StyleSheet.create({
   },
   Name: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: "#131A2C",
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 10,
-    height: 40
+    height: 40,
   },
   containerHeart: {
-    position: 'absolute',
+    position: "absolute",
     top: 10,
     right: 10,
     zIndex: 1,
     backgroundColor: COLORS.white,
     borderRadius: 40,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addToFavBtn: {
     padding: 10,
     right: 10,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     width: 25,
-    justifyContent: 'center',
-    marginLeft: 20
+    justifyContent: "center",
+    marginLeft: 20,
   },
   bottoms: {
     flexDirection: "row",
     backgroundColor: COLORS.white,
     height: 50,
-    bottom: 20
+    bottom: 20,
   },
 });
 export default Favorite;

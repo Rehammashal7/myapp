@@ -5,32 +5,32 @@ import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/Favorite';
-import profile from './pages/profile';
-import userr from './adminPages/userr';
+import Adminprofile from './adminPages/Adminprofile';
+import Favorite from './pages/Favorite';
+import Profile from './pages/Profile';
+import Userr from './adminPages/Userr';
 
-import {adminWomanDetails, adminProductsListWoman } from './adminPages/adminWoman' ;
-import { adminBabyDetails,adminProductsListBaby }  from './adminPages/adminBaby' ;
-import { adminKidsDetails,adminProductsListKids } from './adminPages/adminKids' ;
-import { EditProductPage ,adminMenDetails,adminProductsListMen } from './adminPages/adminMen' ;
+import {AdminWomanDetails, AdminProductsListWoman } from './adminPages/AdminWoman' ;
+import { AdminBabyDetails,AdminProductsListBaby }  from './adminPages/AdminBaby' ;
+import { AdminKidsDetails,AdminProductsListKids } from './adminPages/AdminKids' ;
+import { EditProductPage ,AdminMenDetails,AdminProductsListMen } from './adminPages/AdminMen' ;
 
-import Checkout from './pages/checkout';
+import Checkout from './pages/Checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
 // import products from './pages/AddProducts';
 
 import { OfferDetailsAdmin, ProductsListOfferAdmin, EditOfferPage } from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'
-import adminHome from './adminPages/adminHome'
-import addadmin from './adminPages/addAdmin';
-import plusbutton from './adminPages/plusbutton';
-import BottomNavigator from './components/bar';
+import AdminHome from './adminPages/AdminHome'
+import Addadmin from './adminPages/AddAdmin';
+import Plusbutton from './adminPages/Plusbutton';
+import BottomNavigator from './components/Bar';
 import AddReviewWoman from './pages/AddReviews/AddReview-woman';
 import AddReviewMen from './pages/AddReviews/AddReview-men';
 import AddReviewKids from './pages/AddReviews/AddReview-kids';
 import AddReviewBaby from './pages/AddReviews/AddReview-baby';
-import {Category,  CatigoryResult } from './pages/catigory';import admincategory from './adminPages/admincatigory';
+import {Category,  CatigoryResult } from './pages/Catigory';import admincategory from './adminPages/Admincatigory';
 import DeleteAccount from './pages/DeleteAccount';
 import OrderHistory from './pages/OrderHistory';
 import HistoryOrder from './pages/Orders/HistoryOrder';
@@ -45,13 +45,13 @@ import { BabyDetails,ProductsListBaby } from './pages/Catigory/Baby';
 import PayWithCard from './pages/PayWithCard';
 import ProductPage from './pages/ResultSearch';
 import PurchasedProductsScreen from './adminPages/PurchasedProducts';
-import waitingitem from './adminPages/waitingitem';
-import Offer from './pages/offers';
+import waitingitem from './adminPages/Waitingitem';
+import Offer from './pages/Offers';
 import RecentlyVisited from './pages/RecentlyVisited';
 import AddressScreen from './pages/AddressScreen';
 import AddressInformation from './pages/AddressInformation';
 import AboutUs from './pages/AboutUs';
-import pay from './pages/pay';
+import Pay from './pages/Pay';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -78,34 +78,34 @@ export default function App() {
         {/* { <Stack.Screen name='AddProducts' component={AddProducts}/> } */}
         <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
-        <Stack.Screen name="favorite" component={favorite} />
+        <Stack.Screen name="Favorite" component={Favorite} />
         <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
         <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
-        <Stack.Screen name="pay" component={pay} />
+        <Stack.Screen name="Pay" component={Pay} />
         
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="adminprofile" component={adminprofile} />
+        <Stack.Screen name="adminprofile" component={Adminprofile} />
         {/* <Stack.Screen name="products" component={products} /> */}
         <Stack.Screen name="CartScreen" component={CartScreen} />
-        <Stack.Screen name="adminHome" component={ adminHome }/>
+        <Stack.Screen name="adminHome" component={ AdminHome }/>
         <Stack.Screen name="OfferDetailsAdmin" component={ OfferDetailsAdmin }/>
         <Stack.Screen name="adminOffer" component={ ProductsListOfferAdmin }/>
         <Stack.Screen name="EditOfferPage" component={ EditOfferPage }/>
-        <Stack.Screen name="profile" component={ profile }/>
-        <Stack.Screen name="catigory" component={ Category }/>
+        <Stack.Screen name="Profile" component={ Profile }/>
+        <Stack.Screen name="Catigory" component={ Category }/>
         <Stack.Screen name="admincatigory" component={admincategory }/>
        
         <Stack.Screen name="EditProfile" component={ EditProfile }/>
         <Stack.Screen name="DeleteAccount" component={ DeleteAccount }/>
-        <Stack.Screen name="addadmin" component={ addadmin }/>
-        <Stack.Screen name="plusbutton" component={ plusbutton }/>
-        <Stack.Screen name="checkout" component={ Checkout }/>
+        <Stack.Screen name="Addadmin" component={ Addadmin }/>
+        <Stack.Screen name="Plusbutton" component={ Plusbutton }/>
+        <Stack.Screen name="Checkout" component={ Checkout }/>
         <Stack.Screen name=" BottomNavigator" component={  BottomNavigator }/>
         <Stack.Screen name="SearchResultsPage" component={ ProductPage }/>
-        <Stack.Screen name="offer" component={ Offer }/>
-        <Stack.Screen name="categoryresult" component= {CatigoryResult}/>
+        <Stack.Screen name="Offer" component={ Offer }/>
+        <Stack.Screen name="Categoryresult" component= {CatigoryResult}/>
         <Stack.Screen name="RecentlyVisited" component={ RecentlyVisited }/>
         <Stack.Screen name="AddressScreen" component={ AddressScreen }/>
         <Stack.Screen name="AddressInformation" component={ AddressInformation }/>
@@ -117,15 +117,15 @@ export default function App() {
 
 
 
-        <Stack.Screen name="userr" component={ userr }/>
-        <Stack.Screen name="adminWOMAN" component={adminProductsListWoman} />
-        <Stack.Screen name="adminWomanDetails" component={adminWomanDetails} />
-        <Stack.Screen name="adminBABY" component={adminProductsListBaby} />
-        <Stack.Screen name="adminBabyDetails" component={adminBabyDetails} />
-        <Stack.Screen name="adminKIDS" component={adminProductsListKids} />
-        <Stack.Screen name="adminKidsDetails" component={adminKidsDetails} />
-        <Stack.Screen name="adminMEN" component={adminProductsListMen} />
-        <Stack.Screen name="adminMenDetails" component={adminMenDetails} />
+        <Stack.Screen name="Userr" component={ Userr }/>
+        <Stack.Screen name="AdminWOMAN" component={AdminProductsListWoman} />
+        <Stack.Screen name="AdminWomanDetails" component={AdminWomanDetails} />
+        <Stack.Screen name="AdminBABY" component={AdminProductsListBaby} />
+        <Stack.Screen name="AdminBabyDetails" component={AdminBabyDetails} />
+        <Stack.Screen name="AdminKIDS" component={AdminProductsListKids} />
+        <Stack.Screen name="AdminKidsDetails" component={AdminKidsDetails} />
+        <Stack.Screen name="AdminMEN" component={AdminProductsListMen} />
+        <Stack.Screen name="AdminMenDetails" component={AdminMenDetails} />
         <Stack.Screen name="EditProductPage" component={EditProductPage} />
     
       </Stack.Navigator>

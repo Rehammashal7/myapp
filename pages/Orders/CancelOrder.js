@@ -134,7 +134,7 @@ const CancelOrder = ({ navigation }) => {
 export default CancelOrder;
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+   // flex: 1,
 
   },
   containeritem: {

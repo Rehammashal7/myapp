@@ -231,10 +231,10 @@ const HistoryOrder = ({ navigation }) => {
 export default HistoryOrder;
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+   // flex: 1,
   },
   containeritem: {
-    backgroundColor: "#FBFAFF",
+    backgroundColor: "#ffffff",
     width: width,
   },
   header: {

@@ -30,10 +30,10 @@ import Foodcard from "../components/Foodcard";
 import Icon from "react-native-vector-icons/FontAwesome";
 import PrimaryButton from "../components/Button";
 //import Header from "../Header";
-import Search from "../components/search";
+import Search from "../components/Search";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BottomNavigator from "../components/adminbar";
+import BottomNavigator from "../components/Adminbar";
 import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
 
@@ -43,7 +43,7 @@ const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
 let iconcolor;
-const adminProductsListMen = ({ navigation }) => {
+const AdminProductsListMen = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
@@ -283,7 +283,7 @@ const adminProductsListMen = ({ navigation }) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const adminMenDetails = ({ route, navigation }) => {
+const AdminMenDetails = ({ route, navigation }) => {
   // const { product } = route.params;
   const { product } = route.params ? route.params : { product: {} };
   // const [products, setProducts] = React.useState('');
@@ -1355,7 +1355,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+    //fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },
@@ -2366,4 +2366,4 @@ const EditProductPage = ({ route, navigation }) => {
     );
   };
 
-export { EditProductPage,adminProductsListMen, adminMenDetails } ;
+export { EditProductPage,AdminProductsListMen, AdminMenDetails } ;

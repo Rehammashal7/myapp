@@ -6,7 +6,7 @@ import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 const { width } = Dimensions.get('screen');
 const cardwidth = width / 2;
 
-const pay = ({ navigation }) => {
+const Pay = ({ navigation }) => {
     useEffect(() => {
         console.log('pay')
     }, []);
@@ -77,4 +77,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default pay;
+export default Pay;

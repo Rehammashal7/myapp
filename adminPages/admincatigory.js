@@ -10,11 +10,11 @@ import FoodCard from '../components/Foodcard';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Food, { Offer, filterData } from '../data';
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
+import Search from '../components/Search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomNavigator from '../components/adminbar';
+import BottomNavigator from '../components/Adminbar';
 
-const admincategory = ({ navigation }) => {
+const Admincategory = ({ navigation }) => {
     return (
         <View>
             <View>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
         marginTop: 60
     }
 });
-export default admincategory;
+export default Admincategory;

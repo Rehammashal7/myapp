@@ -9,9 +9,9 @@ import { db } from '../firebase';
 import Food, { filterData, productt, option, size } from "../data";
 
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
+import Search from '../components/Search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomNavigator from '../components/adminbar';
+import BottomNavigator from '../components/Adminbar';
 import { useIsFocused } from '@react-navigation/native';
 // import Carousel from 'react-native-snap-carousel';
 
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     Text: {
         color: COLORS.darkblue,
         fontSize: 35,
-        fontFamily: 'SofiaRegular',
+        //fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
     },

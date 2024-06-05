@@ -80,65 +80,6 @@
       { title: '15' },
     ];
 
-    // function handleChange(e) {
-    //   if (e.target.files[0]) {
-    //     setPhoto(e.target.files[0])
-    //   }
-    // };
-
-
-    
-    
-    // const handleChoosePhoto = async () => {
-    //   const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    //   if (status !== 'granted') {
-    //     alert('Sorry, we need camera roll permissions to make this work!');
-    //     return;
-    //   }
-    //   let result = await ImagePicker.launchImageLibraryAsync({
-    //     mediaTypes: ImagePicker.MediaTypeOptions.All,
-    //     allowsEditing: true,
-    //     aspect: [4, 3],
-    //     quality: 1,
-    //   });
-    //   if (!result.canceled) {
-    //     setPhotoURL(result.assets[0].uri);
-    //     setLoading(true);
-    //     // console.log(loading);
-
-    //   }
-    // };
-    // function handleChange(imagepath) {
-    //   if (imagepath && imagepath.length > 0 ) {
-    //     const image = imagepath[0];
-    //     setPhotoURL(imagepath.uri);
-    //     setPhoto(imagepath);
-    //     handleChoosePhoto();
-    //   }
-    // }
-
-    // function handleClick() {
-    //   upload(photo, currentUser, setLoading);
-    //   setPhotoURL(photo.uri);
-    // }
-
-    // async function upload(file, currentUser, setLoading) {
-    //   const storage = getStorage();
-    //   console.log("stroage",storage);
-    //   const fileRef = ref(storage,currentUser.uid + '.png');
-    //   console.log("file",fileRef);
-
-    //   setLoading(true);
-      
-    //   const snapshot = await uploadBytes(fileRef, file);
-    //   const photoURL = await getDownloadURL(fileRef);
-    //   console.log("photoo",photoURL);
-    //   updateProfile(currentUser, {photoURL});
-      
-    //   setLoading(false);
-    //   alert("Uploaded file!");
-    // };
-
 
   const handleChoosePhoto = async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -154,19 +95,20 @@
       });
       if (!result.canceled) {
         setPhotoURL(result.assets[0].uri);
+        setPhoto(result.uri); 
         console.log(photoURL);
+        console.log(photo);
       }
     };
     function handleChange(e) {
       if (e.target.files[0]) {
         setPhoto(e.target.files[0])
-        handleChoosePhoto();
       }
     };
 
 
     function handleClick() {
-      console.log(photo);
+      console.log('nkmkmlkkmlk',photo);
       upload(photo, currentUser, setLoading);
     };
     async function upload(file, currentUser, setLoading) {
@@ -179,11 +121,23 @@
       const snapshot = await uploadBytes(fileRef, file);
       const photoURL = await getDownloadURL(fileRef);
     
-      updateProfile(currentUser, {photoURL});
+      updateProfilePhoto(photoURL);
       
       setLoading(false);
       alert("Uploaded file!");
     };
+
+    async function updateProfilePhoto(photoURL) {
+      const user = auth.currentUser;
+    
+      try {
+        await updateProfile(user, { photoURL });
+        console.log("Profile photo updated successfully!");
+      } catch (error) {
+        console.error("Error updating profile photo: ", error);
+      }
+    }
+    
 
     const getUserData = async () => {
       try {
@@ -262,6 +216,7 @@
     useEffect(() => {
       if (currentUser?.photoURL) {
         setPhotoURL(currentUser.photoURL);
+        console.log('photooo url ',currentUser.photoURL);
       }
     }, [currentUser]);
 
@@ -563,7 +518,7 @@
           <Text style={styles.inf}> My personal information </Text>
           <TouchableOpacity onPress={handleChoosePhoto}>
           <View>
-            <Image style={styles.profileImage} source={{ uri: photoURL }} />
+            <Image style={styles.profileImage} source={{uri: photoURL }} />
           </View>
         </TouchableOpacity>
 

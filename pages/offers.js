@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Dimensions, CheckBox, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
+import Search from '../components/Search';
 import { filterData } from '../data';
 
 const { width } = Dimensions.get('screen');
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     Text: {
         color: COLORS.darkblue,
         fontSize: 35,
-        fontFamily: 'SofiaRegular',
+        //fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
     },

@@ -28,7 +28,7 @@ import { Entypo } from "@expo/vector-icons";
 import { auth, db, storage } from "../firebase";
 import COLORS from "../Consts/Color";
 import * as ImagePicker from "expo-image-picker";
-import BottomNavigator from "../components/bar";
+import BottomNavigator from "../components/Bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 
