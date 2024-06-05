@@ -34,7 +34,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../../components/bar";
 import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
-
+import SelectDropdown from 'react-native-select-dropdown';
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
@@ -49,7 +49,110 @@ const ProductsListWoman = ({ navigation }) => {
   const scrollViewRef = useRef(null);
   const [activeIndexes, setActiveIndexes] = useState({});
   const [isLoading, setIsLoading] = useState(true);
+  const [filterproduct, setfilterProduct] = useState([]);
+  const [iconsort, seticonsort] = useState(true);
+  const filters = [
+    { title: 'all' },
+    { title: 'size' },
+    { title: 'color' },
+  ];
+  const size = [
+    { title: 'XS' },
+    { title: 'S' },
+    { title: 'M' },
+    { title: 'L' },
+    { title: 'XL' },
+    { title: 'XXL' },
+  ];
+  const color = [
+    { title: 'beige' },
+    { title: 'bisque' },
+    { title: 'black' },
+    { title: 'blue' },
+    { title: 'chocolate' },
+    { title: 'fuchsia' },
+    { title: 'gray' },
+    { title: 'green' },
+    { title: 'khaki' },
+    { title: 'navy' },
+    { title: 'red' },
+    { title: 'salmon' },
+    { title: 'white' },
+  ];
+  const handleSize = (title) => {
 
+    const filterSize = filterproduct.filter(product => containsize(product, title))
+    setProducts(filterSize);
+    console.log(filterSize)
+  }
+  useEffect(() => {
+    handleSize()
+  }, [])
+  const handleColor = (title) => {
+
+    const filterColor = filterproduct.filter(product => containColor(product, title))
+    setProducts(filterColor);
+    console.log(filterColor)
+  }
+  useEffect(() => {
+    handleColor()
+  }, [])
+  const containsize = ({ sizes }, query) => {
+    console.log(sizes);
+    console.log(query);
+    // Convert the query to lowercase for case-insensitive comparison
+    const lowerCaseQuery = query;
+    console.log(sizes.some(size => size.includes(lowerCaseQuery)))
+    // Use the some method to check if any color in the list includes the query
+    return sizes.some(size => size.includes(lowerCaseQuery));
+  };
+  const containColor = ({ colors }, query) => {
+    console.log(colors);
+
+    // Convert the query to lowercase for case-insensitive comparison
+    const lowerCaseQuery = query;
+
+    // Use the some method to check if any color in the list includes the query
+    return colors.some(color => color.includes(lowerCaseQuery));
+  };
+  const sort = [
+    { title: 'price' },
+    { title: 'rate' },
+    { title: 'none' },
+  ];
+  const [sortOrder, setSortOrder] = useState(true);
+
+  const handlesort = (title) => {
+    if (title === 'price') {
+      products.sort((a, b) => {
+        const priceA = a.price || 0; // Default to 0 if price is missing
+        const priceB = b.price || 0;
+        return !sortOrder ? priceA - priceB : priceB - priceA;
+      });
+      console.log(iconsort)
+      setProducts(products);
+    } else if (title === 'rate') {
+      products.sort((a, b) => {
+        const rateA = a.rate || 0; // Default to 0 if price is missing
+        const rateB = b.rate || 0;
+        return !sortOrder ? rateA - rateB : rateB - rateA;
+      });
+      console.log(iconsort)
+      setProducts(products);
+    } else {
+      setProducts(filterproduct);
+    }
+  }
+  const handleAll = (title) => {
+    if (title === 'all') {
+      setProducts(filterproduct);
+    }
+  }
+
+  const [filterType, setFilterType] = useState("");
+  const [sizeType, setsizeType] = useState("");
+  const [colorType, setcolorType] = useState("");
+  const [sortType, setSortType] = useState("");
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -59,7 +162,32 @@ const ProductsListWoman = ({ navigation }) => {
           id: doc.id,
           ...doc.data(),
         }));
+        console.log('data' + productsData)
+
+
+        if (sortType === 'price') {
+          console.log("title " + sortType)
+          console.log("order " + sortOrder)
+          productsData.sort((a, b) => {
+            const priceA = a.price || 0; // Default to 0 if price is missing
+            const priceB = b.price || 0;
+            return sortOrder ? priceA - priceB : priceB - priceA;
+          });
+          console.log(iconsort)
+        } else if (sortType === 'rate') {
+          console.log("title " + sortType)
+          console.log("order " + sortOrder)
+          productsData.sort((a, b) => {
+            const rateA = a.rate || 0; // Default to 0 if price is missing
+            const rateB = b.rate || 0;
+            return sortOrder ? rateA - rateB : rateB - rateA;
+          });
+          console.log(iconsort)
+          setProducts(products);
+        }
         setProducts(productsData);
+        setfilterProduct(productsData);
+
       } catch (error) {
         console.error("Error fetching products: ", error);
       } finally {
@@ -67,7 +195,8 @@ const ProductsListWoman = ({ navigation }) => {
       }
     };
     getProducts();
-  }, []);
+
+  }, [sortType]);
 
   useEffect(() => {
     const getUserId = async () => {
@@ -153,7 +282,7 @@ const ProductsListWoman = ({ navigation }) => {
           style={{
             // flexDirection: "row",
             marginTop: 1,
-            height: 80,
+            height: 100,
 
             // marginHorizontal: 20,
             // justifyContent: "space-between",
@@ -178,30 +307,27 @@ const ProductsListWoman = ({ navigation }) => {
                   fontWeight: "bold",
                   marginHorizontal: 10,
                   textDecorationLine: "line-through",
+                  height: 20
                 }}
               >
                 {item.price} EGP
               </Text>
               <Text
                 style={{
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: "bold",
-                  marginHorizontal: 10,
+                  marginHorizontal: 9,
                   color: "#df2600",
+                  height: 40
                 }}
               >
-                {item.offer}% Discount{" "}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 17,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  marginBottom: 10,
-                  color: "#df2600",
-                }}
-              >
-                {Math.floor(item.price - item.price / item.offer)} EGP
+                🏷️ {item.offer}% Discount{" "}
+                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                  {Math.floor(
+                    item.price - item.price / item.offer
+                  )}{" "}
+                  EGP
+                </Text>
               </Text>
             </>
           ) : (
@@ -255,6 +381,159 @@ const ProductsListWoman = ({ navigation }) => {
         />
       </View>
       <ScrollView>
+        <View style={styles.containerfs}>
+          <Pressable
+            style={{ flexDirection: "row", }}
+          >
+
+            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
+            <View style={styles.numbertypecontainer}>
+              <Icon
+                name="filter"
+                size={25}
+                color="#343434"
+                style={{ marginRight: 3 }}
+              />
+              <SelectDropdown
+                data={filters}
+                onSelect={(selectedItem) => {
+                  setFilterType(selectedItem.title);
+                  handleAll(selectedItem.title)
+                  console.log(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={styles.dropdownButtonStyle}>
+                      <Text style={styles.dropdownButtonTxtStyle}>
+                        {(filterType && filterType) || 'filter'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+
+
+
+            </View>
+            {filterType === 'size' && (
+              <SelectDropdown
+                data={size}
+                onSelect={(selectedItem) => {
+                  setsizeType(selectedItem.title);
+                  handleSize(selectedItem.title);
+                  console.log(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={styles.dropdownButtonStyle}>
+                      <Text style={styles.dropdownButtonTxtStyle}>
+                        {(sizeType && sizeType) || 'size'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+            )}
+            {filterType === 'color' && (
+              <SelectDropdown
+                data={color}
+                onSelect={(selectedItem) => {
+
+                  setcolorType(selectedItem.title);
+                  handleColor(selectedItem.title);
+                  console.log(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={styles.dropdownButtonStyle}>
+                      <Text style={styles.dropdownButtonTxtStyle}>
+                        {(colorType && colorType) || 'color'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+            )}
+          </Pressable>
+          <Pressable
+            style={{ flexDirection: "row", marginLeft: 5 }}
+          >
+
+            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
+            <View style={styles.numbertypecontainer}>
+              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
+                <Icon
+                  name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
+                  size={25}
+                  color="#343434"
+                  style={{ marginRight: 10 }}
+
+                />
+              </Pressable>
+              <SelectDropdown
+                data={sort}
+                onSelect={(selectedItem) => {
+                  setSortType(selectedItem.title);
+                  setSortOrder(true);
+                  seticonsort(true);
+                  handlesort(sortType);
+                  console.log(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={styles.dropdownButtonStyle}>
+                      <Text style={styles.dropdownButtonTxtStyle}>
+                        {(sortType && sortType) || 'Sort'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={styles.dropdownMenuStyle}
+              />
+
+
+            </View>
+          </Pressable>
+        </View>
         {/* Render "Loading..." if isLoading is true, otherwise render products */}
         {isLoading ? (
           <View>
@@ -319,7 +598,7 @@ const WomanDetails = ({ route, navigation }) => {
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
-  const categoryName="Women";
+  const categoryName = "Women";
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
@@ -411,7 +690,7 @@ const WomanDetails = ({ route, navigation }) => {
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
-     newDate.setDate(newDate.getDate() + 2);
+    newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -422,7 +701,7 @@ const WomanDetails = ({ route, navigation }) => {
       existingItem.qty += 1;
       setShowGoToCartButton(true);
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize ,delivery: newDate});
+      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
     }
     await updateDoc(userRef, { cart });
     getCartItems();
@@ -430,7 +709,7 @@ const WomanDetails = ({ route, navigation }) => {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
 
-    }else if (selectedColor || selectedSize) {
+    } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
 
@@ -440,7 +719,7 @@ const WomanDetails = ({ route, navigation }) => {
       setShowGoToCartButton(false);
     }
 
-  
+
   };
 
   const handleGoToCart = () => {
@@ -520,16 +799,16 @@ const WomanDetails = ({ route, navigation }) => {
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
     const existingItem = fav.find(itm => itm.id === item.id);
-    
-    setIsPressed(!!existingItem); 
+
+    setIsPressed(!!existingItem);
   };
-  
+
   useEffect(() => {
     handelHeart(product);
-  }, [handelHeart]); 
+  }, [handelHeart]);
   useEffect(() => {
     console.log(isPressed);
-  }, [isPressed]); 
+  }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
 
@@ -589,10 +868,13 @@ const WomanDetails = ({ route, navigation }) => {
         setComment(productData.reviews.length);
         setRating(averageRating);
         loadLikesAndDislikes(productData.reviews);
+        await updateDoc(productRef, { rate: averageRating });
       } else {
         setRating(0);
         setComment(0);
+        await updateDoc(productRef, { rate: 0 });
       }
+
     } catch (error) {
       console.error("Error fetching reviews: ", error);
     }
@@ -640,89 +922,89 @@ const WomanDetails = ({ route, navigation }) => {
     }
   };
 
-const handleDislike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.disLike === 0) {
-      updatedReview.disLike = 1;
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '1');
-      await AsyncStorage.setItem(`like${index}`, '0');
-    } else {
-      updatedReview.dislike = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '0');
-    }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-  } catch (error) {
-    console.log('Error handling dislike:', error);
-  }
-};
-
-useEffect(() => {
-  console.log("iam in recently use effect ");
-  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
-  // console.log("iam get data ");
-  console.log("produt id",product_id);
-}, []);
-
-const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-  console.log("I am in save visit");
-  try {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userDoc = await getDoc(userRef);
-    if (userDoc.exists) {
-      const userData = userDoc.data();
-      let updatedRecentlyVisited = [];
-      if (userData.recentlyVisited) {
-        const productExists = userData.recentlyVisited.some(item => item.id === id);
-        if (!productExists) {
-          updatedRecentlyVisited = [
-            {
-              id: id,
-              name: name,
-              categoryName: categoryName,
-              image: images,
-              colors: colors,
-              description: description,
-              offer: offer,
-              price: price,
-              sizes: sizes
-            },
-            ...userData.recentlyVisited
-          ];
-        } else {
-          console.log("Product already exists in recentlyVisited");
-          updatedRecentlyVisited = [...userData.recentlyVisited];
-        }
+  const handleDislike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.disLike === 0) {
+        updatedReview.disLike = 1;
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`disLike${index}`, '1');
+        await AsyncStorage.setItem(`like${index}`, '0');
       } else {
-        updatedRecentlyVisited = [{
-          id: id,
-          name: name,
-          categoryName: categoryName,
-          image: images,
-          colors: colors,
-          description: description,
-          offer: offer,
-          price: price,
-          sizes: sizes
-        }];
+        updatedReview.dislike = 0;
+        await AsyncStorage.setItem(`disLike${index}`, '0');
       }
-      if (updatedRecentlyVisited.length > 10) {
-        updatedRecentlyVisited.splice(10);
-        console.log("More than 10 items, removing the oldest ones.");
-      }
-      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-      console.log("Data added to recentlyVisited successfully");
-    } else {
-      console.log("User document not found");
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log('Error handling dislike:', error);
     }
-  } catch (error) {
-    console.error('Error', error);
-  }
-};
+  };
+
+  useEffect(() => {
+    console.log("iam in recently use effect ");
+    saveRecentlyVisited(product.id, product.name, product.categoryName, product.images, product.colors, product.description, product.offer, product.price, product.sizes);
+    // console.log("iam get data ");
+    console.log("produt id", product_id);
+  }, []);
+
+  const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
+    console.log("I am in save visit");
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let updatedRecentlyVisited = [];
+        if (userData.recentlyVisited) {
+          const productExists = userData.recentlyVisited.some(item => item.id === id);
+          if (!productExists) {
+            updatedRecentlyVisited = [
+              {
+                id: id,
+                name: name,
+                categoryName: categoryName,
+                image: images,
+                colors: colors,
+                description: description,
+                offer: offer,
+                price: price,
+                sizes: sizes
+              },
+              ...userData.recentlyVisited
+            ];
+          } else {
+            console.log("Product already exists in recentlyVisited");
+            updatedRecentlyVisited = [...userData.recentlyVisited];
+          }
+        } else {
+          updatedRecentlyVisited = [{
+            id: id,
+            name: name,
+            categoryName: categoryName,
+            image: images,
+            colors: colors,
+            description: description,
+            offer: offer,
+            price: price,
+            sizes: sizes
+          }];
+        }
+        if (updatedRecentlyVisited.length > 10) {
+          updatedRecentlyVisited.splice(10);
+          console.log("More than 10 items, removing the oldest ones.");
+        }
+        await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+        console.log("Data added to recentlyVisited successfully");
+      } else {
+        console.log("User document not found");
+      }
+    } catch (error) {
+      console.error('Error', error);
+    }
+  };
 
 
 
@@ -1421,6 +1703,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 10,
     marginBottom: 0,
+    height: 40
     // left: 200,
   },
   titlesWrapper: {
@@ -1503,12 +1786,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
   },
-  Text: {
-    color: "#0B0E21",
-    fontSize: 40,
-    fontWeight: "bold",
-    alignItems: "center",
-  },
+
   discribtion: {
     color: "#0B0E21",
     fontSize: 20,
@@ -1599,7 +1877,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 282,
+    marginTop: 262,
     //  zIndex: 1
     //marginBottom:30,
   },
@@ -1778,7 +2056,7 @@ const styles = StyleSheet.create({
 
   // },
   bottomBar: {
-    position: "fixed",
+    // position: "fixed",
     bottom: 0,
     left: 0,
     right: 0,
@@ -1796,7 +2074,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    // justifyContent: "start",
 
     alignItems: "center",
   },
@@ -1871,6 +2149,64 @@ const styles = StyleSheet.create({
   okButtonText: {
     color: "white",
     fontSize: 16,
+  },
+  containerfs: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+  },
+  dropdownButtonStyle: {
+    width: 90,
+    height: 50,
+    // backgroundColor: '#E9ECEF',
+    // borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  dropdownButtonTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#393e46',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 22,
+    marginLeft: 5
+  },
+  // dropdownButtonIconStyle: {
+  //   fontSize: 18,
+  //   marginRight: 8,
+  // },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    // width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  numbertypecontainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: 'space-evenly',
+    width: 80,
+    height: 45,
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+  },
+  dropdownItemTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    // fontWeight: '500',
+    color: '#151E26',
   },
 });
 export { ProductsListWoman, WomanDetails };

@@ -13,6 +13,7 @@ import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
 import { useIsFocused } from '@react-navigation/native';
+import { getAuth } from "firebase/auth";
 // import Carousel from 'react-native-snap-carousel';
 
 const { width } = Dimensions.get('screen');
@@ -28,6 +29,7 @@ const HomeScreen = ({ navigation }) => {
     const [activeIndexes, setActiveIndexes] = useState({});
     const imageWidth = cardwidth;
     const isFocused = useIsFocused();
+    const auth = getAuth();
     useEffect(() => {
         getUser();
       }, [isFocused]);
@@ -65,15 +67,15 @@ const HomeScreen = ({ navigation }) => {
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
     
-        if (docSnap.exists()) {
+        // if (docSnap.exists()) {
     
-          const data = docSnap.data();
-          if (data.isAdmin === true) {
-            navigation.navigate('adminHome');
-          } else {
-            navigation.navigate('Home');
-          }
-        }
+        //   const data = docSnap.data();
+        //   if (data.isAdmin === true) {
+        //     navigation.navigate('adminHome');
+        //   } else {
+        //     navigation.navigate('Home');
+        //   }
+        // }
       };
     const handleProductPress = async (product, Category) => {
         try {
