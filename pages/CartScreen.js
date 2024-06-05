@@ -22,7 +22,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
-const cardheight = screenHeight / 2 - 30;
+const cardheight = screenHeight / 2;
 const cardwidth = width / 2;
 
 //parseInt()تحويل 
@@ -82,13 +82,13 @@ const CartScreen = ({ navigation }) => {
   const [collectionName, setCollection] = useState([]);
   const [type, setType] = useState([])
 
-  const [indices,setindices]=useState([]);
+  const [indices, setindices] = useState([]);
 
   useEffect(() => {
     console.log(Recomendproduct);
     recommended();
-   setindices(Array.from({ length: cartList.length }, (_, index) => index));
-   console.log("length",indices);
+    setindices(Array.from({ length: cartList.length }, (_, index) => index));
+    console.log("length", indices);
   }, [cartList]);
 
   const [Recomendproduct, setRecomendproduct] = useState([])
@@ -96,7 +96,9 @@ const CartScreen = ({ navigation }) => {
     try {
       const categories = cartList.map(item => item.data.categoryName);
       const types = cartList.map(item => item.data.type);
-      const prices =cartList.map(item => item.data.price);
+      const prices = cartList.map(item => item.data.price);
+      const Name = cartList.map(item => item.data.name);
+
       setCollection(categories);
       console.log("Category Names:", categories);
 
@@ -105,20 +107,37 @@ const CartScreen = ({ navigation }) => {
 
       // Fetch recommended products for each category and type
       const recommendedProductsPromises = categories.map((item, index) =>
-        getRecommendProduct(item, types[index],prices[index])
+        getRecommendProduct(item, types[index], prices[index], Name)
       );
+
 
       // Wait for all fetches to complete
       const recommendedProducts = await Promise.all(recommendedProductsPromises);
-      setRecomendproduct(recommendedProducts);
-      console.log("Recommended Products:", recommendedProducts);
+      // const recommendedProducts2 = Name.map((item, index) =>
+      //   recommendedProducts.filter(product =>  product.name != item)
+      // );
+      const allRecommendedProducts = recommendedProducts.flat();
+
+      // Use a Set to remove duplicates based on product ID
+      const uniqueProducts = [];
+      const productIds = new Set();
+
+      allRecommendedProducts.forEach(product => {
+        if (!productIds.has(product.id)) {
+          uniqueProducts.push(product);
+          productIds.add(product.id);
+        }
+      });
+
+      setRecomendproduct(uniqueProducts);
+      console.log("Recommended Products:", uniqueProducts);
       console.log(Recomendproduct);
     } catch (error) {
       console.error("Error fetching recommended products: ", error);
     }
   };
 
-  const getRecommendProduct = async (item, types,prices) => {
+  const getRecommendProduct = async (item, types, prices, Names) => {
     console.log("Category Name:", item);
     console.log("Type:", types);
 
@@ -133,10 +152,33 @@ const CartScreen = ({ navigation }) => {
 
       console.log("Filtered Products:", productsData);
 
-        let filteredProducts = productsData.filter(product => product.type === types || product.price < prices ||product.price ===prices+100);
+      let filteredProducts = [];
+      if (types === 't-shirt') {
+        filteredProducts = productsData.filter(product => (product.type === 'trousers' || product.type === 't-shirt' || product.type === 'skirt') && product.price < prices + 100);
+      } else if (types === 'shirt') {
+        filteredProducts = productsData.filter(product => (product.type === 'trousers' || product.type === 'shirt') && product.price < prices + 100);
+      } else if (types === 'trousers') {
+        filteredProducts = productsData.filter(product => (product.type === 't-shirt' || product.type === 'trousers') && product.price < prices + 100);
+      } else if (types === 'skirt') {
+        filteredProducts = productsData.filter(product => (product.type === 't-shirt' || product.type === 'skirt') && product.price < prices + 100);
+      } else {
+        filteredProducts = productsData.filter(product => product.type === types && product.price < prices + 100);
+      }
+      const filteredProducts2 = filteredProducts.filter(product => !Names.includes(product.name));
 
-      console.log("Filtered Products:", filteredProducts);
-      return filteredProducts;
+      console.log("Filtered Products2:", filteredProducts2);
+      const uniqueProducts = [];
+      const productIds = new Set();
+
+      filteredProducts2.forEach(product => {
+        if (!productIds.has(product.id)) {
+          uniqueProducts.push(product);
+          productIds.add(product.id);
+        }
+      });
+
+      console.log("Unique Filtered Products:", uniqueProducts);
+      return uniqueProducts;
     } catch (error) {
       console.error("Error fetching products: ", error);
       throw error;
@@ -332,6 +374,31 @@ const CartScreen = ({ navigation }) => {
       const formattedDate = `${year}-${month}-${day}`;
       return formattedDate;
     };
+  };
+
+  const getpoint = () => {
+    let offer = getTotal() - getTotalOfers() - points;
+    if (offer < 0) {
+      offer = 0
+    }
+    console.log(points);
+    console.log(offer);
+    return offer;
+  }
+  const handleProductPress = async (product, Category) => {
+    try {
+      if (Category === "KIDS") {
+        navigation.navigate('KidsDetails', { product });
+      } else if (Category === "MEN") {
+        navigation.navigate('MenDetails', { product });
+      } else if (Category === "BABY") {
+        navigation.navigate('BabyDetails', { product });
+      } else {
+        navigation.navigate('WomanDetails', { product });
+      }
+    } catch (error) {
+      console.error("Error fetching product: ", error);
+    }
   };
 
   const renderProduct = ({ item }) => (
@@ -561,7 +628,7 @@ const CartScreen = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'using gift points'}
+              {'Total : ' + getpoint().toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconName2(!IconName2)}>
               <Icon name={IconName2 ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
@@ -574,38 +641,35 @@ const CartScreen = ({ navigation }) => {
                 <Text style={{ fontSize: 18 }}>{points}</Text>
               </View>
               <View style={styles.row}>
-                <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Total price</Text>
-                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getTotal() - points * 10}</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>total (after points)</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getpoint().toFixed(2)}</Text>
               </View>
             </>
           )}
         </View>
-        {Recomendproduct.length>0 &&
-        (<View>
-        <View style={styles.headerTextView}>
-                    <Text style={[styles.headerText, { color: COLORS.dark }]}> Recommended for you   </Text>
-                </View>
-        <ScrollView horizontal={true}>
-        {indices.map((index) => (
-           (
-          <FlatList
-            key={index}
-            style={{ marginTop: 10, marginBottom: 10 }}
-            horizontal={true}
-            data={Recomendproduct[index]}
-            showsHorizontalScrollIndicator={false}
-            renderItem={renderProduct}
-            keyExtractor={(item) => item.id.toString()} // Ensure key is a string
-          />
-          )
-      ))}
+        {Recomendproduct.length > 0 &&
+          (<View>
+            <View style={styles.headerTextView}>
+              <Text style={[styles.headerText, { color: COLORS.dark }]}> Recommended for you   </Text>
+            </View>
+            <ScrollView horizontal={true}>
 
-          {/* <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
+              <FlatList
+
+                style={{ marginTop: 10, marginBottom: 10 }}
+                horizontal={true}
+                data={Recomendproduct}
+                showsHorizontalScrollIndicator={false}
+                renderItem={renderProduct}
+
+              />
+
+              {/* <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
                             <Text style={styles.discoverText}>{'See All >>'}</Text>
                         </TouchableOpacity> */}
 
-        </ScrollView>
-      </View>)}
+            </ScrollView>
+          </View>)}
 
         <View style={styles.bottoms}></View>
       </ScrollView>
@@ -629,7 +693,7 @@ const CartScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       )}
-     
+
       <BottomNavigator item="cart" navigation={navigation} userId={userId} />
     </View>
   );
@@ -677,12 +741,12 @@ const styles = StyleSheet.create({
   headerTextView: {
     backgroundColor: 'White',
     marginTop: 10
-},headerText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        alignItems: 'center',
-        margin: 10
-    },
+  }, headerText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    alignItems: 'center',
+    margin: 10
+  },
   deliveryText: {
     marginLeft: 60,
     fontSize: 18,
@@ -714,7 +778,7 @@ const styles = StyleSheet.create({
     height: cardheight - 30,
     elevation: 13,
     backgroundColor: 'white',
-},
+  },
   itemView: {
     flexDirection: 'row',
     width: '90%',
@@ -826,5 +890,5 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     height: 40,
     width: cardwidth - 20
-},
+  },
 });
