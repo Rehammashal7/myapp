@@ -52,6 +52,7 @@ const Favorite = ({ navigation }) => {
       [productId]: currentIndex,
     }));
   };
+
   const getFavItems = async () => {
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
@@ -110,7 +111,7 @@ const Favorite = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.Text, { textAlign: 'center' }]}> Favorite </Text>
+        <Text style={[styles.Texts, { textAlign: 'center' }]}>Favorite</Text>
       </View>
       <Search />
       <ScrollView>
@@ -146,12 +147,18 @@ const Favorite = ({ navigation }) => {
                       ))}
                     </View>
                     <Text style={styles.Name}>{item.data.name}</Text>
-                    <View style={{ flexDirection: "row", marginTop: 10, marginHorizontal: 10, justifyContent: 'space-between' }}>
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}>{item.data.price}</Text>
-                 
-                  <Text style={{ fontSize: 18, fontWeight: 'bold' }}> <Text>EGP</Text> </Text>
-                </View>
-
+                    <View style={{ flexDirection: "row", marginTop: 5, marginHorizontal: 10, marginBottom:10 }}>
+                    <Text
+                                style={{
+                                    fontSize: 18,
+                                    fontWeight: "bold",
+                                    marginHorizontal: 10,
+                                    height: 20
+                                }}
+                            >
+                                {item.data.price} EGP
+                            </Text>
+                    </View>
                     <View style={styles.containerHeart}>
                       <Pressable
                         onPress={() => {
@@ -170,7 +177,8 @@ const Favorite = ({ navigation }) => {
               </TouchableOpacity>
             );
           }}
-        /> <View style={styles.bottoms}></View>
+        />
+        <View style={styles.bottoms}></View>
       </ScrollView>
       <BottomNavigator item="fav" navigation={navigation} userId={userId} />
     </View>
@@ -189,7 +197,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     textAlign: 'center'
   },
-  Text: {
+  Texts: {
     color: COLORS.darkblue,
     fontSize: 35,
     fontFamily: 'SofiaRegular',
@@ -235,8 +243,9 @@ const styles = StyleSheet.create({
     color: "#131A2C",
     marginTop: 5,
     marginLeft: 10,
-    marginBottom: 10,
-    height: 40
+    marginBottom: 5,
+    height: 40,
+    width: cardwidth - 20
   },
   containerHeart: {
     position: 'absolute',
@@ -248,7 +257,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   addToFavBtn: {
-    padding: 10,
+    paddingTop: 10,
+    paddingBottom:8,
     right: 10,
     borderRadius: 10,
     alignItems: 'center',

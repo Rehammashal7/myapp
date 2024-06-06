@@ -44,10 +44,27 @@ const Search = () => {
         }
     }, [isempty])
 
-    const contains = ({ name }, query) => {
+    const contains = ({ name, colors }, query) => {
+        console.log(name, colors);
         return name.toLowerCase().includes(query.toLowerCase());
     };
+    const containtype= ({ type }, query) => {
+        console.log(type);
+        return type.toLowerCase().includes(query.toLowerCase());
+    };
+    const containcategory = ({ categoryName }, query) => {
+        console.log(categoryName);
+        return categoryName.toLowerCase().includes(query.toLowerCase());
+    };
+    const containColor = ({ colors }, query) => {
+        console.log(colors);
 
+        // Convert the query to lowercase for case-insensitive comparison
+        const lowerCaseQuery = query.toLowerCase();
+
+        // Use the some method to check if any color in the list includes the query
+        return colors.some(color => color.includes(lowerCaseQuery));
+    };
     const getsearchItems = async () => {
         try {
             const id = await AsyncStorage.getItem('USERID');
@@ -55,15 +72,15 @@ const Search = () => {
             const userRef = doc(db, 'users', id);
             const userSnap = await getDoc(userRef);
             const searchList = userSnap.get('search');
-            
-            if (searchList ) {
-              setsearchList(searchList);
-              setlength(searchList.length);
+
+            if (searchList) {
+                setsearchList(searchList);
+                setlength(searchList.length);
             } else {
-              setsearchList([]);
-              setlength(0);
+                setsearchList([]);
+                setlength(0);
             }
-            
+
         } catch (error) {
             console.error('Error getting search items:', error);
         }
@@ -165,8 +182,15 @@ const Search = () => {
         if (text.trim() !== '') {
             const filteredData = {};
             Object.keys(products).forEach(collectionName => {
-                const filteredCollection = products[collectionName].filter(product => contains(product, text));
+                const filteredCollection = products[collectionName].filter(product =>
+                    contains(product, text)
+                    || containColor(product, text)
+                    || containcategory(product, text)
+                    || containtype(product, text)
+                );
                 filteredData[collectionName] = filteredCollection;
+                console.log('F', filteredCollection);
+
             });
             setData(filteredData);
             setisempty(false);
@@ -195,7 +219,7 @@ const Search = () => {
                     <Icon name='refresh-outline' size={20} color={COLORS.grey} style={{ alignItems: 'center', }} />
                 </Pressable>
                 <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
-                    <Text style={{width:width-60}}>{item.name}</Text>
+                    <Text style={{ width: width - 60 }}>{item.name}</Text>
                 </TouchableOpacity>
             </View>
             <Pressable onPress={() => deleteItem(index)} style={{ alignItems: 'center', }}>
@@ -284,9 +308,9 @@ const Search = () => {
                     </View>
                     <ScrollView>
                         {/* last search */}
-                        {searchList.length>0 &&(<View style={{ height: (length) * 60 }}>
+                        {searchList.length > 0 && (<View style={{ height: (length) * 60 }}>
                             <FlatList
-                               data={Object.values(searchList || {}).flat()}
+                                data={Object.values(searchList || {}).flat()}
                                 keyExtractor={item => item.id}
                                 renderItem={renderItem2}
                             />
@@ -295,7 +319,7 @@ const Search = () => {
                                     borderBottomColor: 'gray',
                                     borderBottomWidth: 0.5,
                                 }}
-                                
+
                             />
                         </View>)}
                         {/* result search */}
@@ -349,12 +373,12 @@ const Search = () => {
 }
 
 
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
     total: {
         width: '90%',
         height: 60,
         backgroundColor: COLORS.white,
-        marginLeft:5,
+        marginLeft: 5,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -433,7 +457,7 @@ const styles = StyleSheet.create({
         borderColor: 'transparent',
         height: 25,
         padding: 0,
-      },
+    },
 });
 
 export default Search;

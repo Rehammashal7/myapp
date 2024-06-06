@@ -3,7 +3,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, Image } from 'react-native';
 
-const waitingitem = ({ route }) => {
+const Waitingitem = ({ route }) => {
   const { items } = route.params; 
 
   const getFirstImageUrl = (item) => {
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default waitingitem;
+export default Waitingitem;

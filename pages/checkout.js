@@ -37,7 +37,7 @@ const Checkout = ({ navigation }) => {
   const [IconName3, setIconName3] = useState(false);
   const [IconName4, setIconName4] = useState(false);
   const [IconName5, setIconName5] = useState(false);
-
+  const [point, setpoint] = useState(false);
   const isFocused = useIsFocused();
   const [cartList, setCartList] = useState([]);
   const route = useRoute();
@@ -114,6 +114,28 @@ const Checkout = ({ navigation }) => {
   const onError = (err) => {
     setError(err.message);
   };
+  const [points, setpoints] = useState(0);
+  const getbouns = async () => {
+    const userRef = doc(db, 'users', userId);
+    const userSnap = await getDoc(userRef);
+    const userData = userSnap.data();
+    const currentPoints = userData.boun || 0;
+    setpoints(currentPoints);
+  }
+  useEffect(() => {
+    
+    getbouns();
+   
+  }, [ getbouns()]);
+  const getpoint = () => {
+    let offer = getTotal() - getTotalOfers() - points;
+    if (offer < 0) {
+      offer = 0
+    }
+    console.log(points);
+    console.log(offer);
+    return offer;
+  }
   const getTotalOfers = () => {
     let total = 0;
     cartList.map(item => {
@@ -139,7 +161,29 @@ const Checkout = ({ navigation }) => {
     return total;
   };
   const [delprice, setdelprice] = useState(0);
+  const handelNavigation = () => {
+    if (IconName4) {
+      AddOrderHistory();
+      handleSomeAction();
+      deleteAllItems();
+      handleCheckout();
+      setTimeout(() => {
+        navigation.navigate("pay", { userId: userId });
+      }, 2000);
 
+    } else if (IconName3) {
+      AddOrderHistory();
+      handleSomeAction();
+      deleteAllItems();
+      handleCheckout();
+      setTimeout(() => {
+        navigation.navigate("CreditCard", { userId: userId });
+      }, 2000);
+
+    } else {
+      alert('pless choose how can pay')
+    }
+  }
   const deliveryprice = () => {
     if (IconName) {
       setdelprice((getTotal() * 0.05));
@@ -151,11 +195,11 @@ const Checkout = ({ navigation }) => {
   const handleCheckout = async () => {
     try {
       const items = [];
-  
+
       cartList.forEach((item) => {
         const { id, qty, data } = item;
         const totalPrice = (qty || 0) * (data.price || 0);
-  
+
         items.push({
           productId: id,
           quantity: qty,
@@ -166,30 +210,30 @@ const Checkout = ({ navigation }) => {
           category: data.categoryName,
         });
       });
-  
+
       const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
-  
+
       await setDoc(userPurchasedProductsRef, {
-        
+
         items: items,
         userId: userId,
         timestamp: new Date(),
-        delivered: false, 
+        delivered: false,
       });
-  
+
       console.log('Purchased products saved to Firestore successfully');
-  
+
       navigation.navigate('checkout');
     } catch (error) {
       console.error("Error saving purchased products to Firestore:", error);
     }
   };
-  
+
   // const handleCheckout = async () => {
   //   try {
   //     // Prepare an array to hold all purchased items
   //     const purchasedItems = [];
-  
+
   //     // Loop through cartList to collect data for each item
   //     cartList.forEach((item) => {
   //       const purchaseData = {
@@ -205,13 +249,13 @@ const Checkout = ({ navigation }) => {
   //       };
   //       purchasedItems.push(purchaseData);
   //     });
-  
+
   //     // Create a reference to the purchased products collection for the user
   //     const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
-  
+
   //     // Set the aggregated purchased items data as a single document for the user
   //     await setDoc(userPurchasedProductsRef, { items: purchasedItems, timestamp: new Date() });
-  
+
   //     console.log('Purchased products saved to Firestore successfully');
   //     // After successful checkout, navigate to the checkout screen or perform other actions
   //     navigation.navigate('checkout');
@@ -219,7 +263,7 @@ const Checkout = ({ navigation }) => {
   //     console.error('Error saving purchased products to Firestore:', error);
   //   }
   // };
-  
+
   // const handleCheckout = async () => {
   //   try {
   //     // Loop through the products and add them to the purchasedProducts collection
@@ -385,9 +429,17 @@ const Checkout = ({ navigation }) => {
 
       console.log("Current Bonus Points:", userData.boun);
 
-      const currentPoints = userData.boun || 0;
-      const newPoints = currentPoints + 10;
-
+      let currentPoints = userData.boun || 0;
+      if(point){
+      const minespoints =getpoint();
+      if(minespoints===0){
+        currentPoints=currentPoints-(getTotal()-getTotalOfers());
+      }else {
+        currentPoints=0;
+      }
+    }
+      const newPoints = Math.ceil(currentPoints + (getTotal() * 0.1));
+      
       await updateDoc(userRef, { boun: newPoints });
       console.log("Bonus points increased by 10.");
     } catch (error) {
@@ -440,7 +492,7 @@ const Checkout = ({ navigation }) => {
               </Text>
             </View>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {(getTotal() * 0.05 ).toFixed(2)+ ' EGP'}
+              {(getTotal() * 0.05).toFixed(2) + ' EGP'}
             </Text>
           </View>
           <View style={styles.total}>
@@ -555,7 +607,7 @@ const Checkout = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'Total: ' + (getTotal() + delprice- getTotalOfers()).toFixed(2) + ' EGP'}
+              {'Total: ' + (getTotal() + delprice - getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconArr(!IconArr)}>
               <Icon
@@ -591,6 +643,44 @@ const Checkout = ({ navigation }) => {
             </>
           )}
         </View>
+        <View style={[styles.containerTotal, { marginBottom: 5 }]}>
+          <View style={styles.total}>
+          <Pressable
+                onPress={() => {
+                  setpoint(!point)
+                  
+                }}
+              >
+                <Icon
+                  name={point ? "ellipse" : "ellipse-outline"}
+                  size={25}
+                  color="#343434"
+                  style={{ marginRight: 3 }}
+                />
+              </Pressable>
+              {point ?(<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {'Total : ' + getpoint().toFixed(2) + ' EGP'}
+            </Text>):(<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+              {'Total : ' + (getTotal() + delprice - getTotalOfers()).toFixed(2) + ' EGP'}
+            </Text>)}
+            
+            <Pressable onPress={() => setIconName5(!IconName5)}>
+              <Icon name={IconName5 ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
+            </Pressable>
+          </View>
+          {IconName5 && (
+            <>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18 }}>Points</Text>
+                <Text style={{ fontSize: 18 }}>{points}</Text>
+              </View>
+              <View style={styles.row}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>total (after points)</Text>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', color: 'green' }}>{getpoint().toFixed(2)}</Text>
+              </View>
+            </>
+          )}
+        </View>
         <View style={styles.bottoms}></View>
       </ScrollView>
       {/* button */}
@@ -598,12 +688,12 @@ const Checkout = ({ navigation }) => {
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
           <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
-            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice- getTotalOfers()).toFixed(2)}
+            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice - getTotalOfers()).toFixed(2)}
           </Text>
           <TouchableOpacity
             style={styles.checkButton}
             onPress={() => {
-              
+              handelNavigation();
               updatewallet();
               // if (IconName4) {+-
               //   setTimeout(() => {
@@ -623,48 +713,6 @@ const Checkout = ({ navigation }) => {
         </View>
       )}
     </View>
-    //     <View style={styles.container}>
-    //       {/* <TextInput
-    //         style={styles.input}
-    //          placeholder="Enter Amount"
-    //         keyboardType="decimal-pad"
-    //         onChangeText={setAmount}
-    //         value={amount}
-    //       /> */}
-    //       {error && <Text style={styles.error}>{error}</Text>}
-    //       <PayPalScriptProvider
-    //         options={{ "client-id": "AWY10CyVpqD5JFq5o5KelET49ca14WVmpcHn6kF7mxkdwEB1oYjcULi4_hEBrENkcapwEBtXg6-UITYd" }}
-    //       >
-    //         {/* <PayPalButtons
-    //           createOrder={createOrder}
-    //             onApprove={onApprove}
-    //             onError={onError}
-    //         /> */}
-
-    // <PayPalButtons
-    //             style={{ layout: 'horizontal' }}
-    //             // createOrder={(data, actions) => {
-    //             //   // This function is called when the button is clicked
-    //             //   // You can customize the order details here
-    //             //   return actions.order.create({
-    //             //     purchase_units: [
-    //             //       {
-    //             //         amount: {
-    //             //           value: '0.01', // Example amount, should be replaced with actual value
-    //             //         },
-    //             //       },
-    //             //     ],
-    //             //   });
-    //             // }}
-    //             onApprove={onApprove}
-    //             onError={onError}
-    //           />
-    //       </PayPalScriptProvider>
-    //       <View style={styles.paypalContainer}>
-    //         <View style={styles.paypalButton} id="Checkout"></View>
-    //       </View>
-
-    //     </View>
   );
 };
 const styles = StyleSheet.create({

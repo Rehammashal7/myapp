@@ -14,7 +14,7 @@ import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/adminbar';
 
-const admincategory = ({ navigation }) => {
+const Admincategory = ({ navigation }) => {
     return (
         <View>
             <View>
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
         marginTop: 60
     }
 });
-export default admincategory;
+export default Admincategory;
