@@ -51,16 +51,23 @@ import RecentlyVisited from './pages/RecentlyVisited';
 import AddressScreen from './pages/AddressScreen';
 import AddressInformation from './pages/AddressInformation';
 import AboutUs from './pages/AboutUs';
+import Chatbot from'./pages/Chatbot';
 import pay from './pages/pay';
+
 const Stack = createNativeStackNavigator();
+
 export default function App() {
+ 
+  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="Chatbot">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="Chatbot" component={Chatbot} />
+
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
         <Stack.Screen name="WomanDetails" component={WomanDetails} />
