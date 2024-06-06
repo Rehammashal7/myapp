@@ -319,7 +319,7 @@ const WomanDetails = ({ route, navigation }) => {
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
-  const categoryName="Women";
+  const categoryName = "Women";
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
@@ -411,7 +411,7 @@ const WomanDetails = ({ route, navigation }) => {
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
-     newDate.setDate(newDate.getDate() + 2);
+    newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -422,25 +422,26 @@ const WomanDetails = ({ route, navigation }) => {
       existingItem.qty += 1;
       setShowGoToCartButton(true);
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize ,delivery: newDate});
+      cart.push({
+        ...item,
+        qty: 1,
+        color: selectedColor,
+        size: selectedSize,
+        delivery: newDate,
+      });
     }
     await updateDoc(userRef, { cart });
     getCartItems();
     if (selectedColor && selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }else if (selectedColor || selectedSize) {
+    } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }
-    else {
+    } else {
       setModalVisibleCart(true);
       setShowGoToCartButton(false);
     }
-
-  
   };
 
   const handleGoToCart = () => {
@@ -519,17 +520,17 @@ const WomanDetails = ({ route, navigation }) => {
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
-    const existingItem = fav.find(itm => itm.id === item.id);
-    
-    setIsPressed(!!existingItem); 
+    const existingItem = fav.find((itm) => itm.id === item.id);
+
+    setIsPressed(!!existingItem);
   };
-  
+
   useEffect(() => {
     handelHeart(product);
-  }, [handelHeart]); 
+  }, [handelHeart]);
   useEffect(() => {
     console.log(isPressed);
-  }, [isPressed]); 
+  }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
 
@@ -640,45 +641,86 @@ const WomanDetails = ({ route, navigation }) => {
     }
   };
 
-const handleDislike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.disLike === 0) {
-      updatedReview.disLike = 1;
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '1');
-      await AsyncStorage.setItem(`like${index}`, '0');
-    } else {
-      updatedReview.dislike = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '0');
+  const handleDislike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.disLike === 0) {
+        updatedReview.disLike = 1;
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "1");
+        await AsyncStorage.setItem(`like${index}`, "0");
+      } else {
+        updatedReview.dislike = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "0");
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log("Error handling dislike:", error);
     }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-  } catch (error) {
-    console.log('Error handling dislike:', error);
-  }
-};
+  };
 
-useEffect(() => {
-  console.log("iam in recently use effect ");
-  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
-  // console.log("iam get data ");
-  console.log("produt id",product_id);
-}, []);
+  useEffect(() => {
+    console.log("iam in recently use effect ");
+    saveRecentlyVisited(
+      product.id,
+      product.name,
+      product.categoryName,
+      product.images,
+      product.colors,
+      product.description,
+      product.offer,
+      product.price,
+      product.sizes
+    );
+    // console.log("iam get data ");
+    console.log("produt id", product_id);
+  }, []);
 
-const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-  console.log("I am in save visit");
-  try {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userDoc = await getDoc(userRef);
-    if (userDoc.exists) {
-      const userData = userDoc.data();
-      let updatedRecentlyVisited = [];
-      if (userData.recentlyVisited) {
-        const productExists = userData.recentlyVisited.some(item => item.id === id);
-        if (!productExists) {
+  const saveRecentlyVisited = async (
+    id,
+    name,
+    categoryName,
+    images,
+    colors,
+    description,
+    offer,
+    price,
+    sizes
+  ) => {
+    console.log("I am in save visit");
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let updatedRecentlyVisited = [];
+        if (userData.recentlyVisited) {
+          const productExists = userData.recentlyVisited.some(
+            (item) => item.id === id
+          );
+          if (!productExists) {
+            updatedRecentlyVisited = [
+              {
+                id: id,
+                name: name,
+                categoryName: categoryName,
+                image: images,
+                colors: colors,
+                description: description,
+                offer: offer,
+                price: price,
+                sizes: sizes,
+              },
+              ...userData.recentlyVisited,
+            ];
+          } else {
+            console.log("Product already exists in recentlyVisited");
+            updatedRecentlyVisited = [...userData.recentlyVisited];
+          }
+        } else {
           updatedRecentlyVisited = [
             {
               id: id,
@@ -689,42 +731,23 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
               description: description,
               offer: offer,
               price: price,
-              sizes: sizes
+              sizes: sizes,
             },
-            ...userData.recentlyVisited
           ];
-        } else {
-          console.log("Product already exists in recentlyVisited");
-          updatedRecentlyVisited = [...userData.recentlyVisited];
         }
+        if (updatedRecentlyVisited.length > 10) {
+          updatedRecentlyVisited.splice(10);
+          console.log("More than 10 items, removing the oldest ones.");
+        }
+        await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+        console.log("Data added to recentlyVisited successfully");
       } else {
-        updatedRecentlyVisited = [{
-          id: id,
-          name: name,
-          categoryName: categoryName,
-          image: images,
-          colors: colors,
-          description: description,
-          offer: offer,
-          price: price,
-          sizes: sizes
-        }];
+        console.log("User document not found");
       }
-      if (updatedRecentlyVisited.length > 10) {
-        updatedRecentlyVisited.splice(10);
-        console.log("More than 10 items, removing the oldest ones.");
-      }
-      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-      console.log("Data added to recentlyVisited successfully");
-    } else {
-      console.log("User document not found");
+    } catch (error) {
+      console.error("Error", error);
     }
-  } catch (error) {
-    console.error('Error', error);
-  }
-};
-
-
+  };
 
   return (
     <View style={styles.productContainer}>
@@ -1463,7 +1486,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   container: {
-    flex: 1,
+    //flex: 1,
+    //height:height,
     backgroundColor: "#FFFF",
     //flexDirection:"row",
     // alignItems: 'center',
@@ -1585,7 +1609,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+    //fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },
@@ -1778,7 +1802,7 @@ const styles = StyleSheet.create({
 
   // },
   bottomBar: {
-    position: "fixed",
+    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
@@ -1796,7 +1820,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    justifyContent: "flex-start",
 
     alignItems: "center",
   },

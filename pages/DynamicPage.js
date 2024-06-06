@@ -4,9 +4,9 @@ import { useFonts } from 'expo-font';
 
 const DynamicPage = () => {
     const [animatedValue] = useState(new Animated.Value(0));
-    const [fontsLoaded] = useFonts({
-        SofiaRegular: require('../assets/Sofia-Regular.ttf'),
-      });
+    // const [fontsLoaded] = useFonts({
+    //     SofiaRegular: require('../assets/Sofia-Regular.ttf'),
+    //   });
       
     useEffect(() => {
         Animated.loop(
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 70,
         fontWeight: 'bold',
-        fontFamily: 'SofiaRegular',
+       // fontFamily: 'SofiaRegular',
         textShadowColor: 'rgba(0, 0, 0, 0.5)',
         textShadowOffset: { width: 5, height: 5 },
         textShadowRadius: 5,

@@ -52,7 +52,7 @@ const ProductsListMen = ({ navigation }) => {
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
   const [modalVisibleCart, setModalVisibleCart] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  
+
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -303,9 +303,9 @@ const MenDetails = ({ route, navigation }) => {
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
   const [like, setLike] = useState([0]);
-const [disLike, setDislikes] = useState([0]);
- const [reviews, setReviews] = useState([]);
- const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
+  const [disLike, setDislikes] = useState([0]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -320,7 +320,7 @@ const [disLike, setDislikes] = useState([0]);
   const [errorMessage, setErrorMessage] = useState("");
 
   const numberOfInitialReviews = 3;
-  const categoryName="Man";
+  const categoryName = "Man";
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
@@ -361,7 +361,6 @@ const [disLike, setDislikes] = useState([0]);
     };
     getUserId();
   }, []);
-
 
   const getCartItems = async () => {
     const userRef = doc(db, "users", userId);
@@ -413,7 +412,7 @@ const [disLike, setDislikes] = useState([0]);
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
-     newDate.setDate(newDate.getDate() + 2);
+    newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -423,22 +422,25 @@ const [disLike, setDislikes] = useState([0]);
     if (existingItem) {
       existingItem.qty += 1;
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize ,delivery: newDate});
+      cart.push({
+        ...item,
+        qty: 1,
+        color: selectedColor,
+        size: selectedSize,
+        delivery: newDate,
+      });
     }
 
     await updateDoc(userRef, { cart });
     getCartItems();
 
-  if (selectedColor && selectedSize) {
+    if (selectedColor && selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }else if (selectedColor || selectedSize) {
+    } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }
-    else {
+    } else {
       setModalVisibleCart(true);
       setShowGoToCartButton(false);
     }
@@ -474,17 +476,17 @@ const [disLike, setDislikes] = useState([0]);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
-    const existingItem = fav.find(itm => itm.id === item.id);
-    
-    setIsPressed(!!existingItem); 
+    const existingItem = fav.find((itm) => itm.id === item.id);
+
+    setIsPressed(!!existingItem);
   };
-  
+
   useEffect(() => {
     handelHeart(product);
-  }, [handelHeart]); 
+  }, [handelHeart]);
   useEffect(() => {
     console.log(isPressed);
-  }, [isPressed]); 
+  }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
 
@@ -518,7 +520,7 @@ const [disLike, setDislikes] = useState([0]);
       setShowPrice(false);
     }
   };
- 
+
   let flagAdmin = false;
   const fetchAllReviews = async () => {
     try {
@@ -544,7 +546,6 @@ const [disLike, setDislikes] = useState([0]);
         setComment(productData.reviews.length);
         setRating(averageRating);
         loadLikesAndDislikes(productData.reviews);
-
       } else {
         setRating(0);
         setComment(0);
@@ -567,78 +568,115 @@ const [disLike, setDislikes] = useState([0]);
           return updatedReview;
         })
       );
-      
+
       setReviewsWithLikes(updatedReviews);
-      setReviews(updatedReviews)
-  
+      setReviews(updatedReviews);
     } catch (error) {
-      console.log('Error loading likes and dislikes:', error);
+      console.log("Error loading likes and dislikes:", error);
     }
   };
 
-
-const handleLike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.like === 0) {
-      updatedReview.like = 1;
-      updatedReview.disLike = 0;
-      await AsyncStorage.setItem(`like${index}`, '1');
-      await AsyncStorage.setItem(`disLike${index}`, '0');
-    } else {
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`like${index}`, '0');
+  const handleLike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.like === 0) {
+        updatedReview.like = 1;
+        updatedReview.disLike = 0;
+        await AsyncStorage.setItem(`like${index}`, "1");
+        await AsyncStorage.setItem(`disLike${index}`, "0");
+      } else {
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`like${index}`, "0");
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log("Error handling like:", error);
     }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
+  };
 
-    
-  } catch (error) {
-    console.log('Error handling like:', error);
-  }
-};
-
-const handleDislike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.disLike === 0) {
-      updatedReview.disLike = 1;
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '1');
-      await AsyncStorage.setItem(`like${index}`, '0');
-    } else {
-      updatedReview.dislike = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '0');
+  const handleDislike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.disLike === 0) {
+        updatedReview.disLike = 1;
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "1");
+        await AsyncStorage.setItem(`like${index}`, "0");
+      } else {
+        updatedReview.dislike = 0;
+        await AsyncStorage.setItem(`disLike${index}`, "0");
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log("Error handling dislike:", error);
     }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-  } catch (error) {
-    console.log('Error handling dislike:', error);
-  }
-};
-  
-useEffect(() => {
-  console.log("iam in recently use effect ");
-  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
-  // console.log("iam get data ");
-  console.log("produt id",product_id);
-}, []);
+  };
 
-const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-  console.log("I am in save visit");
-  try {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userDoc = await getDoc(userRef);
-    if (userDoc.exists) {
-      const userData = userDoc.data();
-      let updatedRecentlyVisited = [];
-      if (userData.recentlyVisited) {
-        const productExists = userData.recentlyVisited.some(item => item.id === id);
-        if (!productExists) {
+  useEffect(() => {
+    console.log("iam in recently use effect ");
+    saveRecentlyVisited(
+      product.id,
+      product.name,
+      product.categoryName,
+      product.images,
+      product.colors,
+      product.description,
+      product.offer,
+      product.price,
+      product.sizes
+    );
+    // console.log("iam get data ");
+    console.log("produt id", product_id);
+  }, []);
+
+  const saveRecentlyVisited = async (
+    id,
+    name,
+    categoryName,
+    images,
+    colors,
+    description,
+    offer,
+    price,
+    sizes
+  ) => {
+    console.log("I am in save visit");
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let updatedRecentlyVisited = [];
+        if (userData.recentlyVisited) {
+          const productExists = userData.recentlyVisited.some(
+            (item) => item.id === id
+          );
+          if (!productExists) {
+            updatedRecentlyVisited = [
+              {
+                id: id,
+                name: name,
+                categoryName: categoryName,
+                image: images,
+                colors: colors,
+                description: description,
+                offer: offer,
+                price: price,
+                sizes: sizes,
+              },
+              ...userData.recentlyVisited,
+            ];
+          } else {
+            console.log("Product already exists in recentlyVisited");
+            updatedRecentlyVisited = [...userData.recentlyVisited];
+          }
+        } else {
           updatedRecentlyVisited = [
             {
               id: id,
@@ -649,42 +687,23 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
               description: description,
               offer: offer,
               price: price,
-              sizes: sizes
+              sizes: sizes,
             },
-            ...userData.recentlyVisited
           ];
-        } else {
-          console.log("Product already exists in recentlyVisited");
-          updatedRecentlyVisited = [...userData.recentlyVisited];
         }
+        if (updatedRecentlyVisited.length > 10) {
+          updatedRecentlyVisited.splice(10);
+          console.log("More than 10 items, removing the oldest ones.");
+        }
+        await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+        console.log("Data added to recentlyVisited successfully");
       } else {
-        updatedRecentlyVisited = [{
-          id: id,
-          name: name,
-          categoryName: categoryName,
-          image: images,
-          colors: colors,
-          description: description,
-          offer: offer,
-          price: price,
-          sizes: sizes
-        }];
+        console.log("User document not found");
       }
-      if (updatedRecentlyVisited.length > 10) {
-        updatedRecentlyVisited.splice(10);
-        console.log("More than 10 items, removing the oldest ones.");
-      }
-      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-      console.log("Data added to recentlyVisited successfully");
-    } else {
-      console.log("User document not found");
+    } catch (error) {
+      console.error("Error", error);
     }
-  } catch (error) {
-    console.error('Error', error);
-  }
-};
-
-
+  };
 
   return (
     <View style={styles.productContainer}>
@@ -986,7 +1005,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
 
               <FlatList
                 data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
-                renderItem={({ item ,index}) => (
+                renderItem={({ item, index }) => (
                   <View style={styles.reviewContainer}>
                     <View
                       style={{ flexDirection: "row", alignItems: "center" }}
@@ -1016,14 +1035,34 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                         marginBottom: 5,
                       }}
                     >
-                   <TouchableOpacity onPress={() => handleLike(index)} style={styles.likeButton}>
-    <Icon name={item.like === 1 ? 'thumbs-up' : 'thumbs-o-up'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.like})</Text> 
-  <TouchableOpacity onPress={() => handleDislike(index)} style={styles.dislikeButton}>
-    <Icon name={item.disLike === 1 ? 'thumbs-down' : 'thumbs-o-down'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.disLike})</Text>
+                      <TouchableOpacity
+                        onPress={() => handleLike(index)}
+                        style={styles.likeButton}
+                      >
+                        <Icon
+                          name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
+                          size={20}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10 }}>
+                        ({item.like})
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => handleDislike(index)}
+                        style={styles.dislikeButton}
+                      >
+                        <Icon
+                          name={
+                            item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
+                          }
+                          size={20}
+                          color="black"
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10 }}>
+                        ({item.disLike})
+                      </Text>
                     </View>
                   </View>
                 )}
@@ -1305,7 +1344,6 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                       </Modal>
                     </View>
                   </View>
-                 
                 )}
 
                 <View></View>
@@ -1316,7 +1354,6 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
       </View>
     </View>
   );
-
 };
 const styles = StyleSheet.create({
   headerWrapper: {
@@ -1526,7 +1563,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+   // fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },
@@ -1719,7 +1756,7 @@ const styles = StyleSheet.create({
 
   // },
   bottomBar: {
-    position: "fixed",
+    //position: "fixed",
     bottom: 0,
     left: 0,
     right: 0,
@@ -1737,7 +1774,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+    // justifyContent: "start",
 
     alignItems: "center",
   },
