@@ -29,6 +29,7 @@ const CartScreen = ({ navigation }) => {
   const route = useRoute();
   //const userId = route.params.userId;
   const [userId, setUserId] = useState(route.params.userId);
+  console.log(userId);
   const [HistoryOrder, setHistoryOrder] = useState([]);
   const [totalPrice, settotalPrice] = React.useState(0);
   useEffect(() => {
@@ -79,6 +80,7 @@ const CartScreen = ({ navigation }) => {
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     setCartList(userSnap.get('cart'));
+    console.log(getCartItems);
   };
 
 

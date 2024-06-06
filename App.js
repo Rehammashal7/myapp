@@ -42,11 +42,13 @@ import PurchasedProductsScreen from './adminPages/PurchasedProducts';
 import waitingitem from './adminPages/waitingitem';
 import WeatherSearch from './pages/WeatherSearch';
 import suggtions from './pages/suggtions';
+import OrderHistoryScreen from'./pages/OrderHistoryScreen';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="suggtions">
+      <Stack.Navigator initialRouteName="Home">
+        <Stack.Screen name='OrderHistoryScreen' component={OrderHistoryScreen}/>
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
 <Stack.Screen name='suggtions' component={suggtions}/>
