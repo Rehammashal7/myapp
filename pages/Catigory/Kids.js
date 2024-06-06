@@ -1318,7 +1318,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                       <Text style={{ marginLeft: 180, color: "black" }}>
                         {item.date}{" "}
                       </Text>
-                      {"\n"}
+                      
                     </View>
                     <Text style={[styles.reviewText, { marginTop: 15 }]}>
                       {item.comment}
@@ -1654,8 +1654,8 @@ const styles = StyleSheet.create({
   },
   cardView: {
     marginHorizontal: 1,
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 30,
+    marginTop: 0,
     // borderRadius: 15,
     width: cardwidth,
     // width:220,
@@ -2134,6 +2134,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 5,
+    marginBottom:20
   },
   dropdownButtonStyle: {
     width: 90,

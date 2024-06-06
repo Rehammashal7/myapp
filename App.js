@@ -54,6 +54,8 @@ import AddressInformation from './pages/AddressInformation';
 import AboutUs from './pages/AboutUs';
 import Pay from './pages/pay';
 import CreditCard from './pages/CreditCard';
+import { Recycle, RecycleDetails } from './pages/Catigory/Recycle';
+import AddUserProduct from './pages/Catigory/AddUserProduct';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -77,15 +79,17 @@ export default function App() {
         <Stack.Screen name="BabyDetails" component={BabyDetails} />
         <Stack.Screen name='AddReviewBaby' component={AddReviewBaby}/>
         <Stack.Screen name="AllReviewsPage" component={AllReviewsPage} />
-        { <Stack.Screen name='CreditCard' component={CreditCard}/> }
+        <Stack.Screen name='CreditCard' component={CreditCard}/> 
         <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
+        <Stack.Screen name="AddUserProduct" component={AddUserProduct} />
         <Stack.Screen name="favorite" component={Favorite} />
         <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
         <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
         <Stack.Screen name="pay" component={Pay} />
-        
+        <Stack.Screen name="Used" component={Recycle} /> 
+        <Stack.Screen name="RecycleDetails" component={RecycleDetails} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="SignUp" component={SignUpScreen} />
         <Stack.Screen name="adminprofile" component={Adminprofile} />

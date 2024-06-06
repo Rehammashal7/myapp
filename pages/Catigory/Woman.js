@@ -1324,7 +1324,7 @@ const WomanDetails = ({ route, navigation }) => {
                       <Text style={{ marginLeft: 180, color: "black" }}>
                         {item.date}{" "}
                       </Text>
-                      {"\n"}
+                      
                     </View>
                     <Text style={[styles.reviewText, { marginTop: 15 }]}>
                       {item.comment}
@@ -1385,7 +1385,7 @@ const WomanDetails = ({ route, navigation }) => {
                 })
               }
             >
-              <Text style={styles.buttonText}>Add a Review</Text>
+              <Text>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
@@ -1680,8 +1680,8 @@ const styles = StyleSheet.create({
   },
   cardView: {
     marginHorizontal: 1,
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 30,
+    marginTop: 0,
     // borderRadius: 15,
     width: cardwidth,
     // width:220,
@@ -2156,6 +2156,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 5,
+    marginBottom:20
   },
   dropdownButtonStyle: {
     width: 90,

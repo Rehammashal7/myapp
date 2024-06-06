@@ -894,7 +894,7 @@ const handleDislike = async (index) => {
                       <Text style={{ marginLeft: 180, color: "black" }}>
                         {item.date}{" "}
                       </Text>
-                      {"\n"}
+                      
                     </View>
                     <Text style={[styles.reviewText, { marginTop: 15 }]}>
                       {item.comment}
@@ -1515,7 +1515,7 @@ const styles = StyleSheet.create({
 
   // },
   bottomBar: {
-    position: "fixed",
+   // position: "fixed",
     bottom: 0,
     left: 0,
     right: 0,
@@ -1533,7 +1533,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    justifyContent: "start",
+   // justifyContent: "start",
 
     alignItems: "center",
   },

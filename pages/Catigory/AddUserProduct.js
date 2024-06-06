@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, ScrollView, FlatList, TouchableOpacity, Image, StyleSheet ,CheckBox} from 'react-native';
 import { collection, addDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from '../firebase';
-import { Offer } from '../data';
+import { auth, db, storage } from "../../firebase";
 
-const AddProductForm = () => {
+
+const AddUserProduct = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [sizes, setSizes] = useState([]);
@@ -16,7 +16,6 @@ const AddProductForm = () => {
   const [season, setSeason] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [colors, setColors] = useState('');
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +35,7 @@ const AddProductForm = () => {
     }
 
     if (selectedItem) {
-      await addDoc(collection(db, selectedItem.label.toLowerCase()), {
+      await addDoc(collection(db, 'recycle'), {
         name: name,
         description: description,
         sizes: sizes,
@@ -45,8 +44,9 @@ const AddProductForm = () => {
         offer: offer,
         price: price,
         season: season,
+        isAccept:'not accept',
         images: imageUrls,
-        categoryName:selectedItem.label
+        categoryName:selectedItem.label,
       });
       console.log("Product added successfully.");
     } else {
@@ -81,6 +81,8 @@ const AddProductForm = () => {
     const sizeArray = text.split(',').map(size => size.trim());
     setSizes(sizeArray);
   };
+
+  
 
   const handleColorInput = (text) => {
     console.log("handleSubmit5.");
@@ -269,4 +271,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddProductForm;
+export default AddUserProduct;
