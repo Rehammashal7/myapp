@@ -12,6 +12,7 @@ import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/adminbar';
+import { getAuth } from "firebase/auth";
 import { useIsFocused } from '@react-navigation/native';
 // import Carousel from 'react-native-snap-carousel';
 
@@ -28,6 +29,7 @@ const HomeScreen = ({ navigation }) => {
     const [activeIndexes, setActiveIndexes] = useState({});
     const imageWidth = cardwidth;
     const isFocused = useIsFocused();
+    const auth = getAuth();
     useEffect(() => {
         getUser();
       }, [isFocused]);
@@ -65,26 +67,26 @@ const HomeScreen = ({ navigation }) => {
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
     
-        if (docSnap.exists()) {
+        // if (docSnap.exists()) {
     
-          const data = docSnap.data();
-          if (data.isAdmin === true) {
-            navigation.navigate('adminHome');
-          } else {
-            navigation.navigate('Home');
-          }
-        }
+        //   const data = docSnap.data();
+        //   if (data.isAdmin === true) {
+        //     navigation.navigate('adminHome');
+        //   } else {
+        //     navigation.navigate('Home');
+        //   }
+        // }
       };
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
-                navigation.navigate('KidsDetails', { product });
+                navigation.navigate('adminKidsDetails', { product });
             } else if (Category === "MEN") {
-                navigation.navigate('MenDetails', { product });
+                navigation.navigate('adminMenDetails', { product });
             } else if (Category === "BABY") {
-                navigation.navigate('BabyDetails', { product });
+                navigation.navigate('adminBabyDetails', { product });
             } else {
-                navigation.navigate('WomanDetails', { product });
+                navigation.navigate('adminWomanDetails', { product });
             }
         } catch (error) {
             console.error("Error fetching product: ", error);
@@ -164,7 +166,21 @@ const HomeScreen = ({ navigation }) => {
             </View>
         </TouchableOpacity>
     );
-
+const handelNavigation=(Category)=>{
+    try {
+        if (Category === "KIDS") {
+            navigation.navigate('adminKIDS');
+        } else if (Category === "MEN") {
+            navigation.navigate('adminMEN' );
+        } else if (Category === "BABY") {
+            navigation.navigate('adminBABY');
+        } else {
+            navigation.navigate('adminWOMAN');
+        }
+    } catch (error) {
+        console.error("Error fetching product: ", error);
+    }
+}
     const data = [
         { imageUrl: 'https://cdn.youcan.shop/stores/f725985ece28459e35d7975512972572/others/JJucRU3iTsV1W9zkOqLBOOZONn5iKIIZXEvuuvIf.png' },
         { imageUrl: 'https://ashtonscorner.com/cdn/shop/files/ACB_-_Kids_20_Fashion_Sale.jpg?v=1705717296&width=3000' },
@@ -194,7 +210,7 @@ const HomeScreen = ({ navigation }) => {
                         extraData={indexCheck}
                         renderItem={({ item, index }) => (
                             <Pressable
-                                onPress={() => navigation.navigate(item.name)}
+                                onPress={() => handelNavigation(item.name)}
                             >
                                 <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
                                     <View>

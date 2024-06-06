@@ -192,6 +192,7 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice();
   }, [deliveryprice]);
+  
   const handleCheckout = async () => {
     try {
       const items = [];
