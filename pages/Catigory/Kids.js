@@ -1359,7 +1359,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                 })
               }
             >
-              <Text style={styles.buttonText}>Add a Review</Text>
+              <Text style= {[{color:'white',fontSize:20} ] }>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
@@ -2049,7 +2049,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 30,
+    height: height/20,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -2069,6 +2069,8 @@ const styles = StyleSheet.create({
     // marginBottom:10,
     marginLeft: 40,
     width: 300,
+    marginBottom:2,
+
   },
   addToCartBton2: {
     backgroundColor: "black",

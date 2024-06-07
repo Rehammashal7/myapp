@@ -12,7 +12,10 @@ import {
   Dimensions,
   ActivityIndicator,
   Modal,
+  
 } from "react-native";
+import SelectDropdown from 'react-native-select-dropdown';
+
 import COLORS from "../Consts/Color";
 import {
   doc,
@@ -156,13 +159,13 @@ const AdminProductsListMen = ({ navigation }) => {
           style={{
             // flexDirection: "row",
             marginTop: 1,
-            height: 80,
+            height:  height/8,
 
             // marginHorizontal: 20,
             // justifyContent: "space-between",
           }}
         >
-          <View style={{ marginTop: 10, flexDirection: "row" }}>
+          <View style={{  flexDirection: "row" }}>
             <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
@@ -209,7 +212,7 @@ const AdminProductsListMen = ({ navigation }) => {
             </>
           ) : (
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
+              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 ,marginBottom:60}}
             >
               {item.price} EGP
             </Text>
@@ -221,9 +224,7 @@ const AdminProductsListMen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerName}>
-        <Text style={styles.Textt}> AToZ </Text>
-      </View>
+      
       <Search />
 
       <View style={styles.header}>
@@ -319,7 +320,7 @@ const [disLike, setDislikes] = useState([0]);
 
   
   const handleSeeAllReviews = () => {
-    navigation.navigate("AllReviewsPage", { reviews });
+    navigation.navigate("AdminAllReview", { reviews });
     <Text style={styles.seeAllText}>
       See All ({reviews ? reviews.length : 0})
     </Text>;
@@ -577,7 +578,15 @@ const handleDislike = async (index) => {
   }
 };
   
-
+const deleteProduct = async (productId) => {
+  try {
+    await deleteDoc(doc(db, "baby", productId));
+    console.log(`Product with ID ${productId} deleted successfully.`);
+    navigation.goBack(); // للعودة إلى الصفحة السابقة بعد الحذف
+  } catch (error) {
+    console.error("Error deleting product: ", error);
+  }
+};
 
   return (
     <View style={styles.productContainer}>
@@ -585,12 +594,7 @@ const handleDislike = async (index) => {
       onScroll={handleScroll2}>
 
       <View style={styles.editButtonContainer}>
-  <TouchableOpacity
-    style={styles.editButton}
-    onPress={() => navigation.navigate('EditProductPage', { product })}
-  >
-    <Text style={styles.editButtonText}>Edit</Text>
-  </TouchableOpacity>
+  
 </View>
         
 {/* 
@@ -957,173 +961,17 @@ const handleDislike = async (index) => {
             </View>
           </View>
         </View>
-        <View>
-          {
-            <TouchableOpacity
-              style={styles.addToCartBton1}
-              onPress={() =>
-                navigation.navigate("AddReviewMen", {
-                  product: { id: product_id },
-                  fetchAllReviews,
-                })
-              }
-            >
-              <Text style={styles.buttonText}>Add a Review</Text>
-            </TouchableOpacity>
-          }
-        </View>
       </ScrollView>
       <View style={styles.bottomBar}>
-        <View style={styles.Navbarr}>
-          <FlatList
-            data={productt}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                key={index}
-                activeOpacity={0.8}
-                onPress={() => setSelectedOptionIndex(index)}
-              >
-                {showPrice ? (
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.priceText}>
-                      {" "}
-                      {product.offer !== 0 ? (
-                        <>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              fontWeight: "bold",
-                              marginLeft: 10,
-                              marginRight: 40,
-                              color: "white",
-                              backgroundColor: "#df2600",
-                              width: 90,
-                              height: 22,
-                            }}
-                          >
-                            {product.offer}% Discount{"\n"}
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              color: "#df2600",
-                              marginLeft: 14,
-                            }}
-                          >
-                            {Math.floor(
-                              product.price - product.price / product.offer
-                            )}{" "}
-                            EGP
-                          </Text>
-                        </>
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginHorizontal: 10,
-                            marginRight: 45,
-                          }}
-                        >
-                          {product.price} EGP
-                        </Text>
-                      )}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.addToCartBton2}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <View style={styles.buttonContainer}>
-                    <Pressable onPress={() => onAddToFav(item, index)}>
-                      <Icon
-                        name="heart"
-                        size={30}
-                        color={isPressed ? "black" : "grey"}
-                      />
-                    </Pressable>
-                    <TouchableOpacity
-                      style={styles.addToCartBton1}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-
-                <View></View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+      <View style={styles.Navbarr}>
+        <TouchableOpacity style={styles.saveButton} onPress={() => deleteProduct(product.id)}>
+          <Text style={styles.saveButtonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate('EditProductPage', { product })}>
+          <Text style={styles.saveButtonText}>Edit</Text>
+        </TouchableOpacity>
       </View>
+    </View>
     </View>
   );
 
@@ -1168,12 +1016,12 @@ const styles = StyleSheet.create({
   },
   cardView: {
     marginHorizontal: 1,
-    marginBottom: 20,
-    marginTop: 20,
+    marginBottom: 10,
+    marginTop: 10,
     // borderRadius: 15,
     width: cardwidth,
     // width:220,
-    height: 370,
+    height: height/2,
     elevation: 13,
     backgroundColor: "white",
   },
@@ -1186,13 +1034,13 @@ const styles = StyleSheet.create({
 
   Name: {
     fontSize: 14,
-    // fontWeight: 'bold',
+    fontWeight: 'bold',
     color: "#131A2C",
-    marginTop: 0,
+    marginTop: -1,
     marginLeft: 10,
-    marginBottom: 0,
-    left: 200,
-  },
+    marginBottom: 5,
+    width: cardwidth - 20
+},
   titlesWrapper: {
     paddingHorizontal: 5,
     marginTop: 5,
@@ -1261,8 +1109,8 @@ const styles = StyleSheet.create({
   bottoms: {
     flexDirection: "row",
     backgroundColor: "#FBFAFF",
-    height: 35,
-    bottom: 20,
+    height: height/12,
+    bottom: 0,
   },
   headerText: {
     color: "#131A2C",
@@ -1510,7 +1358,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
   },
   line: {
     width: "100%",
@@ -1564,6 +1411,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     height: 30,
   },
+  saveButton: {
+    width: cardwidth-20,
+height:height/22,
+    marginLeft: 5,
+    backgroundColor: "black",
+    padding: 5,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
+  },
   buttonContainer: {
     flexDirection: "row",
    // justifyContent: "start",
@@ -1611,6 +1471,64 @@ const styles = StyleSheet.create({
     // marginTop:10
     // marginBottom: 8,
   },
+  dropdownButtonStyle: {
+    width: width - 80,
+    height:  height/20,
+    //marginLeft: 5,
+    // backgroundColor: '#E9ECEF',
+    // borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    borderColor: "black",
+    borderWidth: 1,
+   // borderEndColor: "white",
+   // borderBottomColor: "black",
+    //borderWidth: 1,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  dropdownButtonTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    fontWeight: "500",
+    color: "#393e46",
+    // marginRight: width - 100,
+    // textAlign: 'center',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 22,
+    // marginRight: width-20,
+  },
+  // dropdownButtonIconStyle: {
+  //   fontSize: 18,
+  //   marginRight: 8,
+  // },
+  dropdownMenuStyle: {
+    backgroundColor: "#E9ECEF",
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    // width: '100%',
+    flexDirection: "row",
+    paddingHorizontal: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 8,
+    backgroundColor: "white",
+    // fontSize:30,
+  },
+  dropdownItemTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    justifyContent: "flex-end",
+    alignItems: "flex-end",
+    // fontWeight: '500',
+    color: "#151E26",
+  },
+
+
 });
 
 
@@ -2231,12 +2149,88 @@ const EditProductPage = ({ route, navigation }) => {
     const [name, setName] = useState(product.name);
     const [description, setDescription] = useState(product.description);
     const [images, setImages] = useState(null);
-    const [size, setSize] = useState(product.size);
+    const [size, setSize] = useState(product.sizes);
     const [type, setType] = useState(product.type); 
     const [offer, setOffer] = useState(product.offer);
     const [price, setPrice] = useState(product.price);
     const [colors, setColors] = useState(product.colors); 
-  
+    const getSizeOptions = () => {
+     
+       if (type === 'girl'||type === 'boy') {
+        return[
+          { title: '5/6Age' },
+          { title: '6/7Age' },
+          { title: '7/8Age' },
+          { title: '8/9Age' },
+          { title: '9/10Age' },
+          { title: '10/11Age' },
+          { title: '11/12Age' },
+          { title: '12/13Age' },
+          { title: '13/14Age' },
+          { title: '14/15Age' },
+        ];
+      }
+      else if (type === 'baby') {
+        return[
+          { title: '1-12 MONTHS' },
+          { title: '12-18 MONTHS' },
+          { title: '18-24 MONTHS' },
+          { title: '24-36 MONTHS' },
+          { title: '3/4Age' },
+          { title: '4/5Age' },
+          { title: '5/6Age' },
+        ];
+      }
+      else{
+          return [
+              { title: 'XS' },
+              { title: 'S' },
+              { title: 'M'},
+              { title: 'L'},
+              { title: 'XL' },
+              { title: '2XL' },
+              { title: '3XL' },
+
+          ];
+      }
+    };
+    const colorsss = [
+      { title: 'Black', color: '#000000' },
+      { title: 'White', color: '#FFFFFF' },
+      { title: 'Gray', color: '#808080' },
+      { title: 'Red', color: '#FF0000' },
+      { title: 'Silver', color: '#C0C0C0' },
+      { title: 'Brown', color: '#A52A2A' },
+      { title: 'Yellow', color: '#FFFF00' },
+      { title: 'Blue', color: '#0000FF' },
+      { title: 'Green', color: '#008000' },
+      { title: 'Cyan', color: '#00FFFF' },
+      { title: 'Pink', color: '#FFC0CB' },
+      { title: 'Baby Blue', color: '#89CFF0' },
+      { title: 'Purple', color: '#800080' },
+      { title: 'Orange', color: '#FFA500' },
+      { title: 'Gold', color: '#FFD700' },
+      { title: 'Magenta', color: '#FF00FF' },
+      { title: 'Beige', color: '#F5F5DC' },
+      { title: 'Maroon', color: '#800000' },
+      { title: 'Olive', color: '#808000' },
+      { title: 'Navy', color: '#000080' },
+      { title: 'Teal', color: '#008080' },
+      { title: 'Lavender', color: '#E6E6FA' },
+      { title: 'Turquoise', color: '#40E0D0' },
+      { title: 'Ivory', color: '#FFFFF0' },
+      { title: 'Coral', color: '#FF7F50' },
+      { title: 'Salmon', color: '#FA8072' },
+      { title: 'Khaki', color: '#F0E68C' },
+      { title: 'Crimson', color: '#DC143C' },
+      { title: 'Mint', color: '#98FF98' },
+      { title: 'Chocolate', color: '#D2691E' },
+      { title: 'Orchid', color: '#DA70D6' },
+      { title: 'Salmon', color: '#FA8072' },
+      { title: 'Fuchsia', color: '#FF00FF' },
+
+
+    ];
     const handleSubmit = async () => {
       // Upload image to Storage
       if (images) {
@@ -2293,10 +2287,30 @@ const EditProductPage = ({ route, navigation }) => {
       const colorsArray = text.split(',').map((color) => color.trim());
       setColors(colorsArray);
     };
+
+    const handleColorSelect = (selectedItem) => {
+      setColors((prevColors) => {
+        if (prevColors.includes(selectedItem.title)) {
+          return prevColors.filter(size => size !== selectedItem.title);
+        } else {
+          return [...prevColors, selectedItem.title];
+        }
+      });
+    };
+    const handleSizeSelect = (selectedItem) => {
+      setSize((prevColors) => {
+        if (prevColors.includes(selectedItem.title)) {
+          return prevColors.filter(color => color !== selectedItem.title);
+        } else {
+          return [...prevColors, selectedItem.title];
+        }
+      });
+    };
+  
   
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ marginBottom: 10 }}>Edit Product</Text>
+        <Text style={{ marginBottom: 10 ,fontSize:25}}>Edit Product</Text>
         <View style={{ width: '80%' }}>
           <View style={{ marginBottom: 10 }}>
             <Text style={{ marginBottom: 5 }}>Product Name:</Text>
@@ -2315,14 +2329,41 @@ const EditProductPage = ({ route, navigation }) => {
               onChangeText={(text) => setDescription(text)}
             />
           </View>
-          <View style={{ marginBottom: 10 }}>
+          
+          {/* <View style={{ marginBottom: 10 }}>
             <Text style={{ marginBottom: 5 }}>Size:</Text>
             <TextInput
               style={{ borderWidth: 1, borderColor: 'black', padding: 5 }}
               value={size}
               onChangeText={(text) => setSize(text)}
             />
-          </View>
+          </View> */}
+           <SelectDropdown
+          data={getSizeOptions()}
+          onSelect={handleSizeSelect}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={styles.dropdownButtonStyle}>
+                <Text style={styles.dropdownButtonTxtStyle}>
+                  {(size.length > 0 && size.join(', ')) || 'Size'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            const isSelectedColor = size.includes(item.title);
+            return (
+              <View style={{ ...styles.dropdownItemStyle, ...(isSelectedColor && { backgroundColor: '#D2D9DF' }) }}>
+                <View style={{ width: 20, height: 20, backgroundColor: item.color, marginRight: 10 }} />
+                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                {isSelectedColor && <Icon name="check" style={styles.checkIconStyle} />}
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={styles.dropdownMenuStyle}
+        />
           <View style={{ marginBottom: 10 }}>
             <Text style={{ marginBottom: 5 }}>Type:</Text>
             <TextInput
@@ -2331,14 +2372,40 @@ const EditProductPage = ({ route, navigation }) => {
               onChangeText={(text) => setType(text)}
             />
           </View>
-          <View style={{ marginBottom: 10 }}>
+          <SelectDropdown
+          data={colorsss}
+          onSelect={handleColorSelect}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={styles.dropdownButtonStyle}>
+                <Text style={styles.dropdownButtonTxtStyle}>
+                  {(colors.length > 0 && colors.join(', ')) || 'Colors'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            const isSelectedColor = colors.includes(item.title);
+            return (
+              <View style={{ ...styles.dropdownItemStyle, ...(isSelectedColor && { backgroundColor: '#D2D9DF' }) }}>
+                <View style={{ width: 20, height: 20, backgroundColor: item.color, marginRight: 10 }} />
+                <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                {isSelectedColor && <Icon name="check" style={styles.checkIconStyle} />}
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={styles.dropdownMenuStyle}
+        />
+          {/* <View style={{ marginBottom: 10 }}>
             <Text style={{ marginBottom: 5 }}>Colors:</Text>
             <TextInput
               style={{ borderWidth: 1, borderColor: 'black', padding: 5 }}
               value={colors.join(', ')} // Convert array to comma-separated string
               onChangeText={handleColorInput}
             />
-          </View>
+          </View> */}
           <View style={{ marginBottom: 10 }}>
             <Text style={{ marginBottom: 5 }}>Offer:</Text>
             <TextInput
@@ -2356,7 +2423,7 @@ const EditProductPage = ({ route, navigation }) => {
             />
           </View>
           <TouchableOpacity
-            style={{ backgroundColor: 'blue', padding: 10, alignItems: 'center', borderRadius: 5 }}
+            style={{ backgroundColor: 'blue', padding: 10, alignItems: 'center', borderRadius: 5,backgroundColor:"black" }}
             onPress={handleSubmit}
           >
             <Text style={{ color: 'white' }}>Edit Product</Text>
@@ -2365,5 +2432,6 @@ const EditProductPage = ({ route, navigation }) => {
       </View>
     );
   };
+
 
 export { EditProductPage,AdminProductsListMen, AdminMenDetails } ;

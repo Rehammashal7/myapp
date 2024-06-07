@@ -235,7 +235,7 @@ const Search = () => {
     };
 
     return (
-        <View style={{ alignItems: "center" }}>
+        <View style={{ alignItems: "center",marginTop:5 }}>
             {/* search */}
             <TouchableWithoutFeedback
                 onPress={() => {
@@ -246,9 +246,9 @@ const Search = () => {
                 <View style={styles.SearchArea}>
                     <Icon name="search"
                         style={styles.searchIcon}
-                        size={25}
+                        size={20}
                     />
-                    <Text style={{ fontSize: 15 }}>What are you looking for ?</Text>
+                    <Text style={{ fontSize: 14 }}>What are you looking for ?</Text>
                 </View>
             </TouchableWithoutFeedback>
             <Modal

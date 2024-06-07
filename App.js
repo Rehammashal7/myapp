@@ -56,6 +56,9 @@ import Pay from './pages/pay';
 import CreditCard from './pages/CreditCard';
 import { Recycle, RecycleDetails } from './pages/Catigory/Recycle';
 import AddUserProduct from './pages/Catigory/AddUserProduct';
+
+import AdminAllReview from './adminPages/AdminAllReview';
+
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -126,7 +129,8 @@ export default function App() {
         <Stack.Screen name="adminMEN" component={AdminProductsListMen} />
         <Stack.Screen name="adminMenDetails" component={AdminMenDetails} />
         <Stack.Screen name="EditProductPage" component={EditProductPage} />
-    
+        <Stack.Screen name="AdminAllReview" component={AdminAllReview} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
