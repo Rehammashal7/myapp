@@ -21,13 +21,14 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import COLORS from "../Consts/Color";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useIsFocused, useRoute } from "@react-navigation/native";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
 
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2;
+
 const Checkout = ({ navigation }) => {
   const [amount, setAmount] = useState("");
   const [error, setError] = useState(null);
@@ -123,10 +124,10 @@ const Checkout = ({ navigation }) => {
     setpoints(currentPoints);
   }
   useEffect(() => {
-    
+
     getbouns();
-   
-  }, [ getbouns()]);
+
+  }, [getbouns()]);
   const getpoint = () => {
     let offer = getTotal() - getTotalOfers() - points;
     if (offer < 0) {
@@ -142,7 +143,7 @@ const Checkout = ({ navigation }) => {
       let existingItem = cartList.find(itm => itm.id === item.id)
       total = total + (item.data.offer / 100 * item.data.price * existingItem.qty);
     });
-    return total.toFixed(2);
+    return total;
   };
   const getTotal = () => {
     let total = 0;
@@ -167,6 +168,8 @@ const Checkout = ({ navigation }) => {
       handleSomeAction();
       deleteAllItems();
       handleCheckout();
+      updatewallet();
+      handleRecycleWallet()
       setTimeout(() => {
         navigation.navigate("pay", { userId: userId });
       }, 2000);
@@ -176,6 +179,7 @@ const Checkout = ({ navigation }) => {
       handleSomeAction();
       deleteAllItems();
       handleCheckout();
+      handleRecycleWallet()
       setTimeout(() => {
         navigation.navigate("CreditCard", { userId: userId });
       }, 2000);
@@ -192,7 +196,7 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice();
   }, [deliveryprice]);
-  
+
   const handleCheckout = async () => {
     try {
       const items = [];
@@ -308,82 +312,86 @@ const Checkout = ({ navigation }) => {
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
       const walletAmount = userSnap.data().walet || 0;
-  
+
       // حساب القيمة التي يجب خصمها من المحفظة
       const totalAmountToDeduct = (getTotal() + delprice - getTotalOfers()).toFixed(2);
-  
+
       // التحقق من أن قيمة المحفظة كافية لإتمام الدفع
       if (walletAmount >= totalAmountToDeduct) {
         // تحديث قيمة المحفظة بعد الخصم
         const updatedAmount = walletAmount - totalAmountToDeduct;
         await updateDoc(userRef, { walet: updatedAmount });
-  
+
         console.log("Wallet value updated successfully");
-        AddOrderHistory();
-              handleSomeAction();
-              deleteAllItems();
-              handleCheckout();
+        
         alert("You can recover the amount in 24 hours only");
 
-    } else {
-      alert("Error: Insufficient balance in the wallet");
+      } else {
+        alert("Error: Insufficient balance in the wallet");
+      }
+    } catch (error) {
+      console.error("An error occurred while updating the wallet:", error);
     }
-  } catch (error) {
-    console.error("An error occurred while updating the wallet:", error);
+  };
+
+  const handleRecycleWallet =async()=>{
+    
+    cartList.forEach(async (item)=>{
+      console.log(item.data.recycleProduct)
+      if(item.data.recycleProduct===true){
+        console.log('recycle')
+        const userRef = doc(db, "users", item.data.userId);
+      const userSnap = await getDoc(userRef);
+      const walletAmount = userSnap.data().walet || 0;
+
+      const totalAmountToDeduct = ((getTotal() - getTotalOfers())-((getTotal() - getTotalOfers())*0.1));
+      const updatedAmount = walletAmount + totalAmountToDeduct;
+        await updateDoc(userRef, { walet: updatedAmount });
+      
+        const usersRef2 = collection(db, "users"); 
+      const querySnapshot = await getDocs(usersRef2); 
+      
+      for (const userDoc of querySnapshot.docs) {
+        const userData = userDoc.data();
+        if (userData.isAdmin) {
+          
+          const currentWalletBalance = userData.walet ; 
+          const newWalletBalance = (currentWalletBalance + ((getTotal()-getTotalOfers())*0.1)); 
+          const userRef3 = doc(db, "users", userDoc.id);
+          await updateDoc(userRef3, { walet: newWalletBalance });
+        }
+        
+      }
+      const userRef2 = doc(db, "recycle", item.id);
+      await updateDoc(userRef2, { sold: true });
+
+      
+      }else {
+        console.log('not recycle')
+        handleWallerAdmin();
+      }
+    })
   }
-};
+  const handleWallerAdmin = async () => {
+    try {
+      const usersRef = collection(db, "users"); 
+      const querySnapshot = await getDocs(usersRef); 
+      
+      for (const userDoc of querySnapshot.docs) {
+        const userData = userDoc.data();
+        if (userData.isAdmin) {
+          
+          const currentWalletBalance = userData.walet ; 
+          const newWalletBalance = currentWalletBalance + (getTotal()-getTotalOfers()); 
+          const userRef = doc(db, "users", userDoc.id);
+          await updateDoc(userRef, { walet: newWalletBalance });
+        }
+      }
+    } catch (error) {
+      console.error("Error updating wallet balances: ", error); 
+    }
+  };
 
-  // const AddOrderHistory = async () => {
-  //   console.log("Executing AddOrderHistory function...");
-
-  //   try {
-  //     const userRef = doc(db, "users", userId);
-  //     const userSnap = await getDoc(userRef);
-  //     const currentDate = new Date();
-  //     const formattedDate = currentDate.toISOString();
-
-  //     const userOrders = userSnap.data()?.waitingOrder || [];
-  //     console.log(userOrders);
-  //     if (userSnap.exists()) {
-  //       const userData = userSnap.data();
-  //       let updatedUserData = {};
-
-  //       if (!userData.waitingOrder) {
-  //           // إذا لم تكن dataAddress موجودة، قم بإنشائها كقائمة فارغة
-  //           updatedUserData = {
-  //               ...userData,
-  //               waitingOrder: []
-  //           };
-  //       } else {
-  //           updatedUserData = { ...waitingOrder };
-  //       }
-  // }
-  //     const addressIndex = waitingOrder.dataAddress.length;
-  //     cartList.forEach((cartItem) => {
-  //       const newOrder = {
-  //         index: addressIndex,
-  //         productId: cartItem.id,
-  //         Name: cartItem.data.name,
-  //         quantity: cartItem.qty,
-  //         image: cartItem.data.images[0],
-  //         totalPrice: (cartItem.qty || 0) * (cartItem.data.price || 0),
-  //         timestamp: new Date(),
-  //         description: cartItem.data.description,
-  //         color: cartItem.color,
-  //         size: cartItem.size,
-  //       };
-
-  //       userOrders.push(newOrder);
-  //       console.log(userOrders.push(newOrder));
-  //     });
-
-  //     await updateDoc(userRef, { waitingOrder: userOrders });
-
-  //     console.log("Order history updated successfully");
-  //   } catch (error) {
-  //     console.error("Error updating order history:", error);
-  //   }
-  // };
   const AddOrderHistory = async () => {
     console.log("Executing AddOrderHistory function...");
     try {
@@ -394,8 +402,7 @@ const Checkout = ({ navigation }) => {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString();
         const addressIndex = userOrders.length;
-        // const addressIndex = updatedUserData.dataAddress.length;
-        console.log("addresssssIndex :",addressIndex);
+        console.log("addresssssIndex :", addressIndex);
         cartList.forEach((cartItem, index) => {
           const newOrder = {
             index: addressIndex + index,
@@ -431,16 +438,16 @@ const Checkout = ({ navigation }) => {
       console.log("Current Bonus Points:", userData.boun);
 
       let currentPoints = userData.boun || 0;
-      if(point){
-      const minespoints =getpoint();
-      if(minespoints===0){
-        currentPoints=currentPoints-(getTotal()-getTotalOfers());
-      }else {
-        currentPoints=0;
+      if (point) {
+        const minespoints = getpoint();
+        if (minespoints === 0) {
+          currentPoints = currentPoints - (getTotal() - getTotalOfers());
+        } else {
+          currentPoints = 0;
+        }
       }
-    }
       const newPoints = Math.ceil(currentPoints + (getTotal() * 0.1));
-      
+
       await updateDoc(userRef, { boun: newPoints });
       console.log("Bonus points increased by 10.");
     } catch (error) {
@@ -646,25 +653,25 @@ const Checkout = ({ navigation }) => {
         </View>
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
-          <Pressable
-                onPress={() => {
-                  setpoint(!point)
-                  
-                }}
-              >
-                <Icon
-                  name={point ? "ellipse" : "ellipse-outline"}
-                  size={25}
-                  color="#343434"
-                  style={{ marginRight: 3 }}
-                />
-              </Pressable>
-              {point ?(<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+            <Pressable
+              onPress={() => {
+                setpoint(!point)
+
+              }}
+            >
+              <Icon
+                name={point ? "ellipse" : "ellipse-outline"}
+                size={25}
+                color="#343434"
+                style={{ marginRight: 3 }}
+              />
+            </Pressable>
+            {point ? (<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
               {'Total : ' + getpoint().toFixed(2) + ' EGP'}
-            </Text>):(<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
+            </Text>) : (<Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
               {'Total : ' + (getTotal() + delprice - getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>)}
-            
+
             <Pressable onPress={() => setIconName5(!IconName5)}>
               <Icon name={IconName5 ? 'chevron-up' : 'chevron-down'} size={25} color={COLORS.dark} style={{ marginTop: 5, right: 30 }} />
             </Pressable>
@@ -695,17 +702,17 @@ const Checkout = ({ navigation }) => {
             style={styles.checkButton}
             onPress={() => {
               handelNavigation();
-              updatewallet();
+              
               // if (IconName4) {+-
               //   setTimeout(() => {
               //     navigation.navigate("pay", { userId: userId });
               //   }, 2000);
-                
+
               // } else {
               //   setTimeout(() => {
               //     navigation.navigate("CreditCard", { userId: userId });
               //   }, 2000);
-                
+
               // }
             }}
           >

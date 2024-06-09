@@ -24,26 +24,20 @@ import {
 import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
 import Food, { filterData, productt, option, size } from "../../data";
-import Foodcard from "../../components/Foodcard";
 import Icon from "react-native-vector-icons/FontAwesome";
-import PrimaryButton from "../../components/Button";
-import Header from "../Header";
 import Search from "../../components/search";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../../components/bar";
-import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
-let iconcolor;
 const ProductsListWoman = ({ navigation }) => {
   const [products, setProducts] = useState([]);
   const [userId, setUserId] = useState("");
-  const isFocused = useIsFocused();
   const [isPressed, setIsPressed] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef(null);
@@ -51,6 +45,13 @@ const ProductsListWoman = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [filterproduct, setfilterProduct] = useState([]);
   const [iconsort, seticonsort] = useState(true);
+  const [sortOrder, setSortOrder] = useState(true);
+  const [filterType, setFilterType] = useState("");
+  const [sizeType, setsizeType] = useState("");
+  const [colorType, setcolorType] = useState("");
+  const [sortType, setSortType] = useState("");
+  const imageWidth = 200;
+
   const filters = [
     { title: 'all' },
     { title: 'size' },
@@ -79,11 +80,16 @@ const ProductsListWoman = ({ navigation }) => {
     { title: 'salmon' },
     { title: 'white' },
   ];
-  const handleSize = (title) => {
 
+  const sort = [
+    { title: 'price' },
+    { title: 'rate' },
+    { title: 'none' },
+  ];
+
+  const handleSize = (title) => {
     const filterSize = filterproduct.filter(product => containsize(product, title))
     setProducts(filterSize);
-    console.log(filterSize)
   }
   useEffect(() => {
     handleSize()
@@ -115,12 +121,8 @@ const ProductsListWoman = ({ navigation }) => {
     // Use the some method to check if any color in the list includes the query
     return colors.some(color => color.includes(lowerCaseQuery));
   };
-  const sort = [
-    { title: 'price' },
-    { title: 'rate' },
-    { title: 'none' },
-  ];
-  const [sortOrder, setSortOrder] = useState(true);
+ 
+ 
 
   const handlesort = (title) => {
     if (title === 'price') {
@@ -149,10 +151,7 @@ const ProductsListWoman = ({ navigation }) => {
     }
   }
 
-  const [filterType, setFilterType] = useState("");
-  const [sizeType, setsizeType] = useState("");
-  const [colorType, setcolorType] = useState("");
-  const [sortType, setSortType] = useState("");
+ 
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -232,7 +231,7 @@ const ProductsListWoman = ({ navigation }) => {
     getFavItems();
   };
 
-  const imageWidth = 200;
+  
 
   const handleProductPress = (product) => {
     navigation.navigate("WomanDetails", { product });
@@ -1019,7 +1018,7 @@ const WomanDetails = ({ route, navigation }) => {
             renderItem={({ item }) => (
               <Image source={{ uri: item }} style={styles.productImage} />
             )}
-            keyExtractor={(image, index) => index.toString()}
+            keyExtractor={(image, index) => index}
             onScroll={(event) => handleScroll(event, product.id)}
           />
           <View style={styles.dotsContainerDetails}>

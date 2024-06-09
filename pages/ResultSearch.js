@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Dimensions, CheckBox, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
 import { useIsFocused } from '@react-navigation/native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -292,7 +291,7 @@ useEffect(() => {
         <View style={styles.header}>
           <Text style={[styles.Text]}> AtoZ </Text>
         </View>
-        <Search />
+        
         <Text style={[styles.result, { marginTop: 10, marginBottom: 10 }]}>{"search Result of : null "}</Text>
         <View style={[styles.container, { alignContent: 'center', textAlign: 'center', marginTop: 20 }]}>
           <Text style={[styles.result, { alignContent: 'center', textAlign: 'center' }]}>No products available</Text>
@@ -640,7 +639,7 @@ const styles = StyleSheet.create({
   cardView: {
     marginBottom: 20,
     marginTop: 20,
-    borderRadius: 15,
+    borderRadius: 5,
     width: cardwidth,
     height: cardheight + 20,
     elevation: 13,

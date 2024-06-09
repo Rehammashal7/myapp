@@ -12,35 +12,30 @@ import {
     ActivityIndicator,
     Modal,
 } from "react-native";
-import COLORS from "../../Consts/Color";
+import COLORS from "../Consts/Color";
 import {
     doc,
     collection,
     updateDoc,
     getDocs,
     getDoc,
-    arrayUnion,
+    deleteDoc,
 } from "firebase/firestore";
 import { useRef } from "react";
-import { auth, db, storage } from "../../firebase";
-import Food, { filterData, productt, option, size } from "../../data";
-import Foodcard from "../../components/Foodcard";
+import { auth, db, storage } from "../firebase";
+import Food, { filterData, productt, option, size } from "../data";
 import Icon from "react-native-vector-icons/FontAwesome";
-import PrimaryButton from "../../components/Button";
-import Header from "../Header";
-import Search from "../../components/search";
+import Search from "../components/search";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import BottomNavigator from "../../components/bar";
-import { FontAwesome } from "@expo/vector-icons";
+import BottomNavigator from "../components/bar";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
-let iconcolor;
-const Recycle = ({ navigation }) => {
+const AdminRecycle = ({ navigation }) => {
     const [products, setProducts] = useState([]);
     const [userId, setUserId] = useState("");
     const isFocused = useIsFocused();
@@ -49,11 +44,15 @@ const Recycle = ({ navigation }) => {
     const scrollViewRef = useRef(null);
     const [activeIndexes, setActiveIndexes] = useState({});
     const [isLoading, setIsLoading] = useState(true);
-    const [showGoToCartButton, setShowGoToCartButton] = useState(false);
-    const [modalVisibleCart, setModalVisibleCart] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
     const [filterproduct, setfilterProduct] = useState([]);
     const [iconsort, seticonsort] = useState(true);
+    const [filterType, setFilterType] = useState("");
+    const [sizeType, setsizeType] = useState("");
+    const [colorType, setcolorType] = useState("");
+    const [sortType, setSortType] = useState("");
+    const [sortOrder, setSortOrder] = useState(true);
+    const imageWidth = 200;
+
     const filters = [
         { title: 'all' },
         { title: 'size' },
@@ -82,79 +81,22 @@ const Recycle = ({ navigation }) => {
         { title: 'salmon' },
         { title: 'white' },
     ];
-    const handleSize = (title) => {
-
-        const filterSize = filterproduct.filter(product => containsize(product, title))
-        setProducts(filterSize);
-        console.log(filterSize)
-    }
-    useEffect(() => {
-        handleSize()
-    }, [])
-    const handleColor = (title) => {
-
-        const filterColor = filterproduct.filter(product => containColor(product, title))
-        setProducts(filterColor);
-        console.log(filterColor)
-    }
-    useEffect(() => {
-        handleColor()
-    }, [])
-    const containsize = ({ sizes }, query) => {
-        console.log(sizes);
-        console.log(query);
-        // Convert the query to lowercase for case-insensitive comparison
-        const lowerCaseQuery = query;
-        console.log(sizes.some(size => size.includes(lowerCaseQuery)))
-        // Use the some method to check if any color in the list includes the query
-        return sizes.some(size => size.includes(lowerCaseQuery));
-    };
-    const containColor = ({ colors }, query) => {
-        console.log(colors);
-
-        // Convert the query to lowercase for case-insensitive comparison
-        const lowerCaseQuery = query;
-
-        // Use the some method to check if any color in the list includes the query
-        return colors.some(color => color.includes(lowerCaseQuery));
-    };
     const sort = [
         { title: 'price' },
         { title: 'rate' },
         { title: 'none' },
     ];
-    const [sortOrder, setSortOrder] = useState(true);
 
-    const handlesort = (title) => {
-        if (title === 'price') {
-            products.sort((a, b) => {
-                const priceA = a.price || 0; // Default to 0 if price is missing
-                const priceB = b.price || 0;
-                return !sortOrder ? priceA - priceB : priceB - priceA;
-            });
-            console.log(iconsort)
-            setProducts(products);
-        } else if (title === 'rate') {
-            products.sort((a, b) => {
-                const rateA = a.rate || 0; // Default to 0 if price is missing
-                const rateB = b.rate || 0;
-                return !sortOrder ? rateA - rateB : rateB - rateA;
-            });
-            console.log(iconsort)
-            setProducts(products);
-        } else {
-            setProducts(filterproduct);
-        }
-    }
-    const handleAll = (title) => {
-        if (title === 'all') {
-            setProducts(filterproduct);
-        }
-    }
-    const [filterType, setFilterType] = useState("");
-    const [sizeType, setsizeType] = useState("");
-    const [colorType, setcolorType] = useState("");
-    const [sortType, setSortType] = useState("");
+    // get user id
+    useEffect(() => {
+        const getUserId = async () => {
+            const id = await AsyncStorage.getItem("USERID");
+            setUserId(id);
+        };
+        getUserId();
+    }, [isFocused]);
+
+    // get products
     useEffect(() => {
         const getProducts = async () => {
             try {
@@ -164,26 +106,18 @@ const Recycle = ({ navigation }) => {
                     id: doc.id,
                     ...doc.data(),
                 }));
-                productsData=productsData.filter((product)=> product.isAccept ==='accepted' && product.sold !=true)
-                console.log(productsData)
                 if (sortType === 'price') {
-                    console.log("title " + sortType)
-                    console.log("order " + sortOrder)
                     productsData.sort((a, b) => {
-                        const priceA = a.price || 0; 
+                        const priceA = a.price || 0;
                         const priceB = b.price || 0;
                         return sortOrder ? priceA - priceB : priceB - priceA;
                     });
-                    console.log(iconsort)
                 } else if (sortType === 'rate') {
-                    console.log("title " + sortType)
-                    console.log("order " + sortOrder)
                     productsData.sort((a, b) => {
-                        const rateA = a.rate || 0; 
+                        const rateA = a.rate || 0; // Default to 0 if price is missing
                         const rateB = b.rate || 0;
                         return sortOrder ? rateA - rateB : rateB - rateA;
                     });
-                    console.log(iconsort)
                     setProducts(products);
                 }
                 setProducts(productsData);
@@ -195,53 +129,71 @@ const Recycle = ({ navigation }) => {
             }
         };
         getProducts();
-    }, [sortType]);
+    }, [isFocused]);
 
+    // filter
+    // filter by size
     useEffect(() => {
-        const getUserId = async () => {
-            const id = await AsyncStorage.getItem("USERID");
-            setUserId(id);
-            console.log(id);
-        };
-        getUserId();
-    }, []);
-    useEffect(() => {
-        const getUserId = async () => {
-            const id = await AsyncStorage.getItem("USERID");
-            setUserId(id);
-            console.log(id);
-        };
-        getUserId();
+        handleSize()
     }, []);
 
-    const onAddToFav = async (item, index) => {
-        setIsPressed(!isPressed);
-        console.log(userId);
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const { fav = [] } = userSnap.data() ?? {};
-        let existingItem = fav.find((itm) => itm.id === item.id);
+    const handleSize = (title) => {
+        const filterSize = filterproduct.filter(product => containsize(product, title))
+        setProducts(filterSize);
+    };
 
-        if (existingItem) {
-            existingItem.qty += 1;
-        } else {
-            fav.push({ ...item, qty: 1 });
+    const containsize = ({ sizes }, query) => {
+        return sizes.some(size => size.includes(query));
+    };
+
+    // filter by color
+    useEffect(() => {
+        handleColor()
+    }, []);
+
+    const handleColor = (title) => {
+        const filterColor = filterproduct.filter(product => containColor(product, title))
+        setProducts(filterColor);
+    };
+
+    const containColor = ({ colors }, query) => {
+        return colors.some(color => color.includes(query));
+    };
+
+    // All product
+    const handleAll = (title) => {
+        if (title === 'all') {
+            setProducts(filterproduct);
         }
-        await updateDoc(userRef, { fav });
-        getFavItems();
-    };
+    }
 
-    const imageWidth = 200;
+    // sort
+    const handlesort = (title) => {
+        if (title === 'price') {
+            products.sort((a, b) => {
+                const priceA = a.price || 0; // Default to 0 if price is missing
+                const priceB = b.price || 0;
+                return !sortOrder ? priceA - priceB : priceB - priceA;
+            });
+            setProducts(products);
+        } else if (title === 'rate') {
+            products.sort((a, b) => {
+                const rateA = a.rate || 0; // Default to 0 if price is missing
+                const rateB = b.rate || 0;
+                return !sortOrder ? rateA - rateB : rateB - rateA;
+            });
+            setProducts(products);
+        } else {
+            setProducts(filterproduct);
+        }
+    }
 
+    // navigation
     const handleProductPress = (product) => {
-        navigation.navigate("RecycleDetails", { product });
+        navigation.navigate("adminRecycleDetails", { product });
     };
 
-    const handleDotPress = (index) => {
-        scrollViewRef.current.scrollTo({ x: index * imageWidth, animated: true });
-        setActiveIndex(index);
-    };
-
+    //scroll images
     const handleScroll = (event, productId) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;
         const currentIndex = Math.floor(contentOffsetX / imageWidth);
@@ -251,9 +203,11 @@ const Recycle = ({ navigation }) => {
         }));
     };
 
+    //to flatlist
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item)}>
             <View style={styles.cardView}>
+                {/* image */}
                 <FlatList
                     horizontal
                     data={item.images}
@@ -277,27 +231,19 @@ const Recycle = ({ navigation }) => {
                         />
                     ))}
                 </View>
-                <View
-                    style={{
-                        // flexDirection: "row",
-                        marginTop: 1,
-                        height: 100,
 
-                        // marginHorizontal: 20,
-                        // justifyContent: "space-between",
-                    }}
-                >
+                <View style={{ marginTop: 1, height: 100 }}>
+                    {/* name */}
                     <View style={{ marginTop: 10, flexDirection: "row" }}>
+
                         <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
                             {item.name}
                         </Text>
+
                     </View>
 
-                    <View
-                        style={{
-                            flexDirection: "row",
-                        }}
-                    ></View>
+                    <View style={{ flexDirection: "row" }} ></View>
+                    {/* price with offer */}
                     {item.offer !== 0 ? (
                         <>
                             <Text
@@ -329,6 +275,7 @@ const Recycle = ({ navigation }) => {
                             </Text>
                         </>
                     ) : (
+                        // price without offer
                         <Text
                             style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
                         >
@@ -348,6 +295,7 @@ const Recycle = ({ navigation }) => {
             <Search />
 
             <View style={styles.header}>
+                {/* category */}
                 <FlatList
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}
@@ -380,11 +328,10 @@ const Recycle = ({ navigation }) => {
             </View>
             <ScrollView>
                 <View style={styles.containerfs}>
+                    {/* filter */}
                     <Pressable
                         style={{ flexDirection: "row", }}
                     >
-
-                        {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
                         <View style={styles.numbertypecontainer}>
                             <Icon
                                 name="filter"
@@ -397,7 +344,6 @@ const Recycle = ({ navigation }) => {
                                 onSelect={(selectedItem) => {
                                     setFilterType(selectedItem.title);
                                     handleAll(selectedItem.title)
-                                    console.log(selectedItem.title);
                                 }}
                                 renderButton={(selectedItem, isOpened) => {
                                     return (
@@ -419,17 +365,15 @@ const Recycle = ({ navigation }) => {
                                 showsVerticalScrollIndicator={false}
                                 dropdownStyle={styles.dropdownMenuStyle}
                             />
-
-
-
                         </View>
+
+                        {/* filter by size */}
                         {filterType === 'size' && (
                             <SelectDropdown
                                 data={size}
                                 onSelect={(selectedItem) => {
                                     setsizeType(selectedItem.title);
                                     handleSize(selectedItem.title);
-                                    console.log(selectedItem.title);
                                 }}
                                 renderButton={(selectedItem, isOpened) => {
                                     return (
@@ -452,14 +396,13 @@ const Recycle = ({ navigation }) => {
                                 dropdownStyle={styles.dropdownMenuStyle}
                             />
                         )}
+                        {/* filter by color */}
                         {filterType === 'color' && (
                             <SelectDropdown
                                 data={color}
                                 onSelect={(selectedItem) => {
-
                                     setcolorType(selectedItem.title);
                                     handleColor(selectedItem.title);
-                                    console.log(selectedItem.title);
                                 }}
                                 renderButton={(selectedItem, isOpened) => {
                                     return (
@@ -483,11 +426,11 @@ const Recycle = ({ navigation }) => {
                             />
                         )}
                     </Pressable>
+
+                    {/* sort */}
                     <Pressable
                         style={{ flexDirection: "row", marginLeft: 5 }}
                     >
-
-                        {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
                         <View style={styles.numbertypecontainer}>
                             <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
                                 <Icon
@@ -505,7 +448,6 @@ const Recycle = ({ navigation }) => {
                                     setSortOrder(true);
                                     seticonsort(true);
                                     handlesort(sortType);
-                                    console.log(selectedItem.title);
                                 }}
                                 renderButton={(selectedItem, isOpened) => {
                                     return (
@@ -532,7 +474,7 @@ const Recycle = ({ navigation }) => {
                         </View>
                     </Pressable>
                 </View>
-                {/* Render "Loading..." if isLoading is true, otherwise render products */}
+
                 {isLoading ? (
                     <View>
                         <Spinner
@@ -550,6 +492,8 @@ const Recycle = ({ navigation }) => {
                 )}
                 <View style={styles.bottoms}></View>
             </ScrollView>
+
+            {/* add product button */}
             <View style={styles.Addproduct}>
                 <TouchableOpacity onPress={() => navigation.navigate('AddUserProduct')}
                     style={styles.Addproductbutton}>
@@ -562,55 +506,36 @@ const Recycle = ({ navigation }) => {
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
-const RecycleDetails = ({ route, navigation }) => {
-    // const { product } = route.params;
-    const { product } = route.params ? route.params : { product: {} };
-    // const [products, setProducts] = React.useState('');
-    const [productt, setProductt] = React.useState([]);
+const AdminRecycleDetails = ({ route, navigation }) => {
 
-    const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
-    const [selectedfav, setSelectedfav] = React.useState(0);
+    const { product } = route.params ? route.params : { product: {} };
+    const [productt, setProductt] = React.useState([]);
     const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
     const [cartCount, setCartCount] = useState(0);
-    //const navigation = useNavigation();
     const [hasCheckedOut, setHasCheckedOut] = useState(false);
-
     const [userId, setUserId] = useState("");
     const isFocused = useIsFocused();
     const product_id = product.id;
-    const [showReviews, setShowReviews] = useState(false);
     const [comments, setComment] = useState(0);
     const [rating, setRating] = useState(0);
-    const [like, setLike] = useState([0]);
-    const [disLike, setDislikes] = useState([0]);
     const [reviews, setReviews] = useState([]);
     const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
-
-    const [isPaymentCompleted, setPaymentCompleted] = useState(false);
     const scrollViewRef = useRef(null);
     const [activeIndexes, setActiveIndexes] = useState({});
     const [selectedColor, setSelectedColor] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [showPrice, setShowPrice] = useState(false);
-    const [showAllReviews, setShowAllReviews] = useState(false);
     const [modalVisibleCart, setModalVisibleCart] = useState(false);
-    const [showGoToCartButton, setShowGoToCartButton] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
-
+    const [Accepted, setAccepted] = useState(product.isAccept);
+    const [Sold, setSold] = useState(product.sold);
     const numberOfInitialReviews = 3;
-    const categoryName = "Man";
+    const imageWidth = width;
 
-    const handleSeeAllReviews = () => {
-        navigation.navigate("AllReviewsPage", { reviews });
-        <Text style={styles.seeAllText}>
-            See All ({reviews ? reviews.length : 0})
-        </Text>;
-    };
+    // get product
     useEffect(() => {
         const fetchItem = async (product_id) => {
             const documentSnapshot = await getDoc(doc(db, "recycle", product_id));
-            console.log("product ID: ", documentSnapshot.id, documentSnapshot.data());
             let tempData = [];
             tempData.push({
                 id: documentSnapshot.id,
@@ -622,33 +547,26 @@ const RecycleDetails = ({ route, navigation }) => {
             setProductt(tempData);
         };
         fetchItem(product_id);
-    }, []);
+    }, [isFocused]);
 
-    useEffect(() => {
-        console.log("noo " + hasCheckedOut);
-        if (hasCheckedOut) {
-            setHasCheckedOut(true);
-            console.log("yess " + hasCheckedOut);
-        }
-    }, []);
-
+    // get user id
     useEffect(() => {
         const getUserId = async () => {
             const id = await AsyncStorage.getItem("USERID");
             setUserId(id);
-            console.log(id);
         };
         getUserId();
     }, []);
 
+    useEffect(() => {
+        setAccepted(product.isAccept)
+    }, [isFocused]);
 
-    const getCartItems = async () => {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const cartCount = userSnap?.data()?.cart?.length ?? 0;
-
-        setCartCount(cartCount);
-    };
+    useEffect(() => {
+        if (hasCheckedOut) {
+            setHasCheckedOut(true);
+        }
+    }, []);
 
     useEffect(() => {
         if (userId) {
@@ -665,7 +583,21 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     }, [modalVisibleCart]);
 
-    const imageWidth = width;
+    const handleSeeAllReviews = () => {
+        navigation.navigate("AllReviewsPage", { reviews });
+        <Text style={styles.seeAllText}>
+            See All ({reviews ? reviews.length : 0})
+        </Text>;
+    };
+
+    //cart
+    const getCartItems = async () => {
+        const userRef = doc(db, "users", userId);
+        const userSnap = await getDoc(userRef);
+        const cartCount = userSnap?.data()?.cart?.length ?? 0;
+        setCartCount(cartCount);
+    };
+
     const handleScroll = (event, product_id) => {
         const contentOffsetX = event.nativeEvent.contentOffset.x;
         const currentIndex = Math.floor(contentOffsetX / imageWidth);
@@ -675,102 +607,37 @@ const RecycleDetails = ({ route, navigation }) => {
         }));
     };
 
-    // const onAddToCart = async (item, index) => {
-    //   console.log(userId);
-    //   const userRef = doc(db, "users", userId);
-    //   const userSnap = await getDoc(userRef);
-    //   const { cart = [] } = userSnap.data() ?? {};
-    //   let existingItem = cart.find((itm) => itm.id === item.id);
-
-    //   if (existingItem) {
-    //     existingItem.qty += 1;
-    //   } else {
-    //     cart.push({ ...item, qty: 1 });
-    //   }
-    //   await updateDoc(userRef, { cart });
-    //   getCartItems();
-    // };
-    const onAddToCart = async (item, index, selectedColor, selectedSize) => {
-        const newDate = new Date();
-        newDate.setDate(newDate.getDate() + 2);
-        console.log(userId);
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const { cart = [] } = userSnap.data() ?? {};
-        let existingItem = cart.find((itm) => itm.id === item.id);
-
-        if (existingItem) {
-            existingItem.qty += 1;
+    const handleScroll2 = (event) => {
+        const scrollPosition = event.nativeEvent.contentOffset.y;
+        const screenHeight = Dimensions.get("window").height;
+        const scrollThreshold = screenHeight * 0.75;
+        if (scrollPosition >= 210) {
+            setShowPrice(true);
         } else {
-            cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
-        }
-
-        await updateDoc(userRef, { cart });
-        getCartItems();
-
-        if (selectedColor && selectedSize) {
-            setShowGoToCartButton(true);
-            setModalVisibleCart(true);
-
-        } else if (selectedColor || selectedSize) {
-            setShowGoToCartButton(true);
-            setModalVisibleCart(true);
-
-        }
-        else {
-            setModalVisibleCart(true);
-            setShowGoToCartButton(false);
+            setShowPrice(false);
         }
     };
 
-    const handleGoToCart = () => {
-        navigation.navigate("CartScreen", { userId: userId });
+    // accept product
+    const handleAccept = async () => {
+        const documentSnapshot = doc(db, "recycle", product_id);
+        await updateDoc(documentSnapshot, { isAccept: "accepted" })
+        setAccepted(product.isAccept)
     };
 
-    const getFavItems = async () => {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const cartCount = userSnap?.data()?.fav?.length ?? 0;
-    };
-    const onAddToFav = async (item, index) => {
-        setIsPressed(!isPressed);
-        console.log(userId);
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const { fav = [] } = userSnap.data() ?? {};
-        let existingItem = fav.find((itm) => itm.id === item.id);
-
-        if (existingItem) {
-            existingItem.qty += 1;
-        } else {
-            fav.push({ ...item, qty: 1 });
-        }
-        await updateDoc(userRef, { fav });
-        getFavItems();
-    };
-    const [isPressed, setIsPressed] = useState("");
-    const handelHeart = async (item) => {
-        const userRef = doc(db, "users", userId);
-        const userSnap = await getDoc(userRef);
-        const { fav = [] } = userSnap.data() ?? {};
-        const existingItem = fav.find(itm => itm.id === item.id);
-
-        setIsPressed(!!existingItem);
-    };
-
-    useEffect(() => {
-        handelHeart(product);
-    }, [handelHeart]);
-    useEffect(() => {
-        console.log(isPressed);
-    }, [isPressed]);
-
-    const [Newprice, setNewprice] = useState(product.price);
-
-    const handlePrice = (pl) => {
-        const price = Newprice + pl;
-        setNewprice(price);
-    };
+    // reject product
+    const handleReject = async () => {
+        const documentSnapshot = doc(db, "recycle", product_id);
+        await updateDoc(documentSnapshot, { isAccept: "reject" })
+        setAccepted(product.isAccept)
+    }
+    const handleDelete = async () => {
+        const documentSnapshot = doc(db, "recycle", product_id);
+        await deleteDoc(documentSnapshot);
+        setTimeout(() => {
+            navigation.navigate("adminRecycle");
+        }, 10000);
+    }
 
     const wordsPerLine = 7;
     const words = product.description.split(" ");
@@ -783,21 +650,9 @@ const RecycleDetails = ({ route, navigation }) => {
             lines.push(line);
             line = "";
         }
-    }
-    const handleScroll2 = (event) => {
-        const scrollPosition = event.nativeEvent.contentOffset.y;
-        const screenHeight = Dimensions.get("window").height;
-        const scrollThreshold = screenHeight * 0.75;
-        console.log(scrollPosition);
-
-        console.log(scrollThreshold);
-        if (scrollPosition >= 210) {
-            setShowPrice(true);
-        } else {
-            setShowPrice(false);
-        }
     };
 
+    // review 
     let flagAdmin = false;
     const fetchAllReviews = async () => {
         try {
@@ -812,8 +667,6 @@ const RecycleDetails = ({ route, navigation }) => {
                 flagAdmin = true;
             }
             setReviews(productData.reviews || []);
-            // loadLikesAndDislikes(reviews);
-
             if (productData.reviews && productData.reviews.length > 0) {
                 const averageRating =
                     productData.reviews.reduce(
@@ -834,6 +687,7 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     };
 
+    // like and dislike
     const loadLikesAndDislikes = async (reviews) => {
         try {
             const updatedReviews = await Promise.all(
@@ -856,7 +710,7 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     };
 
-
+    // like
     const handleLike = async (index) => {
         try {
             const updatedReviews = [...reviewsWithLikes];
@@ -880,6 +734,7 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     };
 
+    // dislike
     const handleDislike = async (index) => {
         try {
             const updatedReviews = [...reviewsWithLikes];
@@ -901,15 +756,21 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     };
 
+    // recently visit    
     useEffect(() => {
-        console.log("iam in recently use effect ");
-        saveRecentlyVisited(product.id, product.name, product.categoryName, product.images, product.colors, product.description, product.offer, product.price, product.sizes);
-        // console.log("iam get data ");
-        console.log("produt id", product_id);
+        saveRecentlyVisited(
+            product.id,
+            product.name,
+            product.categoryName,
+            product.images,
+            product.colors,
+            product.description,
+            product.offer,
+            product.price,
+            product.sizes);
     }, []);
 
     const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-        console.log("I am in save visit");
         try {
             const userRef = doc(db, "users", auth.currentUser.uid);
             const userDoc = await getDoc(userRef);
@@ -934,7 +795,6 @@ const RecycleDetails = ({ route, navigation }) => {
                             ...userData.recentlyVisited
                         ];
                     } else {
-                        console.log("Product already exists in recentlyVisited");
                         updatedRecentlyVisited = [...userData.recentlyVisited];
                     }
                 } else {
@@ -952,10 +812,8 @@ const RecycleDetails = ({ route, navigation }) => {
                 }
                 if (updatedRecentlyVisited.length > 10) {
                     updatedRecentlyVisited.splice(10);
-                    console.log("More than 10 items, removing the oldest ones.");
                 }
                 await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-                console.log("Data added to recentlyVisited successfully");
             } else {
                 console.log("User document not found");
             }
@@ -964,12 +822,11 @@ const RecycleDetails = ({ route, navigation }) => {
         }
     };
 
-
-
     return (
         <View style={styles.productContainer}>
             <ScrollView onScroll={handleScroll2}>
                 <View>
+                    {/* image */}
                     <FlatList
                         horizontal
                         data={product.images}
@@ -1007,9 +864,12 @@ const RecycleDetails = ({ route, navigation }) => {
                                     justifyContent: "space-between",
                                 }}
                             >
-                                {/* العمود الأول */}
                                 <View style={{ width: "50%" }}>
-                                    <Text style={styles.NameD}>{product.name}</Text>
+                                    {/* name */}
+                                    <Text style={styles.NameD}>
+                                        {product.name}
+                                    </Text>
+                                    {/* price */}
                                     {product.offer !== 0 ? (
                                         <>
                                             <Text
@@ -1022,7 +882,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                             >
                                                 {product.price} EGP
                                             </Text>
-
+                                            {/* offer */}
                                             <Text
                                                 style={{
                                                     fontSize: 13,
@@ -1052,8 +912,6 @@ const RecycleDetails = ({ route, navigation }) => {
                                         </Text>
                                     )}
                                 </View>
-
-                                {/* العمود الثاني */}
                                 <View
                                     style={{
                                         width: "50%",
@@ -1061,6 +919,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                         marginTop: 10,
                                     }}
                                 >
+                                    {/* stars */}
                                     <View style={{ flexDirection: "row", alignItems: "center" }}>
                                         {[1, 2, 3, 4, 5].map((star) => (
                                             <Icon
@@ -1094,7 +953,8 @@ const RecycleDetails = ({ route, navigation }) => {
                         </View>
 
                         <View>
-                            {product.colors.length > 1 && (
+                            {/* color */}
+                            {product.colors.length >= 0 && (
                                 <View style={styles.colorsContainer}>
                                     <Text
                                         style={{
@@ -1131,6 +991,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                     />
                                 </View>
                             )}
+                            {/* size */}
                             <View
                                 style={{
                                     flexDirection: "row",
@@ -1152,7 +1013,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                     <Text style={{ color: "black" }}>
                                         {" "}
                                         <Image
-                                            source={require("../../assets/chart.png")}
+                                            source={require("../assets/chart.png")}
                                             style={{ width: 25, height: 25, marginBottom: -8 }}
                                         />
                                         Chart Size{" "}
@@ -1179,7 +1040,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                             <Text style={{ color: "white", fontSize: 18 }}>✖️</Text>
                                         </TouchableOpacity>
                                         <Image
-                                            source={require("../../assets/womanSize.webp")}
+                                            source={require("../assets/womanSize.webp")}
                                             style={{
                                                 width: "80%",
                                                 height: "80%",
@@ -1224,6 +1085,7 @@ const RecycleDetails = ({ route, navigation }) => {
                             </View>
                         </View>
                         <View style={styles.line}></View>
+                        {/* discribtion */}
                         <Text
                             style={{
                                 fontSize: 16,
@@ -1239,7 +1101,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                 {line}
                             </Text>
                         ))}
-
+                        {/* comments */}
                         <View style={styles.container}>
                             <View style={{ flexDirection: "row", alignItems: "center" }}>
                                 {reviews.length > 0 && (
@@ -1263,7 +1125,7 @@ const RecycleDetails = ({ route, navigation }) => {
                                     </TouchableOpacity>
                                 )}
                             </View>
-
+                            {/* reviews */}
                             <FlatList
                                 data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
                                 renderItem={({ item, index }) => (
@@ -1323,11 +1185,12 @@ const RecycleDetails = ({ route, navigation }) => {
                                 })
                             }
                         >
-                            <Text style={styles.buttonText}>Add a Review</Text>
+                            <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
                         </TouchableOpacity>
                     }
                 </View>
             </ScrollView>
+            {/* accept or reject button */}
             <View style={styles.bottomBar}>
                 <View style={styles.Navbarr}>
                     <FlatList
@@ -1339,253 +1202,61 @@ const RecycleDetails = ({ route, navigation }) => {
                                 activeOpacity={0.8}
                                 onPress={() => setSelectedOptionIndex(index)}
                             >
-                                {showPrice ? (
+                                {Accepted === "not accept" && (
                                     <View style={styles.buttonContainer}>
-                                        <Text style={styles.priceText}>
-                                            {" "}
-                                            {product.offer !== 0 ? (
-                                                <>
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 12,
-                                                            fontWeight: "bold",
-                                                            marginLeft: 10,
-                                                            marginRight: 40,
-                                                            color: "white",
-                                                            backgroundColor: "#df2600",
-                                                            width: 90,
-                                                            height: 22,
-                                                        }}
-                                                    >
-                                                        {product.offer}% Discount{"\n"}
-                                                    </Text>
-                                                    <Text
-                                                        style={{
-                                                            fontSize: 16,
-                                                            fontWeight: "bold",
-                                                            color: "#df2600",
-                                                            marginLeft: 14,
-                                                        }}
-                                                    >
-                                                        {Math.floor(
-                                                            product.price - product.price / product.offer
-                                                        )}{" "}
-                                                        EGP
-                                                    </Text>
-                                                </>
-                                            ) : (
-                                                <Text
-                                                    style={{
-                                                        fontSize: 18,
-                                                        fontWeight: "bold",
-                                                        marginHorizontal: 10,
-                                                        marginRight: 45,
-                                                    }}
-                                                >
-                                                    {product.price} EGP
-                                                </Text>
-                                            )}
-                                        </Text>
                                         <View style={styles.container}>
                                             <TouchableOpacity
                                                 style={styles.addToCartBton2}
-                                                onPress={() => {
-                                                    if (product.colors.length !== 1) {
-                                                        if (selectedColor && selectedSize) {
-                                                            onAddToCart(
-                                                                item,
-                                                                index,
-                                                                selectedColor,
-                                                                selectedSize
-                                                            );
-                                                        } else {
-                                                            setModalVisibleCart(true);
-                                                        }
-                                                    } else {
-                                                        if (selectedColor || selectedSize) {
-                                                            onAddToCart(
-                                                                item,
-                                                                index,
-                                                                selectedColor,
-                                                                selectedSize
-                                                            );
-                                                        } else {
-                                                            setModalVisibleCart(true);
-                                                        }
-                                                    }
-                                                }}
+                                                onPress={() => handleReject()}
                                             >
                                                 <Text style={styles.addToCartButtonText}>
-                                                    Add to Cart
+                                                    reject
                                                 </Text>
                                             </TouchableOpacity>
-                                            <Modal
-                                                animationType="slide"
-                                                transparent={true}
-                                                visible={modalVisibleCart}
-                                                onRequestClose={() => {
-                                                    setModalVisibleCart(false);
-                                                }}
-                                            >
-                                                <View style={styles.modalContainer}>
-                                                    <View style={styles.modalContent}>
-                                                        {product.colors.length !== 1 ? (
-                                                            selectedColor && selectedSize ? (
-                                                                <>
-                                                                    <Text style={styles.modalText}>
-                                                                        Item added to cart!
-                                                                    </Text>
-                                                                    {setShowGoToCartButton(true)}
-                                                                </>
-                                                            ) : (
-                                                                <Text style={styles.modalText}>
-                                                                    Please select a size and color if available
-                                                                </Text>
-                                                            )
-                                                        ) : selectedColor || selectedSize ? (
-                                                            <>
-                                                                <Text style={styles.modalText}>
-                                                                    Item added to cart!
-                                                                </Text>
-                                                                {setShowGoToCartButton(true)}
-                                                            </>
-                                                        ) : (
-                                                            <Text style={styles.modalText}>
-                                                                Please select a size and color if available
-                                                            </Text>
-                                                        )}
-
-                                                        <TouchableOpacity
-                                                            style={styles.okButton}
-                                                            onPress={() => {
-                                                                setShowGoToCartButton(!showGoToCartButton);
-                                                            }}
-                                                        >
-                                                            {showGoToCartButton ? (
-                                                                <TouchableOpacity
-                                                                    style={styles.okButton}
-                                                                    onPress={handleGoToCart}
-                                                                >
-                                                                    <Text style={styles.okButtonText}>
-                                                                        go to cart
-                                                                    </Text>
-                                                                </TouchableOpacity>
-                                                            ) : (
-                                                                <TouchableOpacity style={styles.okButton}>
-                                                                    <Text style={styles.okButtonText}>OK</Text>
-                                                                </TouchableOpacity>
-                                                            )}
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                </View>
-                                            </Modal>
                                         </View>
-                                    </View>
-                                ) : (
-                                    <View style={styles.buttonContainer}>
-                                        <Pressable onPress={() => onAddToFav(item, index)}>
-                                            <Icon
-                                                name="heart"
-                                                size={30}
-                                                color={isPressed ? "black" : "grey"}
-                                            />
-                                        </Pressable>
                                         <View style={styles.container}>
                                             <TouchableOpacity
-                                                style={styles.addToCartBton1}
-                                                onPress={() => {
-                                                    if (product.colors.length !== 1) {
-                                                        if (selectedColor && selectedSize) {
-                                                            onAddToCart(
-                                                                item,
-                                                                index,
-                                                                selectedColor,
-                                                                selectedSize
-                                                            );
-                                                        } else {
-                                                            setModalVisibleCart(true);
-                                                        }
-                                                    } else {
-                                                        if (selectedColor || selectedSize) {
-                                                            onAddToCart(
-                                                                item,
-                                                                index,
-                                                                selectedColor,
-                                                                selectedSize
-                                                            );
-                                                        } else {
-                                                            setModalVisibleCart(true);
-                                                        }
-                                                    }
-                                                }}
+                                                style={styles.addToCartBton2}
+                                                onPress={() => handleAccept()}
                                             >
                                                 <Text style={styles.addToCartButtonText}>
-                                                    Add to Cart
+                                                    Accept
                                                 </Text>
                                             </TouchableOpacity>
-                                            <Modal
-                                                animationType="slide"
-                                                transparent={true}
-                                                visible={modalVisibleCart}
-                                                onRequestClose={() => {
-                                                    setModalVisibleCart(false);
-                                                }}
-                                            >
-                                                <View style={styles.modalContainer}>
-                                                    <View style={styles.modalContent}>
-                                                        {product.colors.length !== 1 ? (
-                                                            selectedColor && selectedSize ? (
-                                                                <>
-                                                                    <Text style={styles.modalText}>
-                                                                        Item added to cart!
-                                                                    </Text>
-                                                                    {setShowGoToCartButton(true)}
-                                                                </>
-                                                            ) : (
-                                                                <Text style={styles.modalText}>
-                                                                    Please select a size and color if available
-                                                                </Text>
-                                                            )
-                                                        ) : selectedColor || selectedSize ? (
-                                                            <>
-                                                                <Text style={styles.modalText}>
-                                                                    Item added to cart!
-                                                                </Text>
-                                                                {setShowGoToCartButton(true)}
-                                                            </>
-                                                        ) : (
-                                                            <Text style={styles.modalText}>
-                                                                Please select a size and color if available
-                                                            </Text>
-                                                        )}
-
-                                                        <TouchableOpacity
-                                                            style={styles.okButton}
-                                                            onPress={() => {
-                                                                setShowGoToCartButton(!showGoToCartButton);
-                                                            }}
-                                                        >
-                                                            {showGoToCartButton ? (
-                                                                <TouchableOpacity
-                                                                    style={styles.okButton}
-                                                                    onPress={handleGoToCart}
-                                                                >
-                                                                    <Text style={styles.okButtonText}>
-                                                                        go to cart
-                                                                    </Text>
-                                                                </TouchableOpacity>
-                                                            ) : (
-                                                                <TouchableOpacity style={styles.okButton}>
-                                                                    <Text style={styles.okButtonText}>OK</Text>
-                                                                </TouchableOpacity>
-                                                            )}
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                </View>
-                                            </Modal>
                                         </View>
                                     </View>
-
+                                )}
+                                {(Accepted === 'accepted' && !Sold) && (
+                                    <View style={styles.buttonContainer}>
+                                        <View style={styles.acceptcontainer}>
+                                            <Text style={{ color: 'black', alignItems: 'center', fontSize: 20, fontWeight: 'bold' }}>
+                                                Accepted
+                                            </Text>
+                                        </View>
+                                    </View>
+                                )}
+                                {Accepted === 'reject'  && (
+                                    <View style={styles.buttonContainer}>
+                                       <View style={styles.container}>
+                                            <TouchableOpacity
+                                                style={styles.addToCartBton2}
+                                                onPress={() => handleDelete()}
+                                            >
+                                                <Text style={styles.addToCartButtonText}>
+                                                    Delete
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    </View>
+                                )}
+                                {Sold && (
+                                    <View style={styles.buttonContainer}>
+                                        <View style={styles.acceptcontainer}>
+                                            <Text style={{ color: 'black', alignItems: 'center', fontSize: 20, fontWeight: 'bold' }}>
+                                                Sold
+                                            </Text>
+                                        </View>
+                                    </View>
                                 )}
 
                                 <View></View>
@@ -1599,111 +1270,31 @@ const RecycleDetails = ({ route, navigation }) => {
 
 };
 const styles = StyleSheet.create({
-    headerWrapper: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        paddingHorizontal: 20,
-        paddingTop: 5,
-    },
-    headerRight: {
-        backgroundColor: COLORS.background,
-        padding: 12,
-        borderRadius: 10,
-        borderColor: COLORS.background,
-        marginLeft: 10,
-        marginBottom: 5,
-        marginTop: 10,
-        width: 40,
-        borderWidth: 2,
-    },
     cardView: {
         marginHorizontal: 1,
         marginBottom: 30,
         marginTop: 0,
-        // borderRadius: 15,
         width: cardwidth,
-        // width:220,
         height: 370,
         elevation: 13,
         backgroundColor: "white",
     },
-    image: {
-        borderTopLeftRadius: 5,
-        borderTopRightRadius: 5,
-        height: 150,
-        width: 170,
-    },
-
     Name: {
         fontSize: 14,
-        // fontWeight: 'bold',
         color: "#131A2C",
         marginTop: 0,
         marginLeft: 10,
         marginBottom: 0,
-        height: 40
-        // left: 200,
-    },
-    titlesWrapper: {
-        paddingHorizontal: 5,
-        marginTop: 5,
-    },
-    Name2: {
-        fontFamily: "Montserrat-Bold",
-        fontSize: 32,
-        color: COLORS.dark,
-    },
-    priceWrapper: {
-        marginTop: 10,
-        paddingHorizontal: 20,
-        marginBottom: 10,
-    },
-    price: {
-        color: COLORS.dark,
-        fontFamily: "Montserrat-Bold",
-        fontSize: 24,
-    },
-    HeartIcone: {
-        height: 30,
-        width: 30,
-        borderRadius: 20,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    sizeContainer: {
-        paddingVertical: 20,
-        alignItems: "center",
-        paddingHorizontal: 10,
-    },
-    size: {
-        height: 30,
-        width: 100,
-        marginRight: 7,
-        borderRadius: 30,
-        alignItems: "center",
-        paddingHorizontal: 5,
+        height: 40,
     },
     container: {
         flex: 1,
         backgroundColor: "#FFFF",
-        //flexDirection:"row",
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
-    container2: {
+    acceptcontainer: {
         flex: 1,
-        backgroundColor: "#FBFAFF",
-        flexDirection: "row",
-
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    heading: {
-        color: "WHITE",
-        fontSize: 40,
-        alignItems: "center",
-        marginBottom: 5,
+        backgroundColor: "#FFFF",
+        alignItems: 'center',
     },
     header: {
         flexDirection: "row",
@@ -1716,39 +1307,7 @@ const styles = StyleSheet.create({
         height: 35,
         bottom: 20,
     },
-    headerText: {
-        color: "#131A2C",
-        fontSize: 17,
-        fontWeight: "bold",
-        alignItems: "center",
-        marginLeft: 10,
-        marginBottom: 10,
-        marginTop: 10,
-    },
-    Text: {
-        color: "#0B0E21",
-        fontSize: 40,
-        fontWeight: "bold",
-        alignItems: "center",
-    },
-    discribtion: {
-        color: "#0B0E21",
-        fontSize: 20,
-        fontWeight: "bold",
-        alignItems: "center",
-    },
-    imageCounter: {
-        width: 200,
-        height: 250,
-        justifyContent: "space-evenly",
-        alignItems: "center",
-        padding: 10,
-        left: 7,
-        backgroundColor: "black",
-        marginTop: 10,
-    },
     smallCard: {
-        // borderRadius: 30,
         backgroundColor: "white",
         justifyContent: "center",
         alignItems: "center",
@@ -1767,9 +1326,6 @@ const styles = StyleSheet.create({
         borderBottomColor: "black",
         borderBottomWidth: 2,
     },
-    smallCardTextSected: {
-        color: "#131A2C",
-    },
     regularText: {
         fontWeight: "normal",
         fontSize: 16,
@@ -1778,31 +1334,11 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 18,
     },
-
     smallCardText: {
         fontSize: 14,
         color: "black",
         textAlign: "center",
         marginTop: 5,
-    },
-    NavContainer: {
-        position: "absolute",
-        alignItems: "center",
-        bottom: 5,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-    },
-    Navbar: {
-        flexDirection: "row",
-        backgroundColor: COLORS.dark,
-        width: width,
-        justifyContent: "space-evenly",
-        borderRadius: 30,
-        height: 40,
-    },
-    iconBehave: {
-        padding: 35,
-        bottom: 30,
     },
     Textt: {
         color: COLORS.darkblue,
@@ -1822,56 +1358,27 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginTop: 262,
-        //  zIndex: 1
-        //marginBottom:30,
     },
     dot: {
         width: 40,
         height: 2,
         marginBottom: 20,
-        // borderRadius: 5,
         backgroundColor: "black",
-
         marginHorizontal: 5,
     },
     activeDot: {
         marginBottom: 20,
         backgroundColor: "white",
     },
-
-    scrollView: {
-        height: 200,
-    },
     imagee: {
         position: "relative",
         width: 220,
         height: 300,
-        // width: width * 0.5,
-        // height: width * 0.8 * 0.95,
     },
     ///////////////////add new style/////////////////
     productContainer: {
         padding: 0,
         flex: 1,
-    },
-    productName: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 10,
-    },
-    productDescription: {
-        fontSize: 16,
-        marginBottom: 10,
-    },
-    productPrice: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginBottom: 5,
-    },
-    productOffer: {
-        fontSize: 16,
-        color: "red",
-        marginBottom: 10,
     },
     productImage: {
         width: width,
@@ -1884,8 +1391,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginTop: 475,
-        //  zIndex: 1
-        //marginBottom:30,
         marginLeft: 175,
     },
     dotDetails: {
@@ -1894,14 +1399,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         borderRadius: 30,
         backgroundColor: "black",
-
         marginHorizontal: 5,
     },
     activeDotDetails: {
         marginBottom: 20,
         backgroundColor: "white",
     },
-
     colorsContainer: {
         marginTop: 10,
         flexDirection: "row",
@@ -1912,11 +1415,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         marginVertical: 10,
-    },
-    title: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginRight: 10,
     },
     colorButton: {
         width: 25,
@@ -1943,13 +1441,10 @@ const styles = StyleSheet.create({
     sizeButtonText: {
         position: "relative",
     },
-
     selectedSizeButton: {
         backgroundColor: "transparent",
         borderWidth: 1,
         borderColor: "black",
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     sizeText: {
         fontSize: 16,
@@ -1957,12 +1452,10 @@ const styles = StyleSheet.create({
     },
     NameD: {
         fontSize: 14,
-        // fontWeight: 'bold',
         color: "#131A2C",
         marginTop: 5,
         marginLeft: 10,
         marginBottom: 0,
-        // left: 200,
     },
     line: {
         width: "100%",
@@ -1970,7 +1463,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#b3b3b3",
         marginTop: 5,
     },
-
     description: {
         fontSize: 15,
         marginTop: 2,
@@ -1982,25 +1474,8 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        // borderBottomLeftRadius: 15,
-        // borderBottomRightRadius: 15,
     },
-    // buttonContainer: {
-    //   flexDirection: 'row',
-    //   justifyContent: 'space-between',
-    //   alignItems: 'center',
-    //   marginBottom: 10,
-    // },
-    // Navbarr: {
-    //   flexDirection: 'row',
-    //   backgroundColor: COLORS.white,
-    //   width: width,
-    //   justifyContent: 'space-evenly',
-    //   height: 60
-
-    // },
     bottomBar: {
-        //position: "fixed",
         bottom: 0,
         left: 0,
         right: 0,
@@ -2014,84 +1489,42 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        height: 30,
+        height: 40,
     },
     buttonContainer: {
         flexDirection: "row",
-        // justifyContent: "start",
-
+        justifyContent: "space-between",
         alignItems: "center",
+        marginLeft: 20
     },
     addToCartBton1: {
         backgroundColor: "black",
-        paddingHorizontal: 20,
-        // paddingVertical: 10,
-        // marginRight: 10,
+        paddingHorizontal: 10,
         height: 40,
         justifyContent: "center",
         alignItems: "center",
-        // marginTop:20,
-        // marginBottom:10,
-        marginLeft: 40,
+        marginLeft: cardwidth / 4,
         width: 300,
     },
     addToCartBton2: {
         backgroundColor: "black",
-        paddingHorizontal: 20,
-
         height: 40,
         justifyContent: "center",
         alignItems: "center",
-
-        marginLeft: 60,
         width: 150,
-    },
-    priceText: {
-        fontSize: 12,
-        fontWeight: "bold",
-        color: "black",
     },
     reviewContainer: {
         backgroundColor: "rgb(250, 250, 250)",
-        // borderRadius: 10,
         padding: 5,
         marginBottom: 5,
         elevation: 3,
     },
     reviewText: {
         fontSize: 15,
-        // marginTop:10
-        // marginBottom: 8,
     },
     addToCartButtonText: {
         color: "white",
         fontSize: 18,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-    },
-    modalContent: {
-        backgroundColor: "white",
-        padding: 30,
-        borderRadius: 10,
-        alignItems: "center",
-    },
-    modalText: {
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    okButton: {
-        backgroundColor: "black",
-        padding: 5,
-        // marginTop: 5,
-        // borderRadius: 5,
-    },
-    okButtonText: {
-        color: "white",
-        fontSize: 16,
     },
     containerfs: {
         flexDirection: "row",
@@ -2104,15 +1537,12 @@ const styles = StyleSheet.create({
     dropdownButtonStyle: {
         width: 90,
         height: 50,
-        // backgroundColor: '#E9ECEF',
-        // borderRadius: 12,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
         paddingHorizontal: 12,
     },
     dropdownButtonTxtStyle: {
-        // flex: 1,
         fontSize: 16,
         fontWeight: '500',
         color: '#393e46',
@@ -2121,16 +1551,11 @@ const styles = StyleSheet.create({
         fontSize: 22,
         marginLeft: 5
     },
-    // dropdownButtonIconStyle: {
-    //   fontSize: 18,
-    //   marginRight: 8,
-    // },
     dropdownMenuStyle: {
         backgroundColor: '#E9ECEF',
         borderRadius: 8,
     },
     dropdownItemStyle: {
-        // width: '100%',
         flexDirection: 'row',
         paddingHorizontal: 12,
         justifyContent: 'center',
@@ -2147,9 +1572,7 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
     },
     dropdownItemTxtStyle: {
-        // flex: 1,
         fontSize: 16,
-        // fontWeight: '500',
         color: '#151E26',
     },
     Addproduct: {
@@ -2169,7 +1592,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: COLORS.dark,
-
     },
 });
-export { Recycle, RecycleDetails };
+export { AdminRecycle, AdminRecycleDetails };

@@ -205,6 +205,9 @@ const Profile = ({ navigation }) => {
   const handleAboutUs = () => {
     navigation.navigate("AboutUs");
   };
+  const handleRecycleProduct = () => {
+    navigation.navigate("UserRecycleProduct");
+  };
   const handleEditProfile = () => {
     navigation.navigate("EditProfile");
   };
@@ -234,9 +237,9 @@ const Profile = ({ navigation }) => {
       {mode === "loggedIn" && (
         <View style={styles.container}>
           <View style={styles.welcomecontainer}>
-              <View>
-                <Image style={styles.profileImage} source={{ uri: photoURL }} />
-              </View>
+            <View>
+              <Image style={styles.profileImage} source={{ uri: photoURL }} />
+            </View>
             <Text style={styles.welcomeinput}>
               Welcome,{fristName} {lastName}
             </Text>
@@ -316,32 +319,47 @@ const Profile = ({ navigation }) => {
           <TouchableOpacity onPress={handleAboutUs}>
             <View style={styles.aboutuscontainer}>
               <MaterialIcons name="stars" size={30} color="black" />
+              <View style={styles.textAndArrowContainer}>
               <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+              </View>
               </View>
             </View>
           </TouchableOpacity >
-         <Pressable onPress={() => setShowWallet(!showWallet)}>
-         <View style={styles.aboutuscontainer} >
-          <Ionicons name="wallet-outline" size={24} color="black" />
-          <Text style={styles.abouttext}>MyWallet</Text>
-          <View>
-          {!showWallet && (
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
-              )}
-              {showWallet && (
-                <MaterialIcons name="keyboard-arrow-down" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
-              )}
+          <Pressable onPress={() => setShowWallet(!showWallet)}>
+            <View style={styles.aboutuscontainer} >
+              <Ionicons name="wallet-outline" size={24} color="black" />
+              <View style={styles.textAndArrowContainer}>
+              <Text style={styles.abouttext}>MyWallet</Text>
+              <View>
+                {!showWallet && (
+                  <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+                )}
+                {showWallet && (
+                  <MaterialIcons name="keyboard-arrow-down" size={30} color="black"  />
+                )}
               </View>
-          </View>
-         </Pressable>
+              </View>
+            </View>
+          </Pressable>
           <TouchableOpacity>
-          {showWallet && (
-            
-            <Text style={styles.walletText}>MyWallet: {wallet}</Text>
-          )}
+            {showWallet && (
+
+              <Text style={styles.walletText}>MyWallet: {wallet}</Text>
+            )}
           </TouchableOpacity>
+          <TouchableOpacity onPress={handleRecycleProduct}>
+            <View style={styles.aboutuscontainer}>
+              <Icon name="recycle" size={25} color="black" />
+              <View style={styles.textAndArrowContainer}>
+              <Text style={styles.abouttext}>Recycle Product</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+              </View>
+              </View>
+            </View>
+          </TouchableOpacity >
           <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
             <Text style={styles.logoutButtonText}>LogOut</Text>
           </TouchableOpacity>
@@ -433,7 +451,7 @@ const Profile = ({ navigation }) => {
               <MaterialIcons name="stars" size={30} color="black" />
               <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width/1.7 }]} />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width / 1.7 }]} />
               </View>
             </View>
           </TouchableOpacity>
@@ -490,7 +508,7 @@ const styles = StyleSheet.create({
   },
   logoutButton: {
     width: width - 10,
-    height: cardheight/10,
+    height: cardheight / 10,
     marginLeft: 5,
     backgroundColor: "black",
     padding: 10,
@@ -621,7 +639,7 @@ const styles = StyleSheet.create({
     // borderRadius: 0,
     marginHorizontal: 5,
     width: cardwidth - 10,
-    height: height/20,
+    height: height / 20,
     borderWidth: 1,
     borderColor: "black",
     textAlign: "center",
@@ -629,7 +647,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: "#000",
     fontSize: 20,
-    marginTop:3,
+    marginTop: 3,
     // textAlign: "center",
     justifyContent: "center",
     alignItems: "center",
@@ -690,9 +708,9 @@ const styles = StyleSheet.create({
   aboutuscontainer: {
     flexDirection: "row",
     width: width - 10,
-    height: height /18,
+    height: height / 18,
     alignItems: "center",
-    marginLeft: 5,
+    marginLeft: 10,
     marginTop: 10,
     backgroundColor: "#ffffff",
     borderStyle: "solid",
@@ -705,6 +723,14 @@ const styles = StyleSheet.create({
     marginLeft: 10,
 
 
+  },
+  textAndArrowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight:8
   },
 });
 export default Profile;

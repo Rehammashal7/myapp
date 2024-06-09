@@ -1,40 +1,66 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, FlatList, TouchableOpacity, Image, StyleSheet ,CheckBox} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { collection, addDoc } from 'firebase/firestore';
-import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { db, storage } from '../firebase';
-import { Offer } from '../data';
+import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
+import { auth, db, storage } from "../firebase";
+import COLORS from '../Consts/Color';
+import { launchImageLibrary } from 'react-native-image-picker';
 
-const AddProductForm = () => {
+const AddUserProduct = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [sizes, setSizes] = useState([]);
-  const [type, setType] = useState([]);
+  const [type, setType] = useState('');
   const [images, setImages] = useState([]);
   const [offer, setOffer] = useState(0);
   const [price, setPrice] = useState(0);
   const [season, setSeason] = useState('');
+  const [link1, setlink1] = useState('');
+  const [link2, setlink2] = useState('');
+  const [link3, setlink3] = useState('');
+  const [link4, setlink4] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
   const [colors, setColors] = useState('');
+  const [Links, setLinks] = useState(false);
+  const [imageLinks, setimageLinks] = useState([]);
+
+  
 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("handleSubmit.");
-    // let discountedPrice = price;
-    // if (offer !== '') {
-    //   const discount = parseFloat(offer);
-    //   discountedPrice = price - (price * (discount / 100));
-    // }
-
+  const handleSubmit = async () => {
+    let img = []
+    img.push(link1);
+    img.push(link2);
+    img.push(link3);
+    img.push(link4);
     const imageUrls = [];
-    for (const image of images) {
-      const imageRef = ref(storage, image.name);
-      await uploadBytes(imageRef, image);
-      const imageUrl = await getDownloadURL(imageRef);
-      imageUrls.push(imageUrl);
+    if (img.length = 0) {
+      for (const image of images) {
+        const imageRef = ref(storage, `images/${image.fileName}`);
+        const response = await fetch(image.uri);
+        const blob = await response.blob();
+        const uploadTask = uploadBytesResumable(imageRef, blob);
+        const downloadURL = await new Promise((resolve, reject) => {
+          uploadTask.on('state_changed',
+            (snapshot) => { },
+            (error) => reject(error),
+            () => getDownloadURL(uploadTask.snapshot.ref).then(resolve)
+          );
+        });
+        imageUrls.push(downloadURL);
+      }
+    } else {
+      if (link1 != '') {
+        imageUrls.push(link1)
+      } else if (link2 != '') {
+        imageUrls.push(link2)
+      } else if (link3 != '') {
+        imageUrls.push(link3)
+      } else if (link4 != '') {
+        imageUrls.push(link4)
+      }
+      console.log(imageUrls)
     }
-
     if (selectedItem) {
       await addDoc(collection(db, selectedItem.label.toLowerCase()), {
         name: name,
@@ -45,8 +71,9 @@ const AddProductForm = () => {
         offer: offer,
         price: price,
         season: season,
+        isAccept: 'not accept',
         images: imageUrls,
-        categoryName:selectedItem.label
+        categoryName: selectedItem.label,
       });
       console.log("Product added successfully.");
     } else {
@@ -63,27 +90,39 @@ const AddProductForm = () => {
     setImages([]);
     setSelectedItem(null);
     setColors('');
+    setlink1('');
+    setlink2('');
+    setlink3('');
+    setlink4('');
+
   };
 
-  const handleImageUpload = (e) => {
-    console.log("handleSubmit2.");
-    const newImages = Array.from(e.target.files);
-    setImages([...images, ...newImages]);
+  const handleImageUpload = () => {
+    launchImageLibrary({ mediaType: 'photo', selectionLimit: 0 }, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.errorCode) {
+        console.log('ImagePicker Error: ', response.errorMessage);
+      } else {
+        setImages([...images, ...response.assets]);
+      }
+    });
   };
 
+  const handleLinks = () => {
+    setLinks(!Links);
+  }
   const handleRemoveImage = (indexToRemove) => {
-    const updatedImages = images.filter((image, index) => index !== indexToRemove);
+    const updatedImages = images.filter((_, index) => index !== indexToRemove);
     setImages(updatedImages);
   };
 
   const handleSizeChange = (text) => {
-    console.log("handleSubmit3.");
     const sizeArray = text.split(',').map(size => size.trim());
     setSizes(sizeArray);
   };
 
   const handleColorInput = (text) => {
-    console.log("handleSubmit5.");
     const colorsArray = text.split(',').map(color => color.trim());
     setColors(colorsArray);
   };
@@ -95,27 +134,9 @@ const AddProductForm = () => {
     { id: 4, label: 'WOMAN' },
   ];
 
-  const handlePress = async(item) => {
-    console.log("handleSubmit6.");
+  const handlePress = (item) => {
     setSelectedItem(item);
   };
-
-  const renderItem = ({ item }) => {
-    console.log("handleSubmit7.");
-    const isSelected = selectedItem && selectedItem.id === item.id;
-
-    return (
-  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-  <CheckBox
-    value={isSelected}
-    onPress={() => handlePress(item)}
-    onValueChange={() => setSelectedItem(item)
-    }
-  />
-  <Text>{item.label}</Text>
-</View>
-);
-};
 
   return (
     <ScrollView>
@@ -143,36 +164,71 @@ const AddProductForm = () => {
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Offer:</Text>
-            <TextInput style={styles.input2} value={offer} onChangeText={setOffer} keyboardType="numeric" />
+            <TextInput style={styles.input2} value={offer.toString()} onChangeText={(value) => setOffer(Number(value))} keyboardType="numeric" />
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Price:</Text>
-            <TextInput style={styles.input2} value={price} onChangeText={setPrice} keyboardType="numeric" />
+            <TextInput style={styles.input2} value={price.toString()} onChangeText={(value) => setPrice(Number(value))} keyboardType="numeric" />
           </View>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>season:</Text>
+            <Text style={styles.label}>Season:</Text>
             <TextInput style={styles.input2} value={season} onChangeText={setSeason} />
           </View>
           <View style={styles.inputContainer}>
             <Text style={styles.label}>Images:</Text>
             {images.map((image, index) => (
-              <Image
-                key={index}
-                source={{ uri: URL.createObjectURL(image) }}
-                style={styles.imagePreview}
-              />
+              <View key={index} style={styles.imageContainer}>
+                <Image
+                  source={{ uri: image.uri }}
+                  style={styles.imagePreview}
+                />
+                <TouchableOpacity onPress={() => handleRemoveImage(index)}>
+                  <Text style={styles.removeImageText}>Remove</Text>
+                </TouchableOpacity>
+              </View>
             ))}
-            <input type="file" id="images" onChange={handleImageUpload} multiple/>
-          </View>
-          <View style={styles.menuContainer}>
-            <FlatList
-              data={menuItems}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.id.toString()}
-            />
-            {selectedItem && (
-              <Text>You selected {selectedItem.label}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleImageUpload}>
+              <Text style={styles.buttonText}>Upload Images</Text>
+            </TouchableOpacity >
+            <TouchableOpacity style={styles.button} onPress={handleLinks}>
+              <Text style={styles.buttonText}>Add Links</Text>
+            </TouchableOpacity >
+            {Links && (
+              <><View style={styles.inputContainer}>
+                <Text style={styles.label}>Link 1:</Text>
+                <TextInput style={styles.input2} value={link1} onChangeText={setlink1} />
+              </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Link 2:</Text>
+                  <TextInput style={styles.input2} value={link2} onChangeText={setlink2} />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Link 3:</Text>
+                  <TextInput style={styles.input2} value={link3} onChangeText={setlink3} />
+                </View>
+                <View style={styles.inputContainer}>
+                  <Text style={styles.label}>Link 4:</Text>
+                  <TextInput style={styles.input2} value={link4} onChangeText={setlink4} />
+                </View></>
             )}
+          </View>
+          <View style={styles.checkboxContainer}>
+            {menuItems.map((item) => (
+              <TouchableOpacity
+                key={item.id}
+                style={selectedItem && selectedItem.id === item.id ? styles.selectedcategoryButton : styles.categoryButton}
+                onPress={() => handlePress(item)}
+              >
+                <Text
+                  style={[
+                    styles.categoryLabel,
+                    selectedItem && selectedItem.id === item.id && styles.selectedCategory,
+                  ]}
+                >
+                  {item.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
           <TouchableOpacity style={styles.button} onPress={handleSubmit}>
             <Text style={styles.buttonText}>Add Product</Text>
@@ -221,7 +277,7 @@ const styles = StyleSheet.create({
   },
   textArea: {
     height: 100,
-    textAlignVertical: 'top', 
+    textAlignVertical: 'top',
   },
   button: {
     backgroundColor: '#000',
@@ -236,37 +292,43 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
+  imageContainer: {
+    marginBottom: 10,
+  },
   imagePreview: {
     width: 200,
     height: 200,
     borderRadius: 5,
     marginBottom: 5,
   },
-  menuItem: {
+  removeImageText: {
+    color: 'red',
+  },
+  checkboxContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    flexWrap: 'wrap',
   },
-  itemButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#CCC',
-    borderRadius: 5,
-    marginRight: 10,
+  categoryButton: {
+    borderColor: COLORS.grey,
+    backgroundColor: 'white',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    margin: 5,
   },
-  itemText: {
+  selectedcategoryButton: {
+    backgroundColor: 'black',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    margin: 5,
+  },
+  categoryLabel: {
     fontSize: 16,
   },
-  selectedItemButton: {
-    backgroundColor: '#000',
-    borderColor: '#000',
-  },
-  selectedItemText: {
-    color: '#FFF',
-  },
-  menuContainer: {
-    flex: 1,
-    padding: 20,
+  selectedCategory: {
+    color: 'white',
   },
 });
 
-export default AddProductForm;
+export default AddUserProduct;

@@ -1170,7 +1170,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 1,
     marginBottom: 20,
     marginTop: 20,
-    // borderRadius: 15,
+   borderRadius: 5,
     width: cardwidth,
     // width:220,
     height: 370,

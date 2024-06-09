@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   cardView: {
     marginBottom: 20,
     marginTop: 20,
-    borderRadius: 15,
+    borderRadius: 5,
     width: cardwidth,
     height: cardheight + 20,
     elevation: 13,

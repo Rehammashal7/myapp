@@ -66,16 +66,6 @@ const HomeScreen = ({ navigation }) => {
     const getUser = async () => {
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-    
-        // if (docSnap.exists()) {
-    
-        //   const data = docSnap.data();
-        //   if (data.isAdmin === true) {
-        //     navigation.navigate('adminHome');
-        //   } else {
-        //     navigation.navigate('Home');
-        //   }
-        // }
       };
     const handleProductPress = async (product, Category) => {
         try {
@@ -105,16 +95,9 @@ const HomeScreen = ({ navigation }) => {
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
             <View style={styles.cardView}>
-                <FlatList
-                    vertical={true}
-                    data={item.images}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={styles.image} />
-                    )}
-                    keyExtractor={(image, index) => index.toString()}
-                    onScroll={(event) => handleScroll(event, item.id)}
-                />
+                
+                        <Image source={{ uri: item.images[0] }} style={styles.image} />
+                    
                 <View style={{ height: 110 }}>
                 <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
@@ -274,7 +257,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 5,
         marginRight: 5,
-        borderRadius: 15,
+        borderRadius: 5,
         width: cardwidth,
         height: cardheight + 30,
         elevation: 13,
@@ -320,7 +303,7 @@ const styles = StyleSheet.create({
     },
     image: {
         position: "relative",
-        height: cardheight  ,
+        height: cardheight -90 ,
         width: cardwidth,
     },
     Name: {

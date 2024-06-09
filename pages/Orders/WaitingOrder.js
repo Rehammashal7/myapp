@@ -11,9 +11,6 @@ import {
   Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-import { filterOrder } from "../../data";
-
 import {
   doc,
   collection,
@@ -23,7 +20,10 @@ import {
   getDocs,
   getDoc,
 } from "firebase/firestore";
+
+import { filterOrder } from "../../data";
 import { auth, db, storage } from "../../firebase";
+import { useIsFocused } from "@react-navigation/native";
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
@@ -31,10 +31,11 @@ const cardwidth = width / 2;
 
 const WaitingOrder = ({ navigation }) => {
   const [OrderList, setOrderList] = useState([]);
+  const isFocused =useIsFocused();
 
   useEffect(() => {
     getOrders();
-  }, []);
+  }, [isFocused]);
 
   const getOrders = async () => {
     try {
@@ -169,8 +170,8 @@ const WaitingOrder = ({ navigation }) => {
                   </Text>
                 </View>
                 <Text style={styles.itemText}>Name: {item.Name}</Text>
-                <Text style={styles.itemText}>size: {item.size}</Text>{" "}
-                <Text style={styles.itemText}>quantity: {item.quantity}</Text>{" "}
+                <Text style={styles.itemText}>size: {item.size}{" "}</Text>
+                <Text style={styles.itemText}>quantity: {item.quantity}{" "}</Text>
                 <Text style={styles.itemText}>
                   totalPrice: {item.totalPrice}
                 </Text>
@@ -191,7 +192,7 @@ const WaitingOrder = ({ navigation }) => {
   );
 };
 
-export default WaitingOrder;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -314,3 +315,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+export default WaitingOrder;

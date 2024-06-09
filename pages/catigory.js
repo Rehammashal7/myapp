@@ -186,9 +186,7 @@ const CatigoryResult = ({ route, navigation }) => {
                 setProducts(filteredProducts);
             } catch (error) {
                 console.error("Error fetching products: ", error);
-            } finally {
-                setIsLoading(false);
-            }
+            } 
         };
         getProducts();
     }, []);
@@ -247,7 +245,7 @@ const CatigoryResult = ({ route, navigation }) => {
                 </View>
 
                 <View style={{ height: 110, width: '95%' }}>
-                    <Text style={styles.Name}>{item.name}</Text>
+                    <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text
@@ -314,6 +312,7 @@ const CatigoryResult = ({ route, navigation }) => {
                         renderItem={renderItem}
                     />
                 </View>
+                <View style={styles.bottoms}></View>
             </ScrollView>
             <BottomNavigator navigation={navigation} userId={userId} />
         </View>
@@ -327,7 +326,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 5,
         marginRight: 5,
-        borderRadius: 15,
+        borderRadius: 5,
         width: cardwidth,
         height: cardheight - 30,
         elevation: 13,
@@ -372,7 +371,7 @@ const styles = StyleSheet.create({
     bottoms: {
         flexDirection: "row",
         backgroundColor: COLORS.background,
-        height: 50,
+        height: 60,
         bottom: 20
     },
     headerText: {

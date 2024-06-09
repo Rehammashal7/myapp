@@ -85,7 +85,7 @@ const HomeScreen = ({ navigation }) => {
                 navigation.navigate('adminMenDetails', { product });
             } else if (Category === "BABY") {
                 navigation.navigate('adminBabyDetails', { product });
-            } else {
+            } else if (Category === "WOMAN"){
                 navigation.navigate('adminWomanDetails', { product });
             }
         } catch (error) {
@@ -174,8 +174,10 @@ const handelNavigation=(Category)=>{
             navigation.navigate('adminMEN' );
         } else if (Category === "BABY") {
             navigation.navigate('adminBABY');
-        } else {
-            navigation.navigate('adminWOMAN');
+        } else if (Category === "WOMAN"){
+            navigation.navigate('adminWoman');
+        }else if (Category === "Used"){
+            navigation.navigate('adminRecycle');
         }
     } catch (error) {
         console.error("Error fetching product: ", error);
@@ -288,7 +290,7 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         marginTop: 5,
         marginRight: 5,
-        borderRadius: 15,
+        borderRadius: 5,
         width: cardwidth,
         height: cardheight + 30,
         elevation: 13,
