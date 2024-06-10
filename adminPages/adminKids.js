@@ -33,6 +33,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../components/adminbar";
 import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
+import { card } from "../Consts/styles";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
@@ -124,25 +125,25 @@ const AdminProductsListKids = ({ navigation }) => {
 
   const renderProduct = ({ item }) => (
     <TouchableOpacity onPress={() => handleProductPress(item)}>
-      <View style={styles.cardView}>
+      <View style={card.cardView}>
         <FlatList
           horizontal
           data={item.images}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: image, index }) => (
-            <Image key={index} source={{ uri: image }} style={styles.imagee} />
+            <Image key={index} source={{ uri: image }} style={card.imagee} />
           )}
           keyExtractor={(image, index) => index.toString()}
           onScroll={(event) => handleScroll(event, item.id)}
         />
-        <View style={styles.dotsContainer}>
+        <View style={card.dotsContainer}>
           {item.images.map((_, index) => (
             <View
               key={index}
               style={[
-                styles.dot,
+                card.dot,
                 index === (activeIndexes[item.id] || 0)
-                  ? styles.activeDot
+                  ? card.activeDot
                   : null,
               ]}
             />
@@ -150,16 +151,13 @@ const AdminProductsListKids = ({ navigation }) => {
         </View>
         <View
           style={{
-            // flexDirection: "row",
-            marginTop: 1,
-            height: 80,
 
-            // marginHorizontal: 20,
-            // justifyContent: "space-between",
+            marginTop: 1,
+            height: 100,
           }}
         >
           <View style={{ marginTop: 10, flexDirection: "row" }}>
-            <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
           </View>
@@ -172,40 +170,25 @@ const AdminProductsListKids = ({ navigation }) => {
           {item.offer !== 0 ? (
             <>
               <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  textDecorationLine: "line-through",
-                }}
+                style={card.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
               <Text
-                style={{
-                  fontSize: 14,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  color: "#df2600",
-                }}
+                style={card.offer}
               >
-                {item.offer}% Discount{" "}
-              </Text>
-              <Text
-                style={{
-                  fontSize: 17,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  marginBottom: 10,
-                  color: "#df2600",
-                }}
-              >
-                {Math.floor(item.price - item.price / item.offer)} EGP
+                🏷️{item.offer}% Discount{" "}
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                  {Math.floor(
+                    item.price - item.price / item.offer
+                  )}{" "}
+                  EGP
+                </Text>
               </Text>
             </>
           ) : (
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
+              style={card.price}
             >
               {item.price} EGP
             </Text>
@@ -253,7 +236,7 @@ const AdminProductsListKids = ({ navigation }) => {
           )}
         />
       </View>
-      <ScrollView>
+      <ScrollView nestedScrollEnabled={true}>
         {/* Render "Loading..." if isLoading is true, otherwise render products */}
         {isLoading ? (
           <View>

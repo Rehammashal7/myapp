@@ -35,6 +35,7 @@ import BottomNavigator from "../../components/bar";
 import { FontAwesome } from "@expo/vector-icons";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
+import { card, filter, productpage, smallCard } from "../../Consts/styles";
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
@@ -83,7 +84,7 @@ const ProductsListKids = ({ navigation }) => {
     { title: 'white' },
   ];
   const handleSize = (title) => {
-   
+
     const filterSize = filterproduct.filter(product => containsize(product, title))
     setProducts(filterSize);
     console.log(filterSize)
@@ -92,7 +93,7 @@ const ProductsListKids = ({ navigation }) => {
     handleSize()
   }, [])
   const handleColor = (title) => {
-    
+
     const filterColor = filterproduct.filter(product => containColor(product, title))
     setProducts(filterColor);
     console.log(filterColor)
@@ -134,7 +135,7 @@ const ProductsListKids = ({ navigation }) => {
       });
       console.log(iconsort)
       setProducts(products);
-    }  else if (title === 'rate') {
+    } else if (title === 'rate') {
       products.sort((a, b) => {
         const rateA = a.rate || 0; // Default to 0 if price is missing
         const rateB = b.rate || 0;
@@ -142,14 +143,14 @@ const ProductsListKids = ({ navigation }) => {
       });
       console.log(iconsort)
       setProducts(products);
-    }else {
+    } else {
       setProducts(filterproduct);
     }
   }
-  const handleAll = (title)=>{
-if(title==='all'){
-  setProducts(filterproduct);
-}
+  const handleAll = (title) => {
+    if (title === 'all') {
+      setProducts(filterproduct);
+    }
   }
   const getProducts2 = async () => {
     try {
@@ -179,7 +180,7 @@ if(title==='all'){
         });
         console.log(iconsort)
         setProducts(products);
-      }setfilterProduct(productsData);
+      } setfilterProduct(productsData);
       setProducts(productsData);
     } catch (error) {
       console.error("Error fetching products: ", error);
@@ -287,25 +288,25 @@ if(title==='all'){
 
   const renderProduct = ({ item }) => (
     <TouchableOpacity onPress={() => handleProductPress(item)}>
-      <View style={styles.cardView}>
+      <View style={card.cardView}>
         <FlatList
           horizontal
           data={item.images}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: image, index }) => (
-            <Image key={index} source={{ uri: image }} style={styles.imagee} />
+            <Image key={index} source={{ uri: image }} style={card.imagee} />
           )}
           keyExtractor={(image, index) => index.toString()}
           onScroll={(event) => handleScroll(event, item.id)}
         />
-        <View style={styles.dotsContainer}>
+        <View style={card.dotsContainer}>
           {item.images.map((_, index) => (
             <View
               key={index}
               style={[
-                styles.dot,
+                card.dot,
                 index === (activeIndexes[item.id] || 0)
-                  ? styles.activeDot
+                  ? card.activeDot
                   : null,
               ]}
             />
@@ -313,16 +314,13 @@ if(title==='all'){
         </View>
         <View
           style={{
-            // flexDirection: "row",
+
             marginTop: 1,
             height: 100,
-
-            // marginHorizontal: 20,
-            // justifyContent: "space-between",
           }}
         >
           <View style={{ marginTop: 10, flexDirection: "row" }}>
-            <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
           </View>
@@ -335,36 +333,25 @@ if(title==='all'){
           {item.offer !== 0 ? (
             <>
               <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  textDecorationLine: "line-through",
-                }}
+                style={card.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
               <Text
-                                style={{
-                                    fontSize: 13,
-                                    fontWeight: "bold",
-                                    marginHorizontal: 9,
-                                    color: "#df2600",
-                                    height: 40
-                                }}
-                            >
-                                🏷️ {item.offer}% Discount{" "}
-                                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-                                    {Math.floor(
-                                        item.price - item.price / item.offer
-                                    )}{" "}
-                                    EGP
-                                </Text>
-                            </Text>
+                style={card.offer}
+              >
+                🏷️{item.offer}% Discount{" "}
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                  {Math.floor(
+                    item.price - item.price / item.offer
+                  )}{" "}
+                  EGP
+                </Text>
+              </Text>
             </>
           ) : (
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
+              style={card.price}
             >
               {item.price} EGP
             </Text>
@@ -375,13 +362,13 @@ if(title==='all'){
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerName}>
-        <Text style={styles.Textt}> AToZ </Text>
+    <View style={productpage.container}>
+      <View style={productpage.headerName}>
+        <Text style={productpage.Textt}> AToZ </Text>
       </View>
       <Search />
 
-      <View style={styles.header}>
+      <View style={smallCard.header}>
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -392,16 +379,16 @@ if(title==='all'){
               <View
                 style={
                   item.name === "KIDS"
-                    ? { ...styles.smallCardSelected }
-                    : { ...styles.smallCard }
+                    ? { ...smallCard.smallCardSelected }
+                    : { ...smallCard.smallCard }
                 }
               >
-                <View style={styles.smallCardText}>
+                <View style={smallCard.smallCardText}>
                   <Text
                     style={
                       item.name === "KIDS"
-                        ? { ...styles.boldText }
-                        : { ...styles.regularText }
+                        ? { ...smallCard.boldText }
+                        : { ...smallCard.regularText }
                     }
                   >
                     {item.name}
@@ -412,14 +399,14 @@ if(title==='all'){
           )}
         />
       </View>
-      <ScrollView>
-      <View style={styles.containerfs}>
+      <ScrollView nestedScrollEnabled={true}>
+        <View style={filter.containerfs}>
           <Pressable
             style={{ flexDirection: "row", }}
           >
 
             {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={styles.numbertypecontainer}>
+            <View style={filter.numbertypecontainer}>
               <Icon
                 name="filter"
                 size={25}
@@ -435,23 +422,23 @@ if(title==='all'){
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(filterType && filterType) || 'filter'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
 
 
@@ -467,53 +454,53 @@ if(title==='all'){
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(sizeType && sizeType) || 'size'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
             )}
             {filterType === 'color' && (
               <SelectDropdown
                 data={color}
                 onSelect={(selectedItem) => {
-                  
+
                   setcolorType(selectedItem.title);
                   handleColor(selectedItem.title);
                   console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(colorType && colorType) || 'color'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
             )}
           </Pressable>
@@ -522,7 +509,7 @@ if(title==='all'){
           >
 
             {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={styles.numbertypecontainer}>
+            <View style={filter.numbertypecontainer}>
               <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
                 <Icon
                   name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
@@ -543,23 +530,23 @@ if(title==='all'){
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(sortType && sortType) || 'Sort'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
 
 
@@ -582,7 +569,7 @@ if(title==='all'){
             keyExtractor={(item) => item.id}
           />
         )}
-        <View style={styles.bottoms}></View>
+        <View style={productpage.bottoms}></View>
       </ScrollView>
 
       <BottomNavigator navigation={navigation} userId={userId} />
@@ -594,8 +581,8 @@ if(title==='all'){
 const KidsDetails = ({ route, navigation }) => {
   // const { product } = route.params;
   // const { product } = route.params ? route.params : { product: {} };
-  const { product } = route.params ? route.params : { product: {}};
-  console.log('oroifeo',product);
+  const { product } = route.params ? route.params : { product: {} };
+  console.log('oroifeo', product);
   const product_id = product.id;
   // const [products, setProducts] = React.useState('');
   const [productt, setProductt] = React.useState([]);
@@ -616,10 +603,10 @@ const KidsDetails = ({ route, navigation }) => {
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
   const [like, setLike] = useState([0]);
-const [disLike, setDislikes] = useState([0]);
- const [reviews, setReviews] = useState([]);
- const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
- const productId = product.id;
+  const [disLike, setDislikes] = useState([0]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
+  const productId = product.id;
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -635,13 +622,13 @@ const [disLike, setDislikes] = useState([0]);
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
-  const categoryName="Kids";
+  const categoryName = "Kids";
   const handleGoToCart = () => {
     navigation.navigate("CartScreen", { userId: userId });
   };
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
-    <Text style={styles.seeAllText}>
+    <Text style={productpage.seeAllText}>
       See All ({reviews ? reviews.length : 0})
     </Text>;
   };
@@ -675,13 +662,17 @@ const [disLike, setDislikes] = useState([0]);
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
       console.log(id);
+      getCartItems(id)
     };
     getUserId();
-  }, []);
 
-  
-  const getCartItems = async () => {
-    const userRef = doc(db, "users", userId);
+  }, [isFocused]);
+  useEffect(() => {
+    getCartItems(userId)
+  })
+
+  const getCartItems = async (id) => {
+    const userRef = doc(db, "users", id);
     const userSnap = await getDoc(userRef);
     const cartCount = userSnap?.data()?.cart?.length ?? 0;
 
@@ -690,7 +681,7 @@ const [disLike, setDislikes] = useState([0]);
 
   useEffect(() => {
     if (userId) {
-      getCartItems();
+      getCartItems(userId);
       fetchAllReviews();
     }
   }, [userId]);
@@ -702,7 +693,7 @@ const [disLike, setDislikes] = useState([0]);
       }, 2000);
     }
   }, [modalVisibleCart]);
-  
+
   const imageWidth = width;
   const handleScroll = (event, product_id) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -730,7 +721,7 @@ const [disLike, setDislikes] = useState([0]);
   // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
-     newDate.setDate(newDate.getDate() + 2);
+    newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -740,7 +731,7 @@ const [disLike, setDislikes] = useState([0]);
     if (existingItem) {
       existingItem.qty += 1;
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize ,delivery: newDate});
+      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
     }
 
     await updateDoc(userRef, { cart });
@@ -749,7 +740,7 @@ const [disLike, setDislikes] = useState([0]);
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
 
-    }else if (selectedColor || selectedSize) {
+    } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
 
@@ -787,16 +778,16 @@ const [disLike, setDislikes] = useState([0]);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
     const existingItem = fav.find(itm => itm.id === item.id);
-    
-    setIsPressed(!!existingItem); 
+
+    setIsPressed(!!existingItem);
   };
-  
+
   useEffect(() => {
     handelHeart(product);
-  }, [handelHeart]); 
+  }, [handelHeart]);
   useEffect(() => {
     console.log(isPressed);
-  }, [isPressed]); 
+  }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
 
@@ -830,7 +821,7 @@ const [disLike, setDislikes] = useState([0]);
       setShowPrice(false);
     }
   };
- 
+
   let flagAdmin = false;
   const fetchAllReviews = async () => {
     try {
@@ -880,122 +871,122 @@ const [disLike, setDislikes] = useState([0]);
           return updatedReview;
         })
       );
-      
+
       setReviewsWithLikes(updatedReviews);
       setReviews(updatedReviews)
-  
+
     } catch (error) {
       console.log('Error loading likes and dislikes:', error);
     }
   };
 
 
-const handleLike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.like === 0) {
-      updatedReview.like = 1;
-      updatedReview.disLike = 0;
-      await AsyncStorage.setItem(`like${index}`, '1');
-      await AsyncStorage.setItem(`disLike${index}`, '0');
-    } else {
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`like${index}`, '0');
-    }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-
-    
-  } catch (error) {
-    console.log('Error handling like:', error);
-  }
-};
-
-const handleDislike = async (index) => {
-  try {
-    const updatedReviews = [...reviewsWithLikes];
-    const updatedReview = { ...updatedReviews[index] };
-    if (updatedReview.disLike === 0) {
-      updatedReview.disLike = 1;
-      updatedReview.like = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '1');
-      await AsyncStorage.setItem(`like${index}`, '0');
-    } else {
-      updatedReview.dislike = 0;
-      await AsyncStorage.setItem(`disLike${index}`, '0');
-    }
-    updatedReviews[index] = updatedReview;
-    setReviewsWithLikes(updatedReviews);
-    setReviews(updatedReviews);
-  } catch (error) {
-    console.log('Error handling dislike:', error);
-  }
-};
-  
-useEffect(() => {
-  console.log("iam in recently use effect ");
-  saveRecentlyVisited(product.id, product.name, product.categoryName,product.images,product.colors,product.description,product.offer,product.price,product.sizes);
-  // console.log("iam get data ");
-  console.log("produt id",product_id);
-}, []);
-
-const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-  console.log("I am in save visit");
-  try {
-    const userRef = doc(db, "users", auth.currentUser.uid);
-    const userDoc = await getDoc(userRef);
-    if (userDoc.exists) {
-      const userData = userDoc.data();
-      let updatedRecentlyVisited = [];
-      if (userData.recentlyVisited) {
-        const productExists = userData.recentlyVisited.some(item => item.id === id);
-        if (!productExists) {
-          updatedRecentlyVisited = [
-            {
-              id: id,
-              name: name,
-              categoryName: categoryName,
-              image: images,
-              colors: colors,
-              description: description,
-              offer: offer,
-              price: price,
-              sizes: sizes
-            },
-            ...userData.recentlyVisited
-          ];
-        } else {
-          console.log("Product already exists in recentlyVisited");
-          updatedRecentlyVisited = [...userData.recentlyVisited];
-        }
+  const handleLike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.like === 0) {
+        updatedReview.like = 1;
+        updatedReview.disLike = 0;
+        await AsyncStorage.setItem(`like${index}`, '1');
+        await AsyncStorage.setItem(`disLike${index}`, '0');
       } else {
-        updatedRecentlyVisited = [{
-          id: id,
-          name: name,
-          categoryName: categoryName,
-          image: images,
-          colors: colors,
-          description: description,
-          offer: offer,
-          price: price,
-          sizes: sizes
-        }];
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`like${index}`, '0');
       }
-      if (updatedRecentlyVisited.length > 10) {
-        updatedRecentlyVisited.splice(10);
-        console.log("More than 10 items, removing the oldest ones.");
-      }
-      await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-      console.log("Data added to recentlyVisited successfully");
-    } else {
-      console.log("User document not found");
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+
+
+    } catch (error) {
+      console.log('Error handling like:', error);
     }
-  } catch (error) {
-    console.error('Error', error);
-  }
-};
+  };
+
+  const handleDislike = async (index) => {
+    try {
+      const updatedReviews = [...reviewsWithLikes];
+      const updatedReview = { ...updatedReviews[index] };
+      if (updatedReview.disLike === 0) {
+        updatedReview.disLike = 1;
+        updatedReview.like = 0;
+        await AsyncStorage.setItem(`disLike${index}`, '1');
+        await AsyncStorage.setItem(`like${index}`, '0');
+      } else {
+        updatedReview.dislike = 0;
+        await AsyncStorage.setItem(`disLike${index}`, '0');
+      }
+      updatedReviews[index] = updatedReview;
+      setReviewsWithLikes(updatedReviews);
+      setReviews(updatedReviews);
+    } catch (error) {
+      console.log('Error handling dislike:', error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("iam in recently use effect ");
+    saveRecentlyVisited(product.id, product.name, product.categoryName, product.images, product.colors, product.description, product.offer, product.price, product.sizes);
+    // console.log("iam get data ");
+    console.log("produt id", product_id);
+  }, []);
+
+  const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
+    console.log("I am in save visit");
+    try {
+      const userRef = doc(db, "users", auth.currentUser.uid);
+      const userDoc = await getDoc(userRef);
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        let updatedRecentlyVisited = [];
+        if (userData.recentlyVisited) {
+          const productExists = userData.recentlyVisited.some(item => item.id === id);
+          if (!productExists) {
+            updatedRecentlyVisited = [
+              {
+                id: id,
+                name: name,
+                categoryName: categoryName,
+                image: images,
+                colors: colors,
+                description: description,
+                offer: offer,
+                price: price,
+                sizes: sizes
+              },
+              ...userData.recentlyVisited
+            ];
+          } else {
+            console.log("Product already exists in recentlyVisited");
+            updatedRecentlyVisited = [...userData.recentlyVisited];
+          }
+        } else {
+          updatedRecentlyVisited = [{
+            id: id,
+            name: name,
+            categoryName: categoryName,
+            image: images,
+            colors: colors,
+            description: description,
+            offer: offer,
+            price: price,
+            sizes: sizes
+          }];
+        }
+        if (updatedRecentlyVisited.length > 10) {
+          updatedRecentlyVisited.splice(10);
+          console.log("More than 10 items, removing the oldest ones.");
+        }
+        await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
+        console.log("Data added to recentlyVisited successfully");
+      } else {
+        console.log("User document not found");
+      }
+    } catch (error) {
+      console.error('Error', error);
+    }
+  };
 
 
 
@@ -1003,36 +994,54 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
 
 
   return (
-    <View style={styles.productContainer}>
+    <View style={productpage.productContainer}>
       <ScrollView onScroll={handleScroll2}>
         <View>
+          {/* image */}
           <FlatList
             horizontal
             data={product.images}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.productImage} />
+              <Image source={{ uri: item }} style={productpage.productImage} />
             )}
-            keyExtractor={(image, index) => index.toString()}
+            keyExtractor={(image, index) => index}
             onScroll={(event) => handleScroll(event, product.id)}
           />
-          <View style={styles.dotsContainerDetails}>
+          <View style={productpage.dotsContainerDetails}>
             {product.images.map((_, index) => (
               <View
                 key={index}
                 style={[
-                  styles.dotDetails,
+                  productpage.dotDetails,
                   index === (activeIndexes[product.id] || 0)
-                    ? styles.activeDotDetails
+                    ? productpage.activeDotDetails
                     : null,
                 ]}
               />
             ))}
           </View>
+          {/* cart */}
+          <View style={productpage.containerHeart}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('CartScreen', { userId: userId })
+              }} style={productpage.addToFavBtn}>
+              <Icon name="shopping-cart" size={28} color={COLORS.dark} />
+            </Pressable>
+          </View>
+          <View style={productpage.containercount}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('CartScreen', { userId: userId })
+              }} style={productpage.countcart}>
+              <Text style={{ color: COLORS.white }}>{cartCount}</Text>
+            </Pressable>
+          </View>
           <View
             style={{
               marginTop: 2,
-              height: 500,
+              marginBottom: 5,
               backgroundColor: "white",
             }}
           >
@@ -1043,11 +1052,12 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                   justifyContent: "space-between",
                 }}
               >
-                {/* العمود الأول */}
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.NameD}>{product.name}</Text>
+                <View style={{ width: "60%" }}>
+                  {/* product name */}
+                  <Text style={productpage.NameD}>{product.name}</Text>
                   {product.offer !== 0 ? (
                     <>
+                      {/* price with offer */}
                       <Text
                         style={{
                           fontSize: 18,
@@ -1068,7 +1078,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                         }}
                       >
                         🏷️ {product.offer}% Discount{" "}
-                        <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                        <Text style={{ fontSize: 14, fontWeight: "bold" }}>
                           {Math.floor(
                             product.price - product.price / product.offer
                           )}{" "}
@@ -1077,6 +1087,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                       </Text>
                     </>
                   ) : (
+                    // price
                     <Text
                       style={{
                         fontSize: 18,
@@ -1088,13 +1099,12 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                     </Text>
                   )}
                 </View>
-
-                {/* العمود الثاني */}
+                {/* stars */}
                 <View
                   style={{
-                    width: "50%",
-                    alignItems: "flex-end",
-                    marginTop: 10,
+                    width: "40%",
+                    alignItems: 'center',
+                    marginTop: 5,
                   }}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -1112,26 +1122,14 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                       </TouchableOpacity>
                     )}
                   </View>
-
-                  <Text
-                    style={{
-                      color: "#131A2C",
-                      fontSize: 12,
-                      marginTop: 15,
-                      marginRight: 5,
-                    }}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    Product Code: {product.id.substring(0, 11)}
-                  </Text>
                 </View>
               </View>
             </View>
 
             <View>
+              {/* Choose color */}
               {product.colors.length > 1 && (
-                <View style={styles.colorsContainer}>
+                <View style={productpage.colorsContainer}>
                   <Text
                     style={{
                       fontSize: 16,
@@ -1144,17 +1142,18 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                   <FlatList
                     horizontal
                     data={product.colors}
-                    keyExtractor={(color, index) => index.toString()}
+                    keyExtractor={(color, index) => index}
                     renderItem={({ item }) => {
                       let buttonStyle = [
-                        styles.colorButton,
-                        { backgroundColor: item },
+                        productpage.colorButton,
+                        { backgroundColor: item.toLowerCase() },
                       ];
                       if (selectedColor === item) {
-                        if (item === "black") {
-                          buttonStyle.push(styles.blackButtonStyle);
+                        console.log("color", item)
+                        if (item.toLowerCase() === "black") {
+                          buttonStyle.push(productpage.blackButtonStyle);
                         } else {
-                          buttonStyle.push(styles.selectedColorButton);
+                          buttonStyle.push(productpage.selectedColorButton);
                         }
                       }
                       return (
@@ -1167,6 +1166,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                   />
                 </View>
               )}
+              {/* Choose size */}
               <View
                 style={{
                   flexDirection: "row",
@@ -1225,7 +1225,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                   </View>
                 </Modal>
               </View>
-              <View style={styles.sizesContainer}>
+              <View style={productpage.sizesContainer}>
                 <FlatList
                   horizontal
                   data={product.sizes}
@@ -1233,8 +1233,8 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={[
-                        styles.sizeButton,
-                        selectedSize === item && styles.selectedSizeButton,
+                        productpage.sizeButton,
+                        selectedSize === item && productpage.selectedSizeButton,
                       ]}
                       onPress={() => setSelectedSize(item)}
                     >
@@ -1251,7 +1251,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                           }}
                         />
                       )}
-                      <Text style={[styles.sizeText, styles.sizeButtonText]}>
+                      <Text style={[productpage.sizeText, productpage.sizeButtonText]}>
                         {item}
                       </Text>
                     </TouchableOpacity>
@@ -1259,7 +1259,8 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                 />
               </View>
             </View>
-            <View style={styles.line}></View>
+            <View style={productpage.line}></View>
+            {/* discribtion */}
             <Text
               style={{
                 fontSize: 16,
@@ -1271,101 +1272,132 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
               Product Information
             </Text>
             {lines.map((line, index) => (
-              <Text key={index} style={styles.description}>
+              <Text key={index} style={productpage.description}>
                 {line}
               </Text>
             ))}
+            {/* rate */}
+            {reviews.length > 0 && (
+              <View style={productpage.container}>
 
-            <View style={styles.container}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {reviews.length > 0 && (
+                <View style={{ flexDirection: "row", alignItems: "center", width: '100%' }}>
+
                   <Text
-                    style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}
+                    style={{ fontSize: 20, fontWeight: "bold", marginTop: 10, width: '60%' }}
                   >
-                    Evaluation {"\n"} {rating.toFixed(1)}
+                    Evaluation  {rating.toFixed(1)}
                   </Text>
-                )}
-                {reviews.length > 0 && (
+
                   <TouchableOpacity onPress={handleSeeAllReviews}>
                     <Text
                       style={{
                         textDecorationLine: "underline",
-                        marginLeft: 138,
+                        right: 1,
+                        width: '100%',
                         fontSize: 15,
+                        marginTop: 10,
+                        marginRight: 5,
+                        justifyContent: 'flex-end'
                       }}
                     >
                       {comments} COMMENT | See All{" "}
                     </Text>
                   </TouchableOpacity>
-                )}
-              </View>
 
-              <FlatList
-                data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
-                renderItem={({ item ,index}) => (
-                  <View style={styles.reviewContainer}>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Text style={styles.reviewText}>{item.username} </Text>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Icon
-                          name={star <= item.rating ? "star" : "star-o"}
-                          size={17}
-                          color="black"
-                        />
-                      ))}
-                      <Text style={{ marginLeft: 180, color: "black" }}>
-                        {item.date}{" "}
+                </View>
+                {/* reviews */}
+                <FlatList
+                  data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
+                  renderItem={({ item, index }) => (
+                    <View style={productpage.reviewContainer}>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      ><View style={{ flexDirection: "row", alignItems: "center", width: '80%' }}>
+                          <Text style={productpage.reviewText}>{item.username} </Text>
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Icon
+                              name={star <= item.rating ? "star" : "star-o"}
+                              size={17}
+                              color="black"
+                            />
+                          ))}
+                        </View>
+                        <Text style={{ width: '40%', color: "black" }}>
+                          {item.date}{" "}
+                        </Text>
+
+                      </View>
+                      <Text style={[productpage.reviewText, { marginTop: 15 }]}>
+                        {item.comment}
                       </Text>
-                      
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginTop: 5,
+                          width: '100%',
+                          marginBottom: 5,
+                          justifyContent: 'flex-end'
+                        }}
+                      >
+                        <TouchableOpacity
+                          onPress={() => handleLike(index)}
+                          style={productpage.likeButton}
+                        >
+                          <Icon
+                            name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <Text style={{ marginHorizontal: 10 }}>
+                          ({item.like})
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => handleDislike(index)}
+                          style={productpage.dislikeButton}
+                        >
+                          <Icon
+                            name={
+                              item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
+                            }
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <Text style={{ marginHorizontal: 10 }}>
+                          ({item.disLike})
+                        </Text>
+                      </View>
                     </View>
-                    <Text style={[styles.reviewText, { marginTop: 15 }]}>
-                      {item.comment}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginTop: 5,
-                        marginLeft: 290,
-                        marginBottom: 5,
-                      }}
-                    >
-                   <TouchableOpacity onPress={() => handleLike(index)} style={styles.likeButton}>
-    <Icon name={item.like === 1 ? 'thumbs-up' : 'thumbs-o-up'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.like})</Text> 
-  <TouchableOpacity onPress={() => handleDislike(index)} style={styles.dislikeButton}>
-    <Icon name={item.disLike === 1 ? 'thumbs-down' : 'thumbs-o-down'} size={20} color="black" />
-  </TouchableOpacity>
-  <Text style={{ marginHorizontal: 10 }}>({item.disLike})</Text>
-                    </View>
-                  </View>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </View>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+            )}
           </View>
         </View>
-        <View>
+        {/* add review button */}
+        <View style={{ backgroundColor: COLORS.white }}>
           {
             <TouchableOpacity
-              style={styles.addToCartBton1}
+              style={productpage.reviewButon}
               onPress={() =>
-                navigation.navigate("AddReviewKids", {
+                navigation.navigate("AddReviewMen", {
                   product: { id: product_id },
                   fetchAllReviews,
                 })
               }
             >
-              <Text style={styles.buttonText}>Add a Review</Text>
+              <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
+
       </ScrollView>
-      <View style={styles.bottomBar}>
-        <View style={styles.Navbarr}>
+      <View style={productpage.bottomBar}>
+        <View style={productpage.Navbarr}>
+          {/* add to cart button */}
           <FlatList
             data={productt}
             keyExtractor={(item) => item.id}
@@ -1376,8 +1408,8 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                 onPress={() => setSelectedOptionIndex(index)}
               >
                 {showPrice ? (
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.priceText}>
+                  <View style={productpage.buttonContainer}>
+                    <Text style={productpage.priceText}>
                       {" "}
                       {product.offer !== 0 ? (
                         <>
@@ -1422,9 +1454,10 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                         </Text>
                       )}
                     </Text>
-                    <View style={styles.container}>
+
+                    <View style={productpage.container}>
                       <TouchableOpacity
-                        style={styles.addToCartBton2}
+                        style={productpage.addToCartBton2}
                         onPress={() => {
                           if (product.colors.length !== 1) {
                             if (selectedColor && selectedSize) {
@@ -1451,10 +1484,11 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                           }
                         }}
                       >
-                        <Text style={styles.addToCartButtonText}>
+                        <Text style={productpage.addToCartButtonText}>
                           Add to Cart
                         </Text>
                       </TouchableOpacity>
+                      {/* add to cart alert */}
                       <Modal
                         animationType="slide"
                         transparent={true}
@@ -1463,52 +1497,52 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                           setModalVisibleCart(false);
                         }}
                       >
-                        <View style={styles.modalContainer}>
-                          <View style={styles.modalContent}>
+                        <View style={productpage.modalContainer}>
+                          <View style={productpage.modalContent}>
                             {product.colors.length !== 1 ? (
                               selectedColor && selectedSize ? (
                                 <>
-                                  <Text style={styles.modalText}>
+                                  <Text style={productpage.modalText}>
                                     Item added to cart!
                                   </Text>
                                   {setShowGoToCartButton(true)}
                                 </>
                               ) : (
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Please select a size and color if available
                                 </Text>
                               )
                             ) : selectedColor || selectedSize ? (
                               <>
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Item added to cart!
                                 </Text>
                                 {setShowGoToCartButton(true)}
                               </>
                             ) : (
-                              <Text style={styles.modalText}>
+                              <Text style={productpage.modalText}>
                                 Please select a size and color if available
                               </Text>
                             )}
 
                             <TouchableOpacity
-                              style={styles.okButton}
+                              style={productpage.okButton}
                               onPress={() => {
                                 setShowGoToCartButton(!showGoToCartButton);
                               }}
                             >
                               {showGoToCartButton ? (
                                 <TouchableOpacity
-                                  style={styles.okButton}
+                                  style={productpage.okButton}
                                   onPress={handleGoToCart}
                                 >
-                                  <Text style={styles.okButtonText}>
+                                  <Text style={productpage.okButtonText}>
                                     go to cart
                                   </Text>
                                 </TouchableOpacity>
                               ) : (
-                                <TouchableOpacity style={styles.okButton}>
-                                  <Text style={styles.okButtonText}>OK</Text>
+                                <TouchableOpacity style={productpage.okButton}>
+                                  <Text style={productpage.okButtonText}>OK</Text>
                                 </TouchableOpacity>
                               )}
                             </TouchableOpacity>
@@ -1518,7 +1552,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                     </View>
                   </View>
                 ) : (
-                  <View style={styles.buttonContainer}>
+                  <View style={productpage.buttonContainer}>
                     <Pressable onPress={() => onAddToFav(item, index)}>
                       <Icon
                         name="heart"
@@ -1526,9 +1560,9 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                         color={isPressed ? "black" : "grey"}
                       />
                     </Pressable>
-                    <View style={styles.container}>
+                    <View style={productpage.container}>
                       <TouchableOpacity
-                        style={styles.addToCartBton1}
+                        style={productpage.addToCartBton1}
                         onPress={() => {
                           if (product.colors.length !== 1) {
                             if (selectedColor && selectedSize) {
@@ -1555,7 +1589,7 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                           }
                         }}
                       >
-                        <Text style={styles.addToCartButtonText}>
+                        <Text style={productpage.addToCartButtonText}>
                           Add to Cart
                         </Text>
                       </TouchableOpacity>
@@ -1567,52 +1601,52 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
                           setModalVisibleCart(false);
                         }}
                       >
-                        <View style={styles.modalContainer}>
-                          <View style={styles.modalContent}>
+                        <View style={productpage.modalContainer}>
+                          <View style={productpage.modalContent}>
                             {product.colors.length !== 1 ? (
                               selectedColor && selectedSize ? (
                                 <>
-                                  <Text style={styles.modalText}>
+                                  <Text style={productpage.modalText}>
                                     Item added to cart!
                                   </Text>
                                   {setShowGoToCartButton(true)}
                                 </>
                               ) : (
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Please select a size and color if available
                                 </Text>
                               )
                             ) : selectedColor || selectedSize ? (
                               <>
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Item added to cart!
                                 </Text>
                                 {setShowGoToCartButton(true)}
                               </>
                             ) : (
-                              <Text style={styles.modalText}>
+                              <Text style={productpage.modalText}>
                                 Please select a size and color if available
                               </Text>
                             )}
 
                             <TouchableOpacity
-                              style={styles.okButton}
+                              style={productpage.okButton}
                               onPress={() => {
                                 setShowGoToCartButton(!showGoToCartButton);
                               }}
                             >
                               {showGoToCartButton ? (
                                 <TouchableOpacity
-                                  style={styles.okButton}
+                                  style={productpage.okButton}
                                   onPress={handleGoToCart}
                                 >
-                                  <Text style={styles.okButtonText}>
+                                  <Text style={productpage.okButtonText}>
                                     go to cart
                                   </Text>
                                 </TouchableOpacity>
                               ) : (
-                                <TouchableOpacity style={styles.okButton}>
-                                  <Text style={styles.okButtonText}>OK</Text>
+                                <TouchableOpacity style={productpage.okButton}>
+                                  <Text style={productpage.okButtonText}>OK</Text>
                                 </TouchableOpacity>
                               )}
                             </TouchableOpacity>
@@ -1631,7 +1665,6 @@ const saveRecentlyVisited = async (id, name, categoryName, images, colors, descr
       </View>
     </View>
   );
-
 };
 const styles = StyleSheet.create({
   headerWrapper: {
@@ -1677,7 +1710,7 @@ const styles = StyleSheet.create({
     marginTop: 0,
     marginLeft: 10,
     marginBottom: 0,
-    height:40
+    height: 40
     // left: 200,
   },
   titlesWrapper: {
@@ -1743,7 +1776,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     backgroundColor: "#FBFAFF",
-    height: 70,
+    height: 60,
   },
   bottoms: {
     flexDirection: "row",
@@ -1788,7 +1821,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 100,
-    height: 70,
+    height: 60,
     borderBottomColor: "transparent",
     borderBottomWidth: 2,
   },
@@ -1797,7 +1830,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     width: 100,
-    height: 70,
+    height: 60,
     shadowColor: "black",
     borderBottomColor: "black",
     borderBottomWidth: 2,
@@ -1861,7 +1894,7 @@ const styles = StyleSheet.create({
     //marginBottom:30,
   },
   dot: {
-    width: 40,
+    width:(cardwidth/4)-10,
     height: 2,
     marginBottom: 20,
     // borderRadius: 5,
@@ -2049,13 +2082,23 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 30,
+    height: 40,
   },
   buttonContainer: {
     flexDirection: "row",
-   // justifyContent: "start",
-
+    justifyContent: "space-between",
     alignItems: "center",
+    marginLeft: 10
+  },
+  reviewButon: {
+    backgroundColor: "black",
+    paddingHorizontal: 10,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    alignContent: 'center',
+    marginLeft: cardwidth / 4,
+    width: width - cardwidth / 2,
   },
   addToCartBton1: {
     backgroundColor: "black",
@@ -2067,8 +2110,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginTop:20,
     // marginBottom:10,
-    marginLeft: 40,
-    width: 300,
+    marginLeft: 20,
+    width: width-cardwidth/2,
   },
   addToCartBton2: {
     backgroundColor: "black",
@@ -2134,7 +2177,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 5,
-    marginBottom:20
+    marginBottom: 20
   },
   dropdownButtonStyle: {
     width: 90,

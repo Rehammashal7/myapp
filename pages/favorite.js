@@ -18,6 +18,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import BottomNavigator from '../components/bar';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
+import { card } from '../Consts/styles';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -114,7 +115,7 @@ const Favorite = ({ navigation }) => {
         <Text style={[styles.Texts, { textAlign: 'center' }]}>Favorite</Text>
       </View>
       <Search />
-      <ScrollView>
+      <ScrollView nestedScrollEnabled={true}>
         <FlatList
           numColumns={2}
           data={favList}
@@ -122,43 +123,62 @@ const Favorite = ({ navigation }) => {
             return (
               <TouchableOpacity onPress={() => handleProductPress(item, item.data.categoryName)}>
                 <View style={styles.container}>
-                  <View style={styles.cardView}>
+                  <View style={card.cardView}>
                     <FlatList
                       horizontal
                       data={item.data.images}
                       showsHorizontalScrollIndicator={false}
                       renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={styles.image} />
+                        <Image key={index} source={{ uri: image }} style={card.imagee} />
                       )}
                       keyExtractor={(image, index) => index.toString()}
                       onScroll={(event) => handleScroll(event, item.id)}
                     />
-                    <View style={styles.dotsContainer}>
+                    <View style={card.dotsContainer}>
                       {item.data.images.map((_, index) => (
                         <View
                           key={index}
                           style={[
-                            styles.dot,
+                            card.dot,
                             index === (activeIndexes[item.id] || 0)
-                              ? styles.activeDot
+                              ? card.activeDot
                               : null,
                           ]}
                         />
                       ))}
                     </View>
-                    <Text style={styles.Name}>{item.data.name}</Text>
-                    <View style={{ flexDirection: "row", marginTop: 5, marginHorizontal: 10, marginBottom:10 }}>
-                    <Text
-                                style={{
-                                    fontSize: 18,
-                                    fontWeight: "bold",
-                                    marginHorizontal: 10,
-                                    height: 20
-                                }}
+                    <View style={{ height: 100 }}>
+                    <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
+                        {item.data.name}
+                    </Text>
+                    {item.data.offer !== 0 ? (
+                        <>
+                            <Text
+                                style={card.pricewithoffer}
                             >
                                 {item.data.price} EGP
                             </Text>
-                    </View>
+
+                            <Text
+                                style={card.offer}
+                            >
+                                🏷️{item.data.offer}% Discount{" "}
+                                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                                    {Math.floor(
+                                        item.data.price - item.data.price / item.data.offer
+                                    )}{" "}
+                                    EGP
+                                </Text>
+                            </Text>
+                        </>
+                    ) : (
+                        <Text
+                            style={card.price}
+                        >
+                            {item.data.price} EGP
+                        </Text>
+                    )}
+                </View>
                     <View style={styles.containerHeart}>
                       <Pressable
                         onPress={() => {
@@ -222,14 +242,14 @@ const styles = StyleSheet.create({
     marginTop: cardheight - 90,
   },
   dot: {
-    width: 40,
+    width: (cardwidth / 4) - 10,
     height: 2,
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: "black",
     marginHorizontal: 5,
   },
   activeDot: {
-    marginBottom: 20,
+    marginBottom: 15,
     backgroundColor: "white",
   },
   image: {
@@ -237,15 +257,16 @@ const styles = StyleSheet.create({
     height: cardheight - 80,
     width: cardwidth,
   },
-  Name: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: "#131A2C",
-    marginTop: 5,
-    marginLeft: 10,
-    marginBottom: 5,
-    height: 40,
-    width: cardwidth - 20
+    Name: {
+      fontSize: 14,
+      fontWeight: 'bold',
+      color: "#131A2C",
+      marginTop: 5,
+      marginLeft: 10,
+      marginBottom: 5,
+      height: 40,
+      width: cardwidth - 20
+
   },
   containerHeart: {
     position: 'absolute',
@@ -258,7 +279,7 @@ const styles = StyleSheet.create({
   },
   addToFavBtn: {
     paddingTop: 10,
-    paddingBottom:8,
+    paddingBottom: 8,
     right: 10,
     borderRadius: 10,
     alignItems: 'center',

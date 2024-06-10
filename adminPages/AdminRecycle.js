@@ -31,6 +31,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../components/bar";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
+import { card } from "../Consts/styles";
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
@@ -206,85 +207,77 @@ const AdminRecycle = ({ navigation }) => {
     //to flatlist
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item)}>
-            <View style={styles.cardView}>
-                {/* image */}
-                <FlatList
-                    horizontal
-                    data={item.images}
-                    showsHorizontalScrollIndicator={false}
-                    renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={styles.imagee} />
-                    )}
-                    keyExtractor={(image, index) => index.toString()}
-                    onScroll={(event) => handleScroll(event, item.id)}
-                />
-                <View style={styles.dotsContainer}>
-                    {item.images.map((_, index) => (
-                        <View
-                            key={index}
-                            style={[
-                                styles.dot,
-                                index === (activeIndexes[item.id] || 0)
-                                    ? styles.activeDot
-                                    : null,
-                            ]}
-                        />
-                    ))}
-                </View>
+      <View style={card.cardView}>
+        <FlatList
+          horizontal
+          data={item.images}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item: image, index }) => (
+            <Image key={index} source={{ uri: image }} style={card.imagee} />
+          )}
+          keyExtractor={(image, index) => index.toString()}
+          onScroll={(event) => handleScroll(event, item.id)}
+        />
+        <View style={card.dotsContainer}>
+          {item.images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                card.dot,
+                index === (activeIndexes[item.id] || 0)
+                  ? card.activeDot
+                  : null,
+              ]}
+            />
+          ))}
+        </View>
+        <View
+          style={{
 
-                <View style={{ marginTop: 1, height: 100 }}>
-                    {/* name */}
-                    <View style={{ marginTop: 10, flexDirection: "row" }}>
+            marginTop: 1,
+            height: 100,
+          }}
+        >
+          <View style={{ marginTop: 10, flexDirection: "row" }}>
+            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
+              {item.name}
+            </Text>
+          </View>
 
-                        <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
-                            {item.name}
-                        </Text>
-
-                    </View>
-
-                    <View style={{ flexDirection: "row" }} ></View>
-                    {/* price with offer */}
-                    {item.offer !== 0 ? (
-                        <>
-                            <Text
-                                style={{
-                                    fontSize: 18,
-                                    fontWeight: "bold",
-                                    marginHorizontal: 10,
-                                    textDecorationLine: "line-through",
-                                }}
-                            >
-                                {item.price} EGP
-                            </Text>
-                            <Text
-                                style={{
-                                    fontSize: 13,
-                                    fontWeight: "bold",
-                                    marginHorizontal: 9,
-                                    color: "#df2600",
-                                    height: 40
-                                }}
-                            >
-                                🏷️ {item.offer}% Discount{" "}
-                                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
-                                    {Math.floor(
-                                        item.price - item.price / item.offer
-                                    )}{" "}
-                                    EGP
-                                </Text>
-                            </Text>
-                        </>
-                    ) : (
-                        // price without offer
-                        <Text
-                            style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
-                        >
-                            {item.price} EGP
-                        </Text>
-                    )}
-                </View>
-            </View>
-        </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: "row",
+            }}
+          ></View>
+          {item.offer !== 0 ? (
+            <>
+              <Text
+                style={card.pricewithoffer}
+              >
+                {item.price} EGP
+              </Text>
+              <Text
+                style={card.offer}
+              >
+                🏷️{item.offer}% Discount{" "}
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                  {Math.floor(
+                    item.price - item.price / item.offer
+                  )}{" "}
+                  EGP
+                </Text>
+              </Text>
+            </>
+          ) : (
+            <Text
+              style={card.price}
+            >
+              {item.price} EGP
+            </Text>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
     );
 
     return (
@@ -326,7 +319,7 @@ const AdminRecycle = ({ navigation }) => {
                     )}
                 />
             </View>
-            <ScrollView>
+            <ScrollView nestedScrollEnabled={true}>
                 <View style={styles.containerfs}>
                     {/* filter */}
                     <Pressable

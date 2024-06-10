@@ -471,7 +471,7 @@ const CartScreen = ({ navigation }) => {
         <Text style={[styles.Text, { textAlign: 'center' }]}> My basket </Text>
       </View>
       <Search />
-      <ScrollView style={[styles.container, { marginTop: 10 }]}>
+      <ScrollView style={[styles.container, { marginTop: 10 }]} nestedScrollEnabled={true}>
         <TouchableOpacity
           style={[
             styles.addToCartBtn,

@@ -306,7 +306,7 @@ const Search = () => {
                             </Animatable.View>
                         </View>
                     </View>
-                    <ScrollView>
+                    <ScrollView nestedScrollEnabled={true}>
                         {/* last search */}
                         {searchList.length > 0 && (<View style={{ height: (length) * 60 }}>
                             <FlatList
@@ -397,7 +397,6 @@ const styles = StyleSheet.create({
         paddingRight: 10
     },
     SearchArea: {
-        marginTop: 0,
         width: "94%",
         height: 40,
         backgroundColor: COLORS.background,
@@ -405,7 +404,7 @@ const styles = StyleSheet.create({
         borderColor: 'black',
         flexDirection: "row",
         alignItems: "center",
-        padding: 10
+        paddingLeft:10
     },
     searchIcon: {
         marginRight: 10,

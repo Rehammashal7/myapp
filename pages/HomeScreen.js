@@ -14,7 +14,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
 import { useIsFocused } from '@react-navigation/native';
 import { getAuth } from "firebase/auth";
-// import Carousel from 'react-native-snap-carousel';
+import Carousel from 'react-native-snap-carousel';
+import Homestyles from '../Consts/styles';
+
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -32,7 +34,7 @@ const HomeScreen = ({ navigation }) => {
     const auth = getAuth();
     useEffect(() => {
         getUser();
-      }, [isFocused]);
+    }, [isFocused]);
 
     useEffect(() => {
         const getProducts = async () => {
@@ -66,7 +68,7 @@ const HomeScreen = ({ navigation }) => {
     const getUser = async () => {
         const docRef = doc(db, "users", auth.currentUser.uid);
         const docSnap = await getDoc(docRef);
-      };
+    };
     const handleProductPress = async (product, Category) => {
         try {
             if (Category === "KIDS") {
@@ -94,14 +96,14 @@ const HomeScreen = ({ navigation }) => {
 
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
-            <View style={styles.cardView}>
-                
-                        <Image source={{ uri: item.images[0] }} style={styles.image} />
-                    
-                <View style={{ height: 110 }}>
-                <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
-              {item.name}
-            </Text>
+            <View style={Homestyles.cardView}>
+
+                <Image source={{ uri: item.images[0] }} style={Homestyles.image} />
+
+                <View style={{ height: 100 }}>
+                    <Text style={Homestyles.Name} numberOfLines={2} ellipsizeMode="tail">
+                        {item.name}
+                    </Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text
@@ -122,11 +124,12 @@ const HomeScreen = ({ navigation }) => {
                                     fontWeight: "bold",
                                     marginHorizontal: 9,
                                     color: "#df2600",
-                                    height: 40
+                                    height: 40,
+                                    marginTop: 5
                                 }}
                             >
-                                🏷️ {item.offer}% Discount{" "}
-                                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                                🏷️{item.offer}% Discount{" "}
+                                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
                                     {Math.floor(
                                         item.price - item.price / item.offer
                                     )}{" "}
@@ -164,13 +167,13 @@ const HomeScreen = ({ navigation }) => {
         </View>
     );
     return (
-        <View style={styles.container}>
+        <View style={Homestyles.container}>
             <View >
-                <Text style={styles.Text}> AToZ </Text>
+                <Text style={Homestyles.Text}> AToZ </Text>
             </View>
             <Search />
-            <ScrollView>
-                <View style={styles.header} >
+            <ScrollView nestedScrollEnabled={true}>
+                <View style={Homestyles.header} >
                     <FlatList
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -181,9 +184,9 @@ const HomeScreen = ({ navigation }) => {
                             <Pressable
                                 onPress={() => navigation.navigate(item.name)}
                             >
-                                <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
+                                <View style={[Homestyles.smallCard, indexCheck === item.id ? Homestyles.smallCardSelected : null]}>
                                     <View>
-                                        <Text style={[styles.regularText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
+                                        <Text style={[Homestyles.regularText, indexCheck === item.id ? Homestyles.selectedCardText : null]}>{item.name}</Text>
                                     </View>
                                 </View>
                             </Pressable>
@@ -191,7 +194,7 @@ const HomeScreen = ({ navigation }) => {
                     />
 
                 </View>
-{/* 
+
                 <Carousel
                     ref={carouselRef}
                     data={data}
@@ -201,10 +204,10 @@ const HomeScreen = ({ navigation }) => {
                     autoplay={true}
                     autoplayInterval={3000}
                     loop={true}
-                /> */}
+                />
 
-                <View style={styles.headerTextView}>
-                    <Text style={[styles.headerText, { color: 'red' }]}> Discound product : </Text>
+                <View style={Homestyles.headerTextView}>
+                    <Text style={[Homestyles.headerText, { color: 'red' }]}> Discound product : </Text>
                 </View>
                 <View>
                     <ScrollView horizontal={true}>
@@ -217,15 +220,15 @@ const HomeScreen = ({ navigation }) => {
                             keyExtractor={(item) => item.id}
                         />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
-                            <Text style={styles.discoverText}>{'See All >>'}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={Homestyles.discoverButton}>
+                            <Text style={Homestyles.discoverText}>{'See All >>'}</Text>
                         </TouchableOpacity>
 
                     </ScrollView>
                 </View>
 
-                <View style={styles.headerTextView}>
-                    <Text style={styles.headerText}>TRENDS </Text>
+                <View style={Homestyles.headerTextView}>
+                    <Text style={Homestyles.headerText}>TRENDS </Text>
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -239,131 +242,18 @@ const HomeScreen = ({ navigation }) => {
                             keyExtractor={(item) => item.id}
                         />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('WOMAN')} style={styles.discoverButton}>
-                            <Text style={styles.discoverText}>{'See All >>'} </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('WOMAN')} style={Homestyles.discoverButton}>
+                            <Text style={Homestyles.discoverText}>{'See All >>'} </Text>
                         </TouchableOpacity>
 
                     </ScrollView>
                 </View>
-                <View style={styles.bottoms}></View>
+                <View style={Homestyles.bottoms}></View>
             </ScrollView>
             <BottomNavigator item="Home" navigation={navigation} userId={userId} />
         </View>
     );
 }
 
-const styles = StyleSheet.create({
-    cardView: {
-        marginBottom: 20,
-        marginTop: 5,
-        marginRight: 5,
-        borderRadius: 5,
-        width: cardwidth,
-        height: cardheight + 30,
-        elevation: 13,
-        backgroundColor: 'white',
-    },
-    discoverButton: {
-        marginBottom: 20,
-        marginTop: 10,
-        marginRight: 5,
-        borderRadius: 15,
-        width: cardwidth,
-        height: cardheight + 30,
-        elevation: 13,
-        backgroundColor: '#ECF0F1',
-    },
-    discoverText: {
-        textAlign: 'center',
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: COLORS.dark,
-        marginTop: (cardheight + 30) / 2
-    },
-    container: {
-        flex: 1,
-        backgroundColor: COLORS.background,
-    },
-    header: {
-        flexDirection: "row",
-        backgroundColor: COLORS.background,
-        height: 70,
-    },
-    bottoms: {
-        flexDirection: "row",
-        backgroundColor: COLORS.background,
-        height: 50,
-        bottom: 20
-    },
-    headerText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        alignItems: 'center',
-        
-    },
-    image: {
-        position: "relative",
-        height: cardheight -90 ,
-        width: cardwidth,
-    },
-    Name: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: "#131A2C",
-        marginTop: 5,
-        marginLeft: 10,
-        marginBottom: 5,
-        height: 40,
-        width: cardwidth - 20
-    },
-    Text: {
-        color: COLORS.darkblue,
-        fontSize: 35,
-        fontFamily: 'SofiaRegular',
-        fontWeight: "bold",
-        alignItems: 'center',
-    },
-    headerTextView: {
-        backgroundColor: 'White',
-        // marginTop: 10
-    },
-    smallCard: {
-        // borderRadius: 30,
-        backgroundColor: "white",
-        justifyContent: "center",
-        alignItems: "center",
-        width: 100,
-        height: 70,
-        borderBottomColor: "transparent",
-        borderBottomWidth: 2,
-      },
-      smallCardSelected: {
-        backgroundColor: "#FFFFFF",
-        justifyContent: "center",
-        alignItems: "center",
-        width: 100,
-        height: 70,
-        shadowColor: "black",
-        borderBottomColor: "black",
-        borderBottomWidth: 2,
-      },
-      smallCardTextSected: {
-        color: "#131A2C",
-      },
-      regularText: {
-        fontWeight: "normal",
-        fontSize: 16,
-      },
-      boldText: {
-        fontWeight: "bold",
-        fontSize: 18,
-      },
-    
-      smallCardText: {
-        fontSize: 14,
-        color: "black",
-        textAlign: "center",
-        marginTop: 5,
-      },
-});
+
 export default HomeScreen;

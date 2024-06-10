@@ -25,12 +25,14 @@ import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
 import Food, { filterData, productt, option, size } from "../../data";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Icon2 from 'react-native-vector-icons/Ionicons';
 import Search from "../../components/search";
 import { useIsFocused, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BottomNavigator from "../../components/bar";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
+import { card, filter, productpage, smallCard } from "../../Consts/styles";
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
@@ -121,8 +123,8 @@ const ProductsListWoman = ({ navigation }) => {
     // Use the some method to check if any color in the list includes the query
     return colors.some(color => color.includes(lowerCaseQuery));
   };
- 
- 
+
+
 
   const handlesort = (title) => {
     if (title === 'price') {
@@ -151,7 +153,7 @@ const ProductsListWoman = ({ navigation }) => {
     }
   }
 
- 
+
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -231,7 +233,7 @@ const ProductsListWoman = ({ navigation }) => {
     getFavItems();
   };
 
-  
+
 
   const handleProductPress = (product) => {
     navigation.navigate("WomanDetails", { product });
@@ -253,25 +255,25 @@ const ProductsListWoman = ({ navigation }) => {
 
   const renderProduct = ({ item }) => (
     <TouchableOpacity onPress={() => handleProductPress(item)}>
-      <View style={styles.cardView}>
+      <View style={card.cardView}>
         <FlatList
           horizontal
           data={item.images}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: image, index }) => (
-            <Image key={index} source={{ uri: image }} style={styles.imagee} />
+            <Image key={index} source={{ uri: image }} style={card.imagee} />
           )}
           keyExtractor={(image, index) => index.toString()}
           onScroll={(event) => handleScroll(event, item.id)}
         />
-        <View style={styles.dotsContainer}>
+        <View style={card.dotsContainer}>
           {item.images.map((_, index) => (
             <View
               key={index}
               style={[
-                styles.dot,
+                card.dot,
                 index === (activeIndexes[item.id] || 0)
-                  ? styles.activeDot
+                  ? card.activeDot
                   : null,
               ]}
             />
@@ -279,16 +281,13 @@ const ProductsListWoman = ({ navigation }) => {
         </View>
         <View
           style={{
-            // flexDirection: "row",
+
             marginTop: 1,
             height: 100,
-
-            // marginHorizontal: 20,
-            // justifyContent: "space-between",
           }}
         >
           <View style={{ marginTop: 10, flexDirection: "row" }}>
-            <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
           </View>
@@ -301,27 +300,15 @@ const ProductsListWoman = ({ navigation }) => {
           {item.offer !== 0 ? (
             <>
               <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  textDecorationLine: "line-through",
-                  height: 20
-                }}
+                style={card.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
               <Text
-                style={{
-                  fontSize: 13,
-                  fontWeight: "bold",
-                  marginHorizontal: 9,
-                  color: "#df2600",
-                  height: 40
-                }}
+                style={card.offer}
               >
-                🏷️ {item.offer}% Discount{" "}
-                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                🏷️{item.offer}% Discount{" "}
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
                   {Math.floor(
                     item.price - item.price / item.offer
                   )}{" "}
@@ -331,7 +318,7 @@ const ProductsListWoman = ({ navigation }) => {
             </>
           ) : (
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 }}
+              style={card.price}
             >
               {item.price} EGP
             </Text>
@@ -342,13 +329,13 @@ const ProductsListWoman = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerName}>
-        <Text style={styles.Textt}> AToZ </Text>
+    <View style={productpage.container}>
+      <View style={productpage.headerName}>
+        <Text style={productpage.Textt}> AToZ </Text>
       </View>
       <Search />
 
-      <View style={styles.header}>
+      <View style={smallCard.header}>
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
@@ -359,16 +346,16 @@ const ProductsListWoman = ({ navigation }) => {
               <View
                 style={
                   item.name === "WOMAN"
-                    ? { ...styles.smallCardSelected }
-                    : { ...styles.smallCard }
+                    ? { ...smallCard.smallCardSelected }
+                    : { ...smallCard.smallCard }
                 }
               >
-                <View style={styles.smallCardText}>
+                <View style={smallCard.smallCardText}>
                   <Text
                     style={
                       item.name === "WOMAN"
-                        ? { ...styles.boldText }
-                        : { ...styles.regularText }
+                        ? { ...smallCard.boldText }
+                        : { ...smallCard.regularText }
                     }
                   >
                     {item.name}
@@ -379,14 +366,14 @@ const ProductsListWoman = ({ navigation }) => {
           )}
         />
       </View>
-      <ScrollView>
-        <View style={styles.containerfs}>
+      <ScrollView nestedScrollEnabled={true}>
+        <View style={filter.containerfs}>
           <Pressable
             style={{ flexDirection: "row", }}
           >
 
             {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={styles.numbertypecontainer}>
+            <View style={filter.numbertypecontainer}>
               <Icon
                 name="filter"
                 size={25}
@@ -402,23 +389,23 @@ const ProductsListWoman = ({ navigation }) => {
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(filterType && filterType) || 'filter'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
 
 
@@ -434,23 +421,23 @@ const ProductsListWoman = ({ navigation }) => {
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(sizeType && sizeType) || 'size'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
             )}
             {filterType === 'color' && (
@@ -464,23 +451,23 @@ const ProductsListWoman = ({ navigation }) => {
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(colorType && colorType) || 'color'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
             )}
           </Pressable>
@@ -489,7 +476,7 @@ const ProductsListWoman = ({ navigation }) => {
           >
 
             {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={styles.numbertypecontainer}>
+            <View style={filter.numbertypecontainer}>
               <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
                 <Icon
                   name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
@@ -510,23 +497,23 @@ const ProductsListWoman = ({ navigation }) => {
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={styles.dropdownButtonStyle}>
-                      <Text style={styles.dropdownButtonTxtStyle}>
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
                         {(sortType && sortType) || 'Sort'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={styles.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...styles.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={styles.dropdownMenuStyle}
+                dropdownStyle={filter.dropdownMenuStyle}
               />
 
 
@@ -549,7 +536,7 @@ const ProductsListWoman = ({ navigation }) => {
             keyExtractor={(item) => item.id}
           />
         )}
-        <View style={styles.bottoms}></View>
+        <View style={productpage.bottoms}></View>
       </ScrollView>
 
       <BottomNavigator navigation={navigation} userId={userId} />
@@ -601,7 +588,7 @@ const WomanDetails = ({ route, navigation }) => {
 
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
-    <Text style={styles.seeAllText}>
+    <Text style={productpage.seeAllText}>
       See All ({reviews ? reviews.length : 0})
     </Text>;
   };
@@ -620,7 +607,8 @@ const WomanDetails = ({ route, navigation }) => {
       setProductt(tempData);
     };
     fetchItem(product_id);
-  }, []);
+
+  }, [isFocused]);
 
   useEffect(() => {
     console.log("noo " + hasCheckedOut);
@@ -635,20 +623,17 @@ const WomanDetails = ({ route, navigation }) => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
       console.log(id);
+      getCartItems(id)
     };
     getUserId();
-  }, []);
 
+  }, [isFocused]);
   useEffect(() => {
-    if (modalVisibleCart) {
-      setTimeout(() => {
-        setModalVisibleCart(false);
-      }, 2000);
-    }
-  }, [modalVisibleCart]);
+    getCartItems(userId)
+  })
 
-  const getCartItems = async () => {
-    const userRef = doc(db, "users", userId);
+  const getCartItems = async (id) => {
+    const userRef = doc(db, "users", id);
     const userSnap = await getDoc(userRef);
     const cartCount = userSnap?.data()?.cart?.length ?? 0;
 
@@ -657,11 +642,18 @@ const WomanDetails = ({ route, navigation }) => {
 
   useEffect(() => {
     if (userId) {
-      getCartItems();
+      getCartItems(userId);
       fetchAllReviews();
     }
   }, [userId]);
 
+  useEffect(() => {
+    if (modalVisibleCart) {
+      setTimeout(() => {
+        setModalVisibleCart(false);
+      }, 2000);
+    }
+  }, [modalVisibleCart]);
   const imageWidth = width;
   const handleScroll = (event, product_id) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
@@ -1008,36 +1000,54 @@ const WomanDetails = ({ route, navigation }) => {
 
 
   return (
-    <View style={styles.productContainer}>
+    <View style={productpage.productContainer}>
       <ScrollView onScroll={handleScroll2}>
         <View>
+          {/* image */}
           <FlatList
             horizontal
             data={product.images}
             showsHorizontalScrollIndicator={false}
             renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={styles.productImage} />
+              <Image source={{ uri: item }} style={productpage.productImage} />
             )}
             keyExtractor={(image, index) => index}
             onScroll={(event) => handleScroll(event, product.id)}
           />
-          <View style={styles.dotsContainerDetails}>
+          <View style={productpage.dotsContainerDetails}>
             {product.images.map((_, index) => (
               <View
                 key={index}
                 style={[
-                  styles.dotDetails,
+                  productpage.dotDetails,
                   index === (activeIndexes[product.id] || 0)
-                    ? styles.activeDotDetails
+                    ? productpage.activeDotDetails
                     : null,
                 ]}
               />
             ))}
           </View>
+          {/* cart */}
+          <View style={productpage.containerHeart}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('CartScreen', { userId: userId })
+              }} style={productpage.addToFavBtn}>
+              <Icon name="shopping-cart" size={28} color={COLORS.dark} />
+            </Pressable>
+          </View>
+          <View style={productpage.containercount}>
+            <Pressable
+              onPress={() => {
+                navigation.navigate('CartScreen', { userId: userId })
+              }} style={productpage.countcart}>
+              <Text style={{ color: COLORS.white }}>{cartCount}</Text>
+            </Pressable>
+          </View>
           <View
             style={{
               marginTop: 2,
-              height: 500,
+              marginBottom: 5,
               backgroundColor: "white",
             }}
           >
@@ -1048,11 +1058,12 @@ const WomanDetails = ({ route, navigation }) => {
                   justifyContent: "space-between",
                 }}
               >
-                {/* العمود الأول */}
-                <View style={{ width: "50%" }}>
-                  <Text style={styles.NameD}>{product.name}</Text>
+                <View style={{ width: "60%" }}>
+                  {/* product name */}
+                  <Text style={productpage.NameD}>{product.name}</Text>
                   {product.offer !== 0 ? (
                     <>
+                      {/* price with offer */}
                       <Text
                         style={{
                           fontSize: 18,
@@ -1073,7 +1084,7 @@ const WomanDetails = ({ route, navigation }) => {
                         }}
                       >
                         🏷️ {product.offer}% Discount{" "}
-                        <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                        <Text style={{ fontSize: 14, fontWeight: "bold" }}>
                           {Math.floor(
                             product.price - product.price / product.offer
                           )}{" "}
@@ -1082,6 +1093,7 @@ const WomanDetails = ({ route, navigation }) => {
                       </Text>
                     </>
                   ) : (
+                    // price
                     <Text
                       style={{
                         fontSize: 18,
@@ -1093,13 +1105,12 @@ const WomanDetails = ({ route, navigation }) => {
                     </Text>
                   )}
                 </View>
-
-                {/* العمود الثاني */}
+                {/* stars */}
                 <View
                   style={{
-                    width: "50%",
-                    alignItems: "flex-end",
-                    marginTop: 10,
+                    width: "40%",
+                    alignItems: 'center',
+                    marginTop: 5,
                   }}
                 >
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -1117,26 +1128,14 @@ const WomanDetails = ({ route, navigation }) => {
                       </TouchableOpacity>
                     )}
                   </View>
-
-                  <Text
-                    style={{
-                      color: "#131A2C",
-                      fontSize: 12,
-                      marginTop: 15,
-                      marginRight: 5,
-                    }}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
-                    Product Code: {product.id.substring(0, 11)}
-                  </Text>
                 </View>
               </View>
             </View>
 
             <View>
+              {/* Choose color */}
               {product.colors.length > 1 && (
-                <View style={styles.colorsContainer}>
+                <View style={productpage.colorsContainer}>
                   <Text
                     style={{
                       fontSize: 16,
@@ -1149,17 +1148,18 @@ const WomanDetails = ({ route, navigation }) => {
                   <FlatList
                     horizontal
                     data={product.colors}
-                    keyExtractor={(color, index) => index.toString()}
+                    keyExtractor={(color, index) => index}
                     renderItem={({ item }) => {
                       let buttonStyle = [
-                        styles.colorButton,
-                        { backgroundColor: item },
+                        productpage.colorButton,
+                        { backgroundColor: item.toLowerCase() },
                       ];
                       if (selectedColor === item) {
-                        if (item === "black") {
-                          buttonStyle.push(styles.blackButtonStyle);
+                        console.log("color", item)
+                        if (item.toLowerCase() === "black") {
+                          buttonStyle.push(productpage.blackButtonStyle);
                         } else {
-                          buttonStyle.push(styles.selectedColorButton);
+                          buttonStyle.push(productpage.selectedColorButton);
                         }
                       }
                       return (
@@ -1172,6 +1172,7 @@ const WomanDetails = ({ route, navigation }) => {
                   />
                 </View>
               )}
+              {/* Choose size */}
               <View
                 style={{
                   flexDirection: "row",
@@ -1230,7 +1231,7 @@ const WomanDetails = ({ route, navigation }) => {
                   </View>
                 </Modal>
               </View>
-              <View style={styles.sizesContainer}>
+              <View style={productpage.sizesContainer}>
                 <FlatList
                   horizontal
                   data={product.sizes}
@@ -1238,8 +1239,8 @@ const WomanDetails = ({ route, navigation }) => {
                   renderItem={({ item }) => (
                     <TouchableOpacity
                       style={[
-                        styles.sizeButton,
-                        selectedSize === item && styles.selectedSizeButton,
+                        productpage.sizeButton,
+                        selectedSize === item && productpage.selectedSizeButton,
                       ]}
                       onPress={() => setSelectedSize(item)}
                     >
@@ -1256,7 +1257,7 @@ const WomanDetails = ({ route, navigation }) => {
                           }}
                         />
                       )}
-                      <Text style={[styles.sizeText, styles.sizeButtonText]}>
+                      <Text style={[productpage.sizeText, productpage.sizeButtonText]}>
                         {item}
                       </Text>
                     </TouchableOpacity>
@@ -1264,7 +1265,8 @@ const WomanDetails = ({ route, navigation }) => {
                 />
               </View>
             </View>
-            <View style={styles.line}></View>
+            <View style={productpage.line}></View>
+            {/* discribtion */}
             <Text
               style={{
                 fontSize: 16,
@@ -1276,121 +1278,132 @@ const WomanDetails = ({ route, navigation }) => {
               Product Information
             </Text>
             {lines.map((line, index) => (
-              <Text key={index} style={styles.description}>
+              <Text key={index} style={productpage.description}>
                 {line}
               </Text>
             ))}
+            {/* rate */}
+            {reviews.length > 0 && (
+              <View style={productpage.container}>
 
-            <View style={styles.container}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                {reviews.length > 0 && (
+                <View style={{ flexDirection: "row", alignItems: "center", width: '100%' }}>
+
                   <Text
-                    style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}
+                    style={{ fontSize: 20, fontWeight: "bold", marginTop: 10, width: '60%' }}
                   >
-                    Evaluation {"\n"} {rating.toFixed(1)}
+                    Evaluation  {rating.toFixed(1)}
                   </Text>
-                )}
-                {reviews.length > 0 && (
+
                   <TouchableOpacity onPress={handleSeeAllReviews}>
                     <Text
                       style={{
                         textDecorationLine: "underline",
-                        marginLeft: 138,
+                        right: 1,
+                        width: '100%',
                         fontSize: 15,
+                        marginTop: 10,
+                        marginRight: 5,
+                        justifyContent: 'flex-end'
                       }}
                     >
                       {comments} COMMENT | See All{" "}
                     </Text>
                   </TouchableOpacity>
-                )}
-              </View>
 
-              <FlatList
-                data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
-                renderItem={({ item, index }) => (
-                  <View style={styles.reviewContainer}>
-                    <View
-                      style={{ flexDirection: "row", alignItems: "center" }}
-                    >
-                      <Text style={styles.reviewText}>{item.username} </Text>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Icon
-                          name={star <= item.rating ? "star" : "star-o"}
-                          size={17}
-                          color="black"
-                        />
-                      ))}
-                      <Text style={{ marginLeft: 180, color: "black" }}>
-                        {item.date}{" "}
+                </View>
+                {/* reviews */}
+                <FlatList
+                  data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
+                  renderItem={({ item, index }) => (
+                    <View style={productpage.reviewContainer}>
+                      <View
+                        style={{ flexDirection: "row", alignItems: "center" }}
+                      ><View style={{ flexDirection: "row", alignItems: "center", width: '80%' }}>
+                          <Text style={productpage.reviewText}>{item.username} </Text>
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <Icon
+                              name={star <= item.rating ? "star" : "star-o"}
+                              size={17}
+                              color="black"
+                            />
+                          ))}
+                        </View>
+                        <Text style={{ width: '40%', color: "black" }}>
+                          {item.date}{" "}
+                        </Text>
+
+                      </View>
+                      <Text style={[productpage.reviewText, { marginTop: 15 }]}>
+                        {item.comment}
                       </Text>
-                      
-                    </View>
-                    <Text style={[styles.reviewText, { marginTop: 15 }]}>
-                      {item.comment}
-                    </Text>
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginTop: 5,
-                        marginLeft: 290,
-                        marginBottom: 5,
-                      }}
-                    >
-                      <TouchableOpacity
-                        onPress={() => handleLike(index)}
-                        style={styles.likeButton}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginTop: 5,
+                          width: '100%',
+                          marginBottom: 5,
+                          justifyContent: 'flex-end'
+                        }}
                       >
-                        <Icon
-                          name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
-                          size={20}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                      <Text style={{ marginHorizontal: 10 }}>
-                        ({item.like})
-                      </Text>
-                      <TouchableOpacity
-                        onPress={() => handleDislike(index)}
-                        style={styles.dislikeButton}
-                      >
-                        <Icon
-                          name={
-                            item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
-                          }
-                          size={20}
-                          color="black"
-                        />
-                      </TouchableOpacity>
-                      <Text style={{ marginHorizontal: 10 }}>
-                        ({item.disLike})
-                      </Text>
+                        <TouchableOpacity
+                          onPress={() => handleLike(index)}
+                          style={productpage.likeButton}
+                        >
+                          <Icon
+                            name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <Text style={{ marginHorizontal: 10 }}>
+                          ({item.like})
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => handleDislike(index)}
+                          style={productpage.dislikeButton}
+                        >
+                          <Icon
+                            name={
+                              item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
+                            }
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                        <Text style={{ marginHorizontal: 10 }}>
+                          ({item.disLike})
+                        </Text>
+                      </View>
                     </View>
-                  </View>
-                )}
-                keyExtractor={(item, index) => index.toString()}
-              />
-            </View>
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
+            )}
           </View>
         </View>
-        <View>
+        {/* add review button */}
+        <View style={{ backgroundColor: COLORS.white }}>
           {
             <TouchableOpacity
-              style={styles.addToCartBton1}
+              style={productpage.reviewButon}
               onPress={() =>
-                navigation.navigate("AddReviewWoman", {
+                navigation.navigate("AddReviewMen", {
                   product: { id: product_id },
                   fetchAllReviews,
                 })
               }
             >
-              <Text>Add a Review</Text>
+              <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
+
       </ScrollView>
-      <View style={styles.bottomBar}>
-        <View style={styles.Navbarr}>
+      <View style={productpage.bottomBar}>
+        <View style={productpage.Navbarr}>
+          {/* add to cart button */}
           <FlatList
             data={productt}
             keyExtractor={(item) => item.id}
@@ -1401,8 +1414,8 @@ const WomanDetails = ({ route, navigation }) => {
                 onPress={() => setSelectedOptionIndex(index)}
               >
                 {showPrice ? (
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.priceText}>
+                  <View style={productpage.buttonContainer}>
+                    <Text style={productpage.priceText}>
                       {" "}
                       {product.offer !== 0 ? (
                         <>
@@ -1448,9 +1461,9 @@ const WomanDetails = ({ route, navigation }) => {
                       )}
                     </Text>
 
-                    <View style={styles.container}>
+                    <View style={productpage.container}>
                       <TouchableOpacity
-                        style={styles.addToCartBton2}
+                        style={productpage.addToCartBton2}
                         onPress={() => {
                           if (product.colors.length !== 1) {
                             if (selectedColor && selectedSize) {
@@ -1477,10 +1490,11 @@ const WomanDetails = ({ route, navigation }) => {
                           }
                         }}
                       >
-                        <Text style={styles.addToCartButtonText}>
+                        <Text style={productpage.addToCartButtonText}>
                           Add to Cart
                         </Text>
                       </TouchableOpacity>
+                      {/* add to cart alert */}
                       <Modal
                         animationType="slide"
                         transparent={true}
@@ -1489,52 +1503,52 @@ const WomanDetails = ({ route, navigation }) => {
                           setModalVisibleCart(false);
                         }}
                       >
-                        <View style={styles.modalContainer}>
-                          <View style={styles.modalContent}>
+                        <View style={productpage.modalContainer}>
+                          <View style={productpage.modalContent}>
                             {product.colors.length !== 1 ? (
                               selectedColor && selectedSize ? (
                                 <>
-                                  <Text style={styles.modalText}>
+                                  <Text style={productpage.modalText}>
                                     Item added to cart!
                                   </Text>
                                   {setShowGoToCartButton(true)}
                                 </>
                               ) : (
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Please select a size and color if available
                                 </Text>
                               )
                             ) : selectedColor || selectedSize ? (
                               <>
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Item added to cart!
                                 </Text>
                                 {setShowGoToCartButton(true)}
                               </>
                             ) : (
-                              <Text style={styles.modalText}>
+                              <Text style={productpage.modalText}>
                                 Please select a size and color if available
                               </Text>
                             )}
 
                             <TouchableOpacity
-                              style={styles.okButton}
+                              style={productpage.okButton}
                               onPress={() => {
                                 setShowGoToCartButton(!showGoToCartButton);
                               }}
                             >
                               {showGoToCartButton ? (
                                 <TouchableOpacity
-                                  style={styles.okButton}
+                                  style={productpage.okButton}
                                   onPress={handleGoToCart}
                                 >
-                                  <Text style={styles.okButtonText}>
+                                  <Text style={productpage.okButtonText}>
                                     go to cart
                                   </Text>
                                 </TouchableOpacity>
                               ) : (
-                                <TouchableOpacity style={styles.okButton}>
-                                  <Text style={styles.okButtonText}>OK</Text>
+                                <TouchableOpacity style={productpage.okButton}>
+                                  <Text style={productpage.okButtonText}>OK</Text>
                                 </TouchableOpacity>
                               )}
                             </TouchableOpacity>
@@ -1544,7 +1558,7 @@ const WomanDetails = ({ route, navigation }) => {
                     </View>
                   </View>
                 ) : (
-                  <View style={styles.buttonContainer}>
+                  <View style={productpage.buttonContainer}>
                     <Pressable onPress={() => onAddToFav(item, index)}>
                       <Icon
                         name="heart"
@@ -1552,9 +1566,9 @@ const WomanDetails = ({ route, navigation }) => {
                         color={isPressed ? "black" : "grey"}
                       />
                     </Pressable>
-                    <View style={styles.container}>
+                    <View style={productpage.container}>
                       <TouchableOpacity
-                        style={styles.addToCartBton1}
+                        style={productpage.addToCartBton1}
                         onPress={() => {
                           if (product.colors.length !== 1) {
                             if (selectedColor && selectedSize) {
@@ -1581,7 +1595,7 @@ const WomanDetails = ({ route, navigation }) => {
                           }
                         }}
                       >
-                        <Text style={styles.addToCartButtonText}>
+                        <Text style={productpage.addToCartButtonText}>
                           Add to Cart
                         </Text>
                       </TouchableOpacity>
@@ -1593,52 +1607,52 @@ const WomanDetails = ({ route, navigation }) => {
                           setModalVisibleCart(false);
                         }}
                       >
-                        <View style={styles.modalContainer}>
-                          <View style={styles.modalContent}>
+                        <View style={productpage.modalContainer}>
+                          <View style={productpage.modalContent}>
                             {product.colors.length !== 1 ? (
                               selectedColor && selectedSize ? (
                                 <>
-                                  <Text style={styles.modalText}>
+                                  <Text style={productpage.modalText}>
                                     Item added to cart!
                                   </Text>
                                   {setShowGoToCartButton(true)}
                                 </>
                               ) : (
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Please select a size and color if available
                                 </Text>
                               )
                             ) : selectedColor || selectedSize ? (
                               <>
-                                <Text style={styles.modalText}>
+                                <Text style={productpage.modalText}>
                                   Item added to cart!
                                 </Text>
                                 {setShowGoToCartButton(true)}
                               </>
                             ) : (
-                              <Text style={styles.modalText}>
+                              <Text style={productpage.modalText}>
                                 Please select a size and color if available
                               </Text>
                             )}
 
                             <TouchableOpacity
-                              style={styles.okButton}
+                              style={productpage.okButton}
                               onPress={() => {
                                 setShowGoToCartButton(!showGoToCartButton);
                               }}
                             >
                               {showGoToCartButton ? (
                                 <TouchableOpacity
-                                  style={styles.okButton}
+                                  style={productpage.okButton}
                                   onPress={handleGoToCart}
                                 >
-                                  <Text style={styles.okButtonText}>
+                                  <Text style={productpage.okButtonText}>
                                     go to cart
                                   </Text>
                                 </TouchableOpacity>
                               ) : (
-                                <TouchableOpacity style={styles.okButton}>
-                                  <Text style={styles.okButtonText}>OK</Text>
+                                <TouchableOpacity style={productpage.okButton}>
+                                  <Text style={productpage.okButtonText}>OK</Text>
                                 </TouchableOpacity>
                               )}
                             </TouchableOpacity>
@@ -1658,555 +1672,5 @@ const WomanDetails = ({ route, navigation }) => {
     </View>
   );
 };
-const styles = StyleSheet.create({
-  headerWrapper: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 5,
-  },
-  headerRight: {
-    backgroundColor: COLORS.background,
-    padding: 12,
-    borderRadius: 10,
-    borderColor: COLORS.background,
-    marginLeft: 10,
-    marginBottom: 5,
-    marginTop: 10,
-    width: 40,
-    borderWidth: 2,
-  },
-  cardView: {
-    marginHorizontal: 1,
-    marginBottom: 30,
-    marginTop: 0,
-    // borderRadius: 15,
-    width: cardwidth,
-    // width:220,
-    height: 370,
-    elevation: 13,
-    backgroundColor: "white",
-  },
-  image: {
-    borderTopLeftRadius: 5,
-    borderTopRightRadius: 5,
-    height: 150,
-    width: 170,
-  },
 
-  Name: {
-    fontSize: 14,
-    // fontWeight: 'bold',
-    color: "#131A2C",
-    marginTop: 0,
-    marginLeft: 10,
-    marginBottom: 0,
-    height: 40
-    // left: 200,
-  },
-  titlesWrapper: {
-    paddingHorizontal: 5,
-    marginTop: 5,
-  },
-  Name2: {
-    fontFamily: "Montserrat-Bold",
-    fontSize: 32,
-    color: COLORS.dark,
-  },
-  priceWrapper: {
-    marginTop: 10,
-    paddingHorizontal: 20,
-    marginBottom: 10,
-  },
-  price: {
-    color: COLORS.dark,
-    fontFamily: "Montserrat-Bold",
-    fontSize: 24,
-  },
-  HeartIcone: {
-    height: 30,
-    width: 30,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  sizeContainer: {
-    paddingVertical: 20,
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
-  size: {
-    height: 30,
-    width: 100,
-    marginRight: 7,
-    borderRadius: 30,
-    alignItems: "center",
-    paddingHorizontal: 5,
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#FFFF",
-    //flexDirection:"row",
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  container2: {
-    flex: 1,
-    backgroundColor: "#FBFAFF",
-    flexDirection: "row",
-
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  heading: {
-    color: "WHITE",
-    fontSize: 40,
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  header: {
-    flexDirection: "row",
-    backgroundColor: "#FBFAFF",
-    height: 70,
-  },
-  bottoms: {
-    flexDirection: "row",
-    backgroundColor: "#FBFAFF",
-    height: 35,
-    bottom: 20,
-  },
-  headerText: {
-    color: "#131A2C",
-    fontSize: 17,
-    fontWeight: "bold",
-    alignItems: "center",
-    marginLeft: 10,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-
-  discribtion: {
-    color: "#0B0E21",
-    fontSize: 20,
-    fontWeight: "bold",
-    alignItems: "center",
-  },
-  imageCounter: {
-    width: 200,
-    height: 250,
-    justifyContent: "space-evenly",
-    alignItems: "center",
-    padding: 10,
-    left: 7,
-    backgroundColor: "black",
-    marginTop: 10,
-  },
-  smallCard: {
-    // borderRadius: 30,
-    backgroundColor: "white",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 100,
-    height: 70,
-    borderBottomColor: "transparent",
-    borderBottomWidth: 2,
-  },
-  smallCardSelected: {
-    backgroundColor: "#FFFFFF",
-    justifyContent: "center",
-    alignItems: "center",
-    width: 100,
-    height: 70,
-    shadowColor: "black",
-    borderBottomColor: "black",
-    borderBottomWidth: 2,
-  },
-  smallCardTextSected: {
-    color: "#131A2C",
-  },
-  regularText: {
-    fontWeight: "normal",
-    fontSize: 16,
-  },
-  boldText: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-
-  smallCardText: {
-    fontSize: 14,
-    color: "black",
-    textAlign: "center",
-    marginTop: 5,
-  },
-  NavContainer: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: 5,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-  },
-  Navbar: {
-    flexDirection: "row",
-    backgroundColor: COLORS.dark,
-    width: width,
-    justifyContent: "space-evenly",
-    borderRadius: 30,
-    height: 40,
-  },
-  iconBehave: {
-    padding: 35,
-    bottom: 30,
-  },
-  Textt: {
-    color: COLORS.darkblue,
-    fontSize: 35,
-    fontFamily: "SofiaRegular",
-    fontWeight: "bold",
-    alignItems: "center",
-  },
-  headerName: {
-    flexDirection: "row",
-    backgroundColor: COLORS.background,
-    height: "10%",
-  },
-  dotsContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 262,
-    //  zIndex: 1
-    //marginBottom:30,
-  },
-  dot: {
-    width: 40,
-    height: 2,
-    marginBottom: 20,
-    // borderRadius: 5,
-    backgroundColor: "black",
-
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    marginBottom: 20,
-    backgroundColor: "white",
-  },
-
-  scrollView: {
-    height: 200,
-  },
-  imagee: {
-    position: "relative",
-    width: 220,
-    height: 300,
-    // width: width * 0.5,
-    // height: width * 0.8 * 0.95,
-  },
-  ///////////////////add new style/////////////////
-  productContainer: {
-    padding: 0,
-    flex: 1,
-  },
-  productName: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  productDescription: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  productPrice: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  productOffer: {
-    fontSize: 16,
-    color: "red",
-    marginBottom: 10,
-  },
-  productImage: {
-    width: width,
-    height: 490,
-    marginRight: 10,
-  },
-  dotsContainerDetails: {
-    position: "absolute",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 475,
-    //  zIndex: 1
-    //marginBottom:30,
-    marginLeft: 175,
-  },
-  dotDetails: {
-    width: 5,
-    height: 5,
-    marginBottom: 20,
-    borderRadius: 30,
-    backgroundColor: "black",
-
-    marginHorizontal: 5,
-  },
-  activeDotDetails: {
-    marginBottom: 20,
-    backgroundColor: "white",
-  },
-
-  colorsContainer: {
-    marginTop: 10,
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  sizesContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 10,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 10,
-  },
-  colorButton: {
-    width: 25,
-    height: 25,
-    borderRadius: 20,
-    marginHorizontal: 5,
-  },
-  selectedColorButton: {
-    borderWidth: 3,
-    borderColor: "black",
-  },
-  blackButtonStyle: {
-    borderWidth: 2,
-    borderColor: "#df2600",
-  },
-  sizeButton: {
-    width: 70,
-    height: 40,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    margin: 3,
-  },
-  sizeButtonText: {
-    position: "relative",
-  },
-
-  selectedSizeButton: {
-    backgroundColor: "transparent",
-    borderWidth: 1,
-    borderColor: "black",
-    // alignItems: 'center',
-    // justifyContent: 'center',
-  },
-  sizeText: {
-    fontSize: 16,
-    color: "black",
-  },
-  NameD: {
-    fontSize: 14,
-    // fontWeight: 'bold',
-    color: "#131A2C",
-    marginTop: 5,
-    marginLeft: 10,
-    marginBottom: 0,
-    // left: 200,
-  },
-  line: {
-    width: "100%",
-    height: 1,
-    backgroundColor: "#b3b3b3",
-    marginTop: 5,
-  },
-
-  description: {
-    fontSize: 15,
-    marginTop: 2,
-    marginLeft: 10,
-  },
-  bottomBar: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    // borderBottomLeftRadius: 15,
-    // borderBottomRightRadius: 15,
-  },
-  // buttonContainer: {
-  //   flexDirection: 'row',
-  //   justifyContent: 'space-between',
-  //   alignItems: 'center',
-  //   marginBottom: 10,
-  // },
-  // Navbarr: {
-  //   flexDirection: 'row',
-  //   backgroundColor: COLORS.white,
-  //   width: width,
-  //   justifyContent: 'space-evenly',
-  //   height: 60
-
-  // },
-  bottomBar: {
-    // position: "fixed",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "#ffffff",
-    borderTopWidth: 1,
-    borderColor: "#cccccc",
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  Navbarr: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    height: 30,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    // justifyContent: "start",
-
-    alignItems: "center",
-  },
-  addToCartBton1: {
-    backgroundColor: "black",
-    paddingHorizontal: 20,
-    // paddingVertical: 10,
-    // marginRight: 10,
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-    // marginTop:20,
-    // marginBottom:10,
-    marginLeft: 40,
-    width: 300,
-  },
-  addToCartBton2: {
-    backgroundColor: "black",
-    paddingHorizontal: 20,
-
-    height: 40,
-    justifyContent: "center",
-    alignItems: "center",
-
-    marginLeft: 60,
-    width: 150,
-  },
-  priceText: {
-    fontSize: 12,
-    fontWeight: "bold",
-    color: "black",
-  },
-  reviewContainer: {
-    backgroundColor: "rgb(250, 250, 250)",
-    // borderRadius: 10,
-    padding: 5,
-    marginBottom: 5,
-    elevation: 3,
-  },
-  reviewText: {
-    fontSize: 15,
-    // marginTop:10
-    // marginBottom: 8,
-  },
-
-  addToCartButtonText: {
-    color: "white",
-    fontSize: 18,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 30,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalText: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  okButton: {
-    backgroundColor: "black",
-    padding: 5,
-    // marginTop: 5,
-    // borderRadius: 5,
-  },
-  okButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
-  containerfs: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingTop: 5,
-    marginBottom:20
-  },
-  dropdownButtonStyle: {
-    width: 90,
-    height: 50,
-    // backgroundColor: '#E9ECEF',
-    // borderRadius: 12,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-  },
-  dropdownButtonTxtStyle: {
-    // flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#393e46',
-  },
-  dropdownButtonArrowStyle: {
-    fontSize: 22,
-    marginLeft: 5
-  },
-  // dropdownButtonIconStyle: {
-  //   fontSize: 18,
-  //   marginRight: 8,
-  // },
-  dropdownMenuStyle: {
-    backgroundColor: '#E9ECEF',
-    borderRadius: 8,
-  },
-  dropdownItemStyle: {
-    // width: '100%',
-    flexDirection: 'row',
-    paddingHorizontal: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  numbertypecontainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: 'space-evenly',
-    width: 80,
-    height: 45,
-    borderBottomColor: "black",
-    borderBottomWidth: 1,
-  },
-  dropdownItemTxtStyle: {
-    // flex: 1,
-    fontSize: 16,
-    // fontWeight: '500',
-    color: '#151E26',
-  },
-});
 export { ProductsListWoman, WomanDetails };

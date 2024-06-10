@@ -4,6 +4,7 @@ import COLORS from '../Consts/Color';
 import { useIsFocused } from '@react-navigation/native';
 import SelectDropdown from 'react-native-select-dropdown';
 import Icon from "react-native-vector-icons/FontAwesome";
+import { card } from '../Consts/styles';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -209,59 +210,46 @@ useEffect(() => {
 
   const renderItem = ({ item, index }) => (
     <TouchableOpacity onPress={() => { handleProductPress(item, item.categoryName) }}>
-      <View style={styles.cardView}>
+      <View style={card.cardView}>
         <FlatList
           horizontal
           data={item.images}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: image, index }) => (
-            <Image key={index} source={{ uri: image }} style={styles.image} />
+            <Image key={index} source={{ uri: image }} style={card.imagee} />
           )}
           keyExtractor={(image, index) => index.toString()}
           onScroll={(event) => handleScroll(event, item.id)}
         />
-        <View style={styles.dotsContainer}>
+        <View style={card.dotsContainer}>
           {item.images.map((_, index) => (
             <View
               key={index}
               style={[
-                styles.dot,
+                card.dot,
                 index === (activeIndexes[item.id] || 0)
-                  ? styles.activeDot
+                  ? card.activeDot
                   : null,
               ]}
             />
           ))}
         </View>
         <View style={{ height: 110 }}>
-          <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
+          <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
             {item.name}
           </Text>
           {item.offer !== 0 ? (
             <>
               <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "bold",
-                  marginHorizontal: 10,
-                  textDecorationLine: "line-through",
-                  height: 20
-                }}
+                style={card.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
-
               <Text
-                style={{
-                  fontSize: 13,
-                  fontWeight: "bold",
-                  marginHorizontal: 9,
-                  color: "#df2600",
-                  height: 40
-                }}
+                style={card.offer}
               >
-                🏷️ {item.offer}% Discount{" "}
-                <Text style={{ fontSize: 15, fontWeight: "bold" }}>
+                🏷️{item.offer}% Discount{" "}
+                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
                   {Math.floor(
                     item.price - item.price / item.offer
                   )}{" "}
@@ -271,11 +259,7 @@ useEffect(() => {
             </>
           ) : (
             <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "bold",
-                marginHorizontal: 10,
-              }}
+              style={card.price}
             >
               {item.price} EGP
             </Text>
