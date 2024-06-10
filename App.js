@@ -56,11 +56,19 @@ import Pay from './pages/pay';
 import CreditCard from './pages/CreditCard';
 import { Recycle, RecycleDetails } from './pages/Catigory/Recycle';
 import AddUserProduct from './pages/Catigory/AddUserProduct';
+import suggestions from './pages/suggestions';
+import weathersearch from './pages/weathersearch' ;
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
+
     <NavigationContainer>
+
       <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Screen name="weathersearch" component={weathersearch} />
+
+      <Stack.Screen name="suggestions" component={suggestions} />
+
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={Waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
