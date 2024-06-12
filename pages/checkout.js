@@ -1,7 +1,7 @@
 // import { createStackNavigator } from '@react-navigation/stack';
 // import { NavigationContainer } from '@react-navigation/native';
 //import Checkout from './Checkout';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // import firebase from 'firebase/app';
 // import 'firebase/firestore';
 
@@ -21,14 +21,16 @@ import { PayPalButtons } from "@paypal/react-paypal-js";
 import COLORS from "../Consts/Color";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useIsFocused, useRoute } from "@react-navigation/native";
-import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
+import chart from '../adminPages/chart';
 
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2;
 const Checkout = ({ navigation }) => {
+  //const [currentCount, setCurrentCount] = useState(0);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState(null);
   const [IconArr, setIconArr] = useState(false);
@@ -148,14 +150,94 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice();
   }, [deliveryprice]);
+  // const updateProductCount = async (productName) => {
+  //   try {
+  //     const docRef = firestore().collection('productCounts').doc('counts');
+  //     await docRef.update({
+  //       [productName]: firestore.FieldValue.increment(1)
+  //     });
+  //     console.log(`Count for ${productName} updated successfully.`);
+  //   } catch (error) {
+  //     console.error(`Error updating count for ${productName}:`, error);
+  //   }
+  // };
+
+  //   const updateProductCount = async (categoryName, productName) => {
+  //     try {
+  //         // Perform database operation to update product count based on category
+  //         // For example:
+  //         const docRef = firestore().collection('productCounts').doc('counts');
+  //         await docRef.update({
+  //             [categoryName]: firestore.FieldValue.increment(1)
+  //         });
+
+  //         console.log(`Count for product ${productName} in category ${categoryName} updated successfully.`);
+  //     } catch (error) {
+  //         console.error(`Error updating count for product ${productName} in category ${categoryName}:`, error);
+  //     }
+  // };
+
   const handleCheckout = async () => {
+    console.log("Button pressed");
     try {
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(usersRef);
+
+      for (const userDoc of querySnapshot.docs) {
+        const userData = userDoc.data();
+        if (userData.isAdmin) {
+          cartList.forEach(async (cartItem) => {
+           
+            if (cartItem.data.categoryName == 'WOMAN') {
+             // console.log(cartItem.data.categoryName)
+              const currentcount = userData.woman || 0;
+              const newwoman = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { woman: newwoman });
+            }
+            else if (cartItem.data.categoryName == 'MEN') {
+
+              const currentcount = userData.men || 0;
+              const newmen = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { men: newmen });
+            }
+            else if (cartItem.data.categoryName == 'KIDS') {
+
+              const currentcount = userData.kids || 0;
+              const newkids = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { kids: newkids });
+            }
+            else if (cartItem.data.categoryName == 'BABY') {
+
+              const currentcount = userData.baby || 0;
+              const newbaby = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { baby: newbaby });
+            }
+
+          });
+
+          // const currentcount = userData.cou || 0;
+          // const newCount = currentcount + 1;
+          // const userRef = doc(db, "users", userDoc.id);
+          // await updateDoc(userRef, { cou: newCount });
+
+        }
+      }
+    } catch (error) {
+      console.error("Error updating checkoutcount: ", error);
+    }
+
+      try {
       const items = [];
-  
-      cartList.forEach((item) => {
+
+      cartList.forEach(async (item) => {
         const { id, qty, data } = item;
         const totalPrice = (qty || 0) * (data.price || 0);
-  
+
+
         items.push({
           productId: id,
           quantity: qty,
@@ -165,31 +247,35 @@ const Checkout = ({ navigation }) => {
           description: data.description,
           category: data.categoryName,
         });
+
       });
-  
+
       const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
-  
+
       await setDoc(userPurchasedProductsRef, {
-        
+
         items: items,
         userId: userId,
         timestamp: new Date(),
-        delivered: false, 
+        delivered: false,
       });
-  
+
       console.log('Purchased products saved to Firestore successfully');
-  
+
+
       navigation.navigate('checkout');
     } catch (error) {
       console.error("Error saving purchased products to Firestore:", error);
     }
+
+
   };
-  
+
   // const handleCheckout = async () => {
   //   try {
   //     // Prepare an array to hold all purchased items
   //     const purchasedItems = [];
-  
+
   //     // Loop through cartList to collect data for each item
   //     cartList.forEach((item) => {
   //       const purchaseData = {
@@ -205,13 +291,13 @@ const Checkout = ({ navigation }) => {
   //       };
   //       purchasedItems.push(purchaseData);
   //     });
-  
+
   //     // Create a reference to the purchased products collection for the user
   //     const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
-  
+
   //     // Set the aggregated purchased items data as a single document for the user
   //     await setDoc(userPurchasedProductsRef, { items: purchasedItems, timestamp: new Date() });
-  
+
   //     console.log('Purchased products saved to Firestore successfully');
   //     // After successful checkout, navigate to the checkout screen or perform other actions
   //     navigation.navigate('checkout');
@@ -219,7 +305,7 @@ const Checkout = ({ navigation }) => {
   //     console.error('Error saving purchased products to Firestore:', error);
   //   }
   // };
-  
+
   // const handleCheckout = async () => {
   //   try {
   //     // Loop through the products and add them to the purchasedProducts collection
@@ -364,10 +450,29 @@ const Checkout = ({ navigation }) => {
     }
   };
 
+
+  // useEffect(() => {
+  //   const fetchCheckoutCount = async () => {
+  //     try {
+  //       const userRef = doc(db, "users", userId);
+  //       const userSnap = await getDoc(userRef);
+  //       const userData = userSnap.data();
+
+  //       const count = userData.cou || 0;
+  //       setCurrentCount(count);
+  //     } catch (error) {
+  //       console.error("Error fetching checkout count:", error);
+  //     }
+  //   };
+
+  //   fetchCheckoutCount();
+  // }, [userId]);
   return (
+
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.Text, { textAlign: "center" }]}> Checkout</Text>
+
+        <Text style={[styles.Text, { textAlign: "center" }]}> Checkout </Text>
       </View>
       <ScrollView style={styles.container}>
         {/* delivery */}
@@ -409,7 +514,7 @@ const Checkout = ({ navigation }) => {
               </Text>
             </View>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {(getTotal() * 0.05 ).toFixed(2)+ ' EGP'}
+              {(getTotal() * 0.05).toFixed(2) + ' EGP'}
             </Text>
           </View>
           <View style={styles.total}>
@@ -524,7 +629,7 @@ const Checkout = ({ navigation }) => {
         <View style={[styles.containerTotal, { marginBottom: 5 }]}>
           <View style={styles.total}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20 }}>
-              {'Total: ' + (getTotal() + delprice- getTotalOfers()).toFixed(2) + ' EGP'}
+              {'Total: ' + (getTotal() + delprice - getTotalOfers()).toFixed(2) + ' EGP'}
             </Text>
             <Pressable onPress={() => setIconArr(!IconArr)}>
               <Icon
@@ -566,9 +671,11 @@ const Checkout = ({ navigation }) => {
 
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
+          {/* <chart currentCount={currentCount} /> */}
           <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
-            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice- getTotalOfers()).toFixed(2)}
+            {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice - getTotalOfers()).toFixed(2)}
           </Text>
+          {/* <chart currentCount={currentCount} /> */}
           <TouchableOpacity
             style={styles.checkButton}
             onPress={() => {
@@ -576,16 +683,37 @@ const Checkout = ({ navigation }) => {
               handleSomeAction();
               deleteAllItems();
               handleCheckout();
-              if (IconName4) {+-
+
+              //   if (IconName4 === "WOMAN") {
+              //     const updatedData = { ...chartData };
+              //     updatedData.datasets[0].data[0] += 1;
+              //     setChartData(updatedData);
+              //   } else if (IconName4 === "MEN") {
+              //     const updatedData = { ...chartData };
+              //     updatedData.datasets[0].data[0] += 1;
+              //     setChartData(updatedData);
+              //   } else if (IconName4 === "KIDS") {
+              //     const updatedData = { ...chartData };
+              //     updatedData.datasets[0].data[0] += 1;
+              //     setChartData(updatedData);
+              //   } else if (IconName4 === "BABY") {
+              //     const updatedData = { ...chartData };
+              //     updatedData.datasets[0].data[0] += 1;
+              //     setChartData(updatedData);
+              // }
+
+
+              if (IconName4) {
+                +-
                 setTimeout(() => {
                   navigation.navigate("pay", { userId: userId });
                 }, 2000);
-                
+
               } else {
                 setTimeout(() => {
                   navigation.navigate("CreditCard", { userId: userId });
                 }, 2000);
-                
+
               }
             }}
           >
