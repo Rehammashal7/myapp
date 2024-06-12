@@ -976,28 +976,6 @@ const BabyDetails = ({ route, navigation, props }) => {
     }
   };
 
-
-
-
-
-
-  // const saveRecentlyVisited = async (product_id, name, description) => {
-  //   console.log("iam in save visit")
-  //   try {
-  //     await db.collection('recentlyVisited').add({
-  //       product_id: product_id,
-  //       name: name,
-  //       description: description
-  //     });
-  //     console.log("iam get data ");
-  //     console.log("produt id",product_id);
-  //     console.log('Done save to data');
-  //   } catch (error) {
-  //     console.error('Error', error);
-  //   }
-  // };
-
-
   return (
     <View style={productpage.productContainer}>
       <ScrollView onScroll={handleScroll2}>

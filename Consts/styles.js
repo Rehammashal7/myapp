@@ -307,7 +307,7 @@ export const productpage = StyleSheet.create({
     },
     sizeButton: {
         width: 55,
-        height: 30,
+        height: 40,
         borderWidth: 1,
         alignItems: "center",
         justifyContent: "center",
@@ -322,7 +322,7 @@ export const productpage = StyleSheet.create({
         borderColor: "black",
     },
     sizeText: {
-        fontSize: 16,
+        fontSize: 15,
         color: "black",
     },
     NameD: {

@@ -20,12 +20,8 @@ const AddUserProduct = () => {
   const [link3, setlink3] = useState('');
   const [link4, setlink4] = useState('');
   const [selectedItem, setSelectedItem] = useState(null);
-  const [colors, setColors] = useState('');
+  const [colors, setColors] = useState([]);
   const [Links, setLinks] = useState(false);
-  const [imageLinks, setimageLinks] = useState([]);
-
-  
-
 
   const handleSubmit = async () => {
     let img = []
@@ -52,11 +48,11 @@ const AddUserProduct = () => {
     } else {
       if (link1 != '') {
         imageUrls.push(link1)
-      } else if (link2 != '') {
+      } if (link2 != '') {
         imageUrls.push(link2)
-      } else if (link3 != '') {
+      } if (link3 != '') {
         imageUrls.push(link3)
-      } else if (link4 != '') {
+      } if (link4 != '') {
         imageUrls.push(link4)
       }
       console.log(imageUrls)
@@ -71,9 +67,9 @@ const AddUserProduct = () => {
         offer: offer,
         price: price,
         season: season,
-        isAccept: 'not accept',
         images: imageUrls,
         categoryName: selectedItem.label,
+        rate:0,
       });
       console.log("Product added successfully.");
     } else {
@@ -89,7 +85,7 @@ const AddUserProduct = () => {
     setOffer(0);
     setImages([]);
     setSelectedItem(null);
-    setColors('');
+    setColors([]);
     setlink1('');
     setlink2('');
     setlink3('');

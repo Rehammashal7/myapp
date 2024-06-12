@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
 import { useIsFocused } from '@react-navigation/native';
 import { getAuth } from "firebase/auth";
-import Carousel from 'react-native-snap-carousel';
+// import Carousel from 'react-native-snap-carousel';
 import Homestyles from '../Consts/styles';
 
 
@@ -27,6 +27,7 @@ const HomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [indexCheck, setIndexCheck] = useState("0")
     const [products, setProducts] = useState([]);
+    const [TRENDS, setTRENDS] = useState([]);
     const [userId, setUserId] = useState('');
     const [activeIndexes, setActiveIndexes] = useState({});
     const imageWidth = cardwidth;
@@ -50,6 +51,30 @@ const HomeScreen = ({ navigation }) => {
             const filteredProducts = allProducts.filter(product => product.offer > 0);
             console.log(filteredProducts);
             setProducts(filteredProducts);
+        };
+        getProducts();
+
+    }, []);
+
+    useEffect(() => {
+        const getProducts = async () => {
+            const collections = ['woman', 'men', 'kids', 'baby'];
+            const allProducts = [];
+
+            for (const collectionName of collections) {
+                const productsCollection = collection(db, collectionName);
+                const productsSnapshot = await getDocs(productsCollection);
+                const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allProducts.push(...productsData);
+            }
+            const filteredProducts = allProducts.filter(product => product.rate > 2);
+            filteredProducts.sort((a, b) => {
+                const rateA = a.rate ; // Default to 0 if price is missing
+                const rateB = b.rate ;
+                return rateB - rateA;
+              });
+            console.log(filteredProducts);
+            setTRENDS(filteredProducts);
         };
         getProducts();
 
@@ -194,7 +219,7 @@ const HomeScreen = ({ navigation }) => {
                     />
 
                 </View>
-
+{/* 
                 <Carousel
                     ref={carouselRef}
                     data={data}
@@ -204,7 +229,7 @@ const HomeScreen = ({ navigation }) => {
                     autoplay={true}
                     autoplayInterval={3000}
                     loop={true}
-                />
+                /> */}
 
                 <View style={Homestyles.headerTextView}>
                     <Text style={[Homestyles.headerText, { color: 'red' }]}> Discound product : </Text>
@@ -236,13 +261,13 @@ const HomeScreen = ({ navigation }) => {
                         <FlatList
                             style={{ marginTop: 10, marginBottom: 10 }}
                             horizontal={true}
-                            data={products.slice(0, 3)}
+                            data={TRENDS.slice(0, 3)}
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderProduct}
                             keyExtractor={(item) => item.id}
                         />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('WOMAN')} style={Homestyles.discoverButton}>
+                        <TouchableOpacity onPress={() => navigation.navigate('offer', TRENDS)} style={Homestyles.discoverButton}>
                             <Text style={Homestyles.discoverText}>{'See All >>'} </Text>
                         </TouchableOpacity>
 

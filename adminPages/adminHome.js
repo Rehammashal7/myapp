@@ -175,7 +175,7 @@ const handelNavigation=(Category)=>{
         } else if (Category === "BABY") {
             navigation.navigate('adminBABY');
         } else if (Category === "WOMAN"){
-            navigation.navigate('adminWoman');
+            navigation.navigate('adminWOMAN');
         }else if (Category === "Used"){
             navigation.navigate('adminRecycle');
         }

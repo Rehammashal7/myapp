@@ -13,7 +13,7 @@ import Userr from './adminPages/userr';
 import { AdminWomanDetails, AdminProductsListWoman } from './adminPages/adminWoman' ;
 import { AdminBabyDetails, AdminProductsListBaby }  from './adminPages/adminBaby' ;
 import { AdminKidsDetails, AdminProductsListKids } from './adminPages/adminKids' ;
-import { EditProductPage , AdminMenDetails, AdminProductsListMen } from './adminPages/adminMen' ;
+import { AdminMenDetails, AdminProductsListMen } from './adminPages/adminMen' ;
 
 import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
@@ -58,6 +58,7 @@ import { Recycle, RecycleDetails } from './pages/Catigory/Recycle';
 import AddUserProduct from './pages/Catigory/AddUserProduct';
 import { AdminRecycle, AdminRecycleDetails } from './adminPages/AdminRecycle';
 import UserRecycleProduct from './pages/UserRecycleProduct';
+import EditProductPage from './adminPages/EditProductPage';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
