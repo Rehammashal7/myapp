@@ -1,12 +1,15 @@
 
 import Welcome from './pages/Welcome';
+//  import 'react-native-get-random-values';
+  // import { v4 as uuidv4 } from 'uuid';
+
 import LoginScreen from './pages/LoginScreen'
 import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/Favorite';
+// import favorite from './pages/Favorite';
 import profile from './pages/profile';
 import userr from './adminPages/userr';
 
@@ -53,20 +56,22 @@ import AddressInformation from './pages/AddressInformation';
 import AboutUs from './pages/AboutUs';
 import Chatbot from'./pages/Chatbot';
 import pay from './pages/pay';
-
+// import ChatComponent from './ChatComponent';
+// import Favorite from './pages/favorite';
+// import './shim';
 const Stack = createNativeStackNavigator();
 
 export default function App() {
  
-  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Chatbot">
+      <Stack.Navigator initialRouteName="Login">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
         <Stack.Screen name="Chatbot" component={Chatbot} />
+        {/* <Stack.Screen name="ChatComponent" component={ChatComponent} /> */}
 
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
@@ -75,7 +80,7 @@ export default function App() {
         <Stack.Screen name="MEN" component={ProductsListMen} />
         <Stack.Screen name="MenDetails" component={MenDetails} />
         <Stack.Screen name='AddReviewMen' component={AddReviewMen}/>
-        <Stack.Screen name="KIDS" component={ProductsListKids} />
+        <Stack.Screen name="KIDS" component={ProductsListKids} />  
         <Stack.Screen name="KidsDetails" component={KidsDetails} />
         <Stack.Screen name='AddReviewKids' component={AddReviewKids}/>
         <Stack.Screen name="BABY" component={ProductsListBaby} />
@@ -85,7 +90,7 @@ export default function App() {
         {/* { <Stack.Screen name='AddProducts' component={AddProducts}/> } */}
         <Stack.Screen name='OrderHistory' component={OrderHistory}/>
         <Stack.Screen name="AddProductForm" component={AddProductForm} />
-        <Stack.Screen name="favorite" component={favorite} />
+        {/* <Stack.Screen name="favorite" component={Favorite} /> */}
         <Stack.Screen name='HistoryOrder' component={HistoryOrder}/>
         <Stack.Screen name='WaitingOrder' component={WaitingOrder}/>
         <Stack.Screen name='CancelOrder' component={CancelOrder}/>
