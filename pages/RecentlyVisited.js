@@ -3,7 +3,6 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile,
-  // useAuth,
 } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState, useEffect } from "react";

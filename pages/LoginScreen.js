@@ -39,7 +39,7 @@ const LoginScreen = ({ navigation }) => {
       if (data.isAdmin === true) {
         navigation.navigate('adminHome');
       } else {
-        navigation.navigate('Home');
+        navigation.navigate('MEN');
       }
     }
   };
