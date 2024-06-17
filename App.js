@@ -1,5 +1,8 @@
 
 import Welcome from './pages/Welcome';
+//  import 'react-native-get-random-values';
+  // import { v4 as uuidv4 } from 'uuid';
+
 import LoginScreen from './pages/LoginScreen'
 import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
@@ -59,15 +62,23 @@ import AddUserProduct from './pages/Catigory/AddUserProduct';
 import { AdminRecycle, AdminRecycleDetails } from './adminPages/AdminRecycle';
 import UserRecycleProduct from './pages/UserRecycleProduct';
 import EditProductPage from './adminPages/EditProductPage';
+import Chatbot from'./pages/Chatbot';
+import pay from './pages/pay';
+// import ChatComponent from './ChatComponent';
+// import Favorite from './pages/favorite';
+// import './shim';
 const Stack = createNativeStackNavigator();
+
 export default function App() {
+ 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Welcome">
+      <Stack.Navigator initialRouteName="Home">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={Waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="Chatbot" component={Chatbot} />
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
         <Stack.Screen name="WomanDetails" component={WomanDetails} />
@@ -75,7 +86,7 @@ export default function App() {
         <Stack.Screen name="MEN" component={ProductsListMen} />
         <Stack.Screen name="MenDetails" component={MenDetails} />
         <Stack.Screen name='AddReviewMen' component={AddReviewMen}/>
-        <Stack.Screen name="KIDS" component={ProductsListKids} />
+        <Stack.Screen name="KIDS" component={ProductsListKids} />  
         <Stack.Screen name="KidsDetails" component={KidsDetails} />
         <Stack.Screen name='AddReviewKids' component={AddReviewKids}/>
         <Stack.Screen name="BABY" component={ProductsListBaby} />

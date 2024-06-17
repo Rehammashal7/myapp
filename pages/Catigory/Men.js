@@ -290,7 +290,7 @@ const ProductsListMen = ({ navigation }) => {
           onScroll={(event) => handleScroll(event, item.id)}
         />
         <View style={card.dotsContainer}>
-          {item.images.map((_, index) => (
+          {item.images?.map((_, index) => (
             <View
               key={index}
               style={[
@@ -783,12 +783,12 @@ const MenDetails = ({ route, navigation }) => {
   };
 
   const wordsPerLine = 7;
-  const words = product.description.split(" ");
+  const words = product.description?.split(" ");
   const lines = [];
   let line = "";
-  for (let i = 0; i < words.length; i++) {
+  for (let i = 0; i < words?.length; i++) {
     line += words[i] + " ";
-    if ((i + 1) % wordsPerLine === 0 || i === words.length - 1) {
+    if ((i + 1) % wordsPerLine === 0 || i === words?.length - 1) {
       line = "◼︎ " + line.trim();
       lines.push(line);
       line = "";
@@ -847,7 +847,7 @@ const MenDetails = ({ route, navigation }) => {
   const loadLikesAndDislikes = async (reviews) => {
     try {
       const updatedReviews = await Promise.all(
-        reviews.map(async (review, index) => {
+        reviews?.map(async (review, index) => {
           const likeValue = await AsyncStorage.getItem(`like${index}`);
           const dislikeValue = await AsyncStorage.getItem(`disLike${index}`);
           const updatedReview = { ...review };
@@ -992,7 +992,7 @@ const MenDetails = ({ route, navigation }) => {
             onScroll={(event) => handleScroll(event, product.id)}
           />
           <View style={productpage.dotsContainerDetails}>
-            {product.images.map((_, index) => (
+            {product.images?.map((_, index) => (
               <View
                 key={index}
                 style={[
@@ -1254,7 +1254,7 @@ const MenDetails = ({ route, navigation }) => {
             >
               Product Information
             </Text>
-            {lines.map((line, index) => (
+            {lines?.map((line, index) => (
               <Text key={index} style={productpage.description}>
                 {line}
               </Text>

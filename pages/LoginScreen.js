@@ -10,7 +10,7 @@ import { Image } from 'react-native';
 import googleicon from "../assets/iconn.png";
 import faceicon from '../assets/fac.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import Chatbot from './Chatbot';
 
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
