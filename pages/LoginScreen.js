@@ -37,9 +37,9 @@ const LoginScreen = ({ navigation }) => {
 
       const data = docSnap.data();
       if (data.isAdmin === true) {
-        navigation.navigate('Chatbot');
+        navigation.navigate('adminHome');
       } else {
-        navigation.navigate('Chatbot');
+        navigation.navigate('Home');
       }
     }
   };

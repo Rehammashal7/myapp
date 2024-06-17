@@ -11,11 +11,7 @@ import { getAuth } from "firebase/auth";
 import { collection, addDoc, query, getDocs, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRoute } from '@react-navigation/native';
-// import { v4 as uuidv4 } from 'uuid';
-// import * as Random from 'expo-random';
 
-//  import 'react-native-get-random-values';
-// import { getRandomBytes } from 'expo-random';
 
 const Chatbot = ({ navigation }) => {
   const route = useRoute();
@@ -111,158 +107,17 @@ const Chatbot = ({ navigation }) => {
     }
   }, []);
   
-  // const generateUUID = async () => {
-  //   const randomBytes = await Random.getRandomBytesAsync(16);
-  //   let uuid = '';
-  //   for (let i = 0; i < randomBytes.length; i++) {
-  //     let hex = randomBytes[i].toString(16);
-  //     if (hex.length === 1) {
-  //       hex = '0' + hex;
-  //     }
-  //     uuid += hex;
-  //     if (i === 3 || i === 5 || i === 7 || i === 9) {
-  //       uuid += '-';
-  //     }
-  //   }
-  //   return uuid;
-  // };
-
-  // useEffect(() => {
-  //   const initialize = async () => {
-  //     try {
-  //       console.log("uuidv4:", uuidv4); // Check if this logs a function
-  //       const uniqueId = uuidv4();
-  //       console.log("UUID generated:", uniqueId);
-  //       setState(uniqueId);
-  //     } catch (error) {
-  //       console.error("An error occurred:", error);
-  //     }
-  //   };
-
-  //   initialize();
-  // }, []);
-
-  // const handleSend = async (newMessage = []) => {
-  //   setMessages((previousMessages) => GiftedChat.append(previousMessages, newMessage));
-  //   const text = newMessage[0].text;
-
-  //   const auth = getAuth();
-  //   if (auth.currentUser) {
-  //     await saveMessage(newMessage[0]);
-  //   }
-
-  //   try {
-  //     const result = await sendQueryToDialogflow(text, state);
-  //     handleResponse(result);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   const getProductsDataForWomen = async () => {
-  //     try {
-  //       const productsCollection = collection(db, "woman");
-  //       const productsSnapshot = await getDocs(productsCollection);
-  //       const productsData = productsSnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }));
-  //       const filteredProductsWomenDress = getProducts("woman", productsData, "dress");
-  //       setProductsWomenDress(filteredProductsWomenDress);
-  //       const filteredProductsWomenSkirt = getProducts("woman", productsData, "skirt");
-  //       setProductsWomenSkirt(filteredProductsWomenSkirt);
-  //       const filteredProductsWomenTshirt = getProducts("woman", productsData, "t-shirt");
-  //       setProductsWomenTshirt(filteredProductsWomenTshirt);
-  //       const filteredProductsWomenTrousers = getProducts("woman", productsData, "trousers");
-  //       setProductsWomenTrousers(filteredProductsWomenTrousers);
-  //     } catch (error) {
-  //       console.error("Error fetching products: ", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   getProductsDataForWomen();
-  //   const getProductsDataForMen = async () => {
-  //     try {
-  //       const productsCollection = collection(db, "men");
-  //       const productsSnapshot = await getDocs(productsCollection);
-  //       const productsData = productsSnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }));
-  //       const filteredProductsMenShirt = getProducts("men", productsData, "shirt");
-  //       setProductsMenShirt(filteredProductsMenShirt);
-  //       const filteredProductsMenTshirt = getProducts("men", productsData, "t-shirt");
-  //       setProductsMenTshirt(filteredProductsMenTshirt);
-  //       const filteredProductsMenTrousers = getProducts("men", productsData, "trousers");
-  //       setProductsMenTrousers(filteredProductsMenTrousers);
-  //     } catch (error) {
-  //       console.error("Error fetching products: ", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   getProductsDataForMen();
-  // }, []);
-
-  // useEffect(() => {
-  //   const getProductsDataForMen = async () => {
-  //     try {
-  //       const productsCollection = collection(db, "men");
-  //       const productsSnapshot = await getDocs(productsCollection);
-  //       const productsData = productsSnapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         ...doc.data(),
-  //       }));
-  //       const filteredProductsMenShirt = getProducts("men", productsData, "shirt");
-  //       setProductsMenShirt(filteredProductsMenShirt);
-  //       const filteredProductsMenTshirt = getProducts("men", productsData, "t-shirt");
-  //       setProductsMenTshirt(filteredProductsMenTshirt);
-  //       const filteredProductsMenTrousers = getProducts("men", productsData, "trousers");
-  //       setProductsMenTrousers(filteredProductsMenTrousers);
-  //     } catch (error) {
-  //       console.error("Error fetching products: ", error);
-  //     } finally {
-  //       setIsLoading(false);
-  //     }
-  //   };
-  //   getProductsDataForMen();
-  // }, []);
-
-
-  // const getProducts = (collectionName, data, type) => {
-  //   if (!data || !Array.isArray(data)) {
-  //     console.error("Invalid data format");
-  //     return [];
-  //   }
-
-  //   const filteredProducts = data.filter(product => product.type === type);
-
-  //   return filteredProducts;
-  // };
-
-  const saveMessage = async (message) => {
+   const saveMessage = async (message) => {
     try {
       if (auth.currentUser) {
-        console.log('User ID:', auth.currentUser.uid);
-        console.log(`Message Collection Path: users/${auth.currentUser.uid}/messages`);
-        console.log('Message data to save:', {
-          text: message.text,
-          createdAt: Timestamp.fromDate(message.createdAt),
-          user: message.user,
-          quickReplies: message.quickReplies || null,
-        });
-  
-        // const messageId = ; // استخدام مكتبة uuid لتوليد UUID
         await addDoc(collection(db, "users", auth.currentUser.uid, "messages"), {
-          // id: uuidv4(),
+          // id: Math.random(),
           text: message.text,
           createdAt: Timestamp.fromDate(message.createdAt),
           user: message.user,
           quickReplies: message.quickReplies || null,
         });
-        console.log('Message saved successfully with ID:');
+        console.log('Message saved successfully ');
       } else {
         console.log('No current user');
       }
@@ -274,25 +129,25 @@ const Chatbot = ({ navigation }) => {
     }
   };
 
-  function generateRandomHex() {
-    return Math.floor(Math.random() * 16).toString(16);
-  }
+  // function generateRandomHex() {
+  //   return Math.floor(Math.random() * 16).toString(16);
+  // }
   
-  function generateRandomUuid() {
-    let uuid = '';
-    for (let i = 0; i < 32; i++) {
-      if (i === 8 || i === 12 || i === 16 || i === 20) {
-        uuid += '-';
-      } else if (i === 16) {
-        uuid += '4';
-      } else if (i === 12) {
-        uuid += '4';
-      } else {
-        uuid += generateRandomHex();
-      }
-    }
-    return uuid;
-  }
+  // function generateRandomUuid() {
+  //   let uuid = '';
+  //   for (let i = 0; i < 32; i++) {
+  //     if (i === 8 || i === 12 || i === 16 || i === 20) {
+  //       uuid += '-';
+  //     } else if (i === 16) {
+  //       uuid += '4';
+  //     } else if (i === 12) {
+  //       uuid += '4';
+  //     } else {
+  //       uuid += generateRandomHex();
+  //     }
+  //   }
+  //   return uuid;
+  // }
   
  // const randomId = Date.now().toString() + Math.floor(Math.random() * 1000).toString();
   useEffect(() => {
@@ -332,13 +187,6 @@ const Chatbot = ({ navigation }) => {
       checkFirstVisit();
     }
 
-    // Voice.onSpeechResults = (event) => {
-    //   handleSend([{ text: event.value[0] }]);
-    // };
-
-    // return () => {
-    //   Voice.destroy().then(Voice.removeAllListeners);
-    // };
   }, []);
 
   const checkFirstVisit = async () => {
@@ -426,8 +274,6 @@ const Chatbot = ({ navigation }) => {
     }
   };
 
-//  let isMan=false;
-//  let isWoman=false;
 
   const sendBotResponse = async (text) => {
     if (isLoading) {
@@ -435,7 +281,7 @@ const Chatbot = ({ navigation }) => {
       return;
     }
     const message = {
-      _id:50,
+      _id:messages.length + Math.random(),
       text: text,
       createdAt: new Date(),
       user: BOT,
@@ -453,7 +299,7 @@ const Chatbot = ({ navigation }) => {
             value: product.name,
             image: product.images[0],
             productId: product.id,
-            _id:86,
+            _id:messages.length +  Math.random(),
           })),
         };
       } else {
@@ -754,7 +600,7 @@ setMessages((previousMessages) => GiftedChat.append(previousMessages, [message])
 
   const handleOnQuickReply = async (quickReply) => {
     const userMessage = {
-      _id: 66,
+      _id: messages.length  + Math.random(),
       text: quickReply[0].title,
       createdAt: new Date(),
       user: {

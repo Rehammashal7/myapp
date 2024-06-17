@@ -7,7 +7,10 @@ import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 // import filterData from '../data';
 import Food, { filterData, productt, option, size } from "../data";
-
+ import Icon from 'react-native-vector-icons/Ionicons';
+//import Icon from 'react-native-vector-icons/FontAwesome';
+import { Octicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -262,7 +265,24 @@ const HomeScreen = ({ navigation }) => {
                 </View>
                 <View style={styles.bottoms}></View>
             </ScrollView>
+            <Pressable onPress={() => navigation.navigate("Chatbot")} style={styles.chatIconContainer}>
+        {/* <Icon name="chatbubble-ellipses" size={50} color='#333' 
+        style={{
+  transform: [{ scaleX: -1 }]
+}}/> */}
+<Image
+                      source={require("../assets/bot.jpeg")}
+                      style={{
+                        width: 55,
+                        height: 55,
+                        resizeMode: "contain",
+                        borderRadius: 55,
+                      }}
+                    />
+        
+      </Pressable>
             <BottomNavigator item="Home" navigation={navigation} userId={userId} />
+      
         </View>
     );
 }
@@ -379,6 +399,12 @@ const styles = StyleSheet.create({
         color: "black",
         textAlign: "center",
         marginTop: 5,
+      },
+      chatIconContainer: {
+        position: 'absolute',
+        // top:550,
+         bottom: 65, // ضبط المسافة من الأعلى
+        right: 5, // ضبط المسافة من اليمين
       },
 });
 export default HomeScreen;
