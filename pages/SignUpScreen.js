@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
@@ -10,6 +10,7 @@ import {  createUserWithEmailAndPassword , signInWithPopup,
   import { auth , db}  from '../firebase';
   import { doc, setDoc } from "firebase/firestore";
   import Icon from 'react-native-vector-icons/FontAwesome';
+  import { DataContext } from '../DataContext';
 
 const SignUpScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
@@ -28,6 +29,7 @@ const SignUpScreen = ({ navigation }) => {
     const [HistoryOrder, setHistoryOrders] = useState([]);
   const [cancelOrder, setCancelOrders] = useState([]);
   const [walet , setWalet] = useState(Math.ceil(Math.random()*(25000-20000 + 1)+20000));
+  const { setUserId } = useContext(DataContext);
 
   const handleCheckEmail = () => {
     let isvalid = true ;
@@ -68,6 +70,9 @@ const SignUpScreen = ({ navigation }) => {
       const id =auth.currentUser.uid;
       //navigation.navigate('Profile');
        AsyncStorage.setItem('USERID', id);
+      //  await addUserToData(userId); 
+      //  await AsyncStorage.setItem('USERID', userId); 
+       setUserId(id);
       navigation.navigate('Home')
       
       // ...
@@ -115,6 +120,9 @@ const SignUpScreen = ({ navigation }) => {
     // The signed-in user info.
     const user = result.user.email;
     adduserTodata();
+    AsyncStorage.setItem('USERID', id);
+    setUserId(id);
+
     navigation.navigate('Home')
     window.alert("done log in");
     console.log("done login in");
@@ -141,6 +149,8 @@ const SignUpScreen = ({ navigation }) => {
       // This gives you a Facebook Access Token. You can use it to access the Facebook API.
       const credential = FacebookAuthProvider.credentialFromResult(result);
       const accessToken = credential.accessToken;
+      AsyncStorage.setItem('USERID', id);
+      setUserId(id);
       navigation.navigate('Home')
       window.alert("done log in");
       

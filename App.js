@@ -1,4 +1,4 @@
-
+import { DataProvider } from './DataContext';
 import Welcome from './pages/Welcome';
 import LoginScreen from './pages/LoginScreen'
 import SignUpScreen from './pages/SignUpScreen'
@@ -62,6 +62,7 @@ import EditProductPage from './adminPages/EditProductPage';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
+    <DataProvider>
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
@@ -135,6 +136,7 @@ export default function App() {
     
       </Stack.Navigator>
     </NavigationContainer>
+    </DataProvider>
   );
 }
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useContext} from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import {
   signInWithEmailAndPassword, signInWithPopup,
@@ -15,8 +15,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
 import COLORS from '../Consts/Color';
+import { DataContext } from '../DataContext';
+
 
 const LoginScreen = ({ navigation }) => {
+  const { setUser } = useContext(DataContext);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -32,10 +36,11 @@ const LoginScreen = ({ navigation }) => {
   const getUser = async () => {
     const docRef = doc(db, "users", auth.currentUser.uid);
     const docSnap = await getDoc(docRef);
-
+    
     if (docSnap.exists()) {
 
       const data = docSnap.data();
+      setUser(data); 
       if (data.isAdmin === true) {
         navigation.navigate('adminHome');
       } else {

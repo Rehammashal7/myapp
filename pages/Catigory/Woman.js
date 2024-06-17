@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useContext } from "react";
 import {
   View,
   Text,
@@ -33,25 +33,31 @@ import BottomNavigator from "../../components/bar";
 import Spinner from "react-native-loading-spinner-overlay";
 import SelectDropdown from 'react-native-select-dropdown';
 import { card, filter, productpage, smallCard } from "../../Consts/styles";
+import { DataContext } from "../../DataContext";
+import { fetchUserData } from "../../dataService";
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
 const ProductsListWoman = ({ navigation }) => {
-  const [products, setProducts] = useState([]);
-  const [userId, setUserId] = useState("");
+  // const [products, setProducts] = useState([]);
+  // const [userId, setUserId] = useState("");
   const [isPressed, setIsPressed] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollViewRef = useRef(null);
   const [activeIndexes, setActiveIndexes] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [filterproduct, setfilterProduct] = useState([]);
   const [iconsort, seticonsort] = useState(true);
-  const [sortOrder, setSortOrder] = useState(true);
+  // const [sortOrder, setSortOrder] = useState(true);
   const [filterType, setFilterType] = useState("");
   const [sizeType, setsizeType] = useState("");
   const [colorType, setcolorType] = useState("");
-  const [sortType, setSortType] = useState("");
+  const { products, isLoading ,userId} = useContext(DataContext);
+  const [womenProducts, setWomenProducts] = useState([]);
+  const [filterProduct, setFilterProduct] = useState([]);
+  const [sortType, setSortType] = useState(null);
+  const [sortOrder, setSortOrder] = useState(true); 
   const imageWidth = 200;
 
   const filters = [
@@ -90,114 +96,206 @@ const ProductsListWoman = ({ navigation }) => {
   ];
 
   // user id
-  useEffect(() => {
-    const getUserId = async () => {
-      const id = await AsyncStorage.getItem("USERID");
-      setUserId(id);
-    };
-    getUserId();
-  }, []);
-  useEffect(() => {
-    const getUserId = async () => {
-      const id = await AsyncStorage.getItem("USERID");
-      setUserId(id);
-    };
-    getUserId();
-  }, []);
+  // useEffect(() => {
+  //   const getUserId = async () => {
+  //     const id = await AsyncStorage.getItem("USERID");
+  //     setUserId(id);
+  //   };
+  //   getUserId();
+  // }, []);
+  // useEffect(() => {
+  //   const getUserId = async () => {
+  //     const id = await AsyncStorage.getItem("USERID");
+  //     setUserId(id);
+  //   };
+  //   getUserId();
+  // }, []);
 
   // get products
-  useEffect(() => {
-    const getProducts = async () => {
-      try {
-        const productsCollection = collection(db, "woman");
-        const productsSnapshot = await getDocs(productsCollection);
-        const productsData = productsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+  // useEffect(() => {
+  //   const getProducts = async () => {
+  //     try {
+  //       const productsCollection = collection(db, "woman");
+  //       const productsSnapshot = await getDocs(productsCollection);
+  //       const productsData = productsSnapshot.docs.map((doc) => ({
+  //         id: doc.id,
+  //         ...doc.data(),
+  //       }));
 
 
-        if (sortType === 'price') {
-          productsData.sort((a, b) => {
-            const priceA = a.price || 0; // Default to 0 if price is missing
-            const priceB = b.price || 0;
-            return sortOrder ? priceA - priceB : priceB - priceA;
-          });
-        } else if (sortType === 'rate') {
-          productsData.sort((a, b) => {
-            const rateA = a.rate || 0; // Default to 0 if price is missing
-            const rateB = b.rate || 0;
-            return sortOrder ? rateA - rateB : rateB - rateA;
-          });
-          setProducts(products);
-        }
-        setProducts(productsData);
-        setfilterProduct(productsData);
+  //       if (sortType === 'price') {
+  //         productsData.sort((a, b) => {
+  //           const priceA = a.price || 0; // Default to 0 if price is missing
+  //           const priceB = b.price || 0;
+  //           return sortOrder ? priceA - priceB : priceB - priceA;
+  //         });
+  //       } else if (sortType === 'rate') {
+  //         productsData.sort((a, b) => {
+  //           const rateA = a.rate || 0; // Default to 0 if price is missing
+  //           const rateB = b.rate || 0;
+  //           return sortOrder ? rateA - rateB : rateB - rateA;
+  //         });
+  //         setProducts(products);
+  //       }
+  //       setProducts(productsData);
+  //       setfilterProduct(productsData);
 
-      } catch (error) {
-        console.error("Error fetching products: ", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getProducts();
+  //     } catch (error) {
+  //       console.error("Error fetching products: ", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+  //   getProducts();
 
-  }, [sortType]);
+  // }, [sortType]);
 
   // filter
   // filter by size
+  // const handleSize = (title) => {
+  //   const filterSize = filterproduct.filter(product => containsize(product, title))
+  //   setProducts(filterSize);
+  // }
+  // const containsize = ({ sizes }, query) => {
+  //   return sizes.some(size => size.includes(query));
+  // };
+
+  // useEffect(() => {
+  //   handleSize()
+  // }, []);
+
+  // // by color
+  // const handleColor = (title) => {
+
+  //   const filterColor = filterproduct.filter(product => containColor(product, title))
+  //   setProducts(filterColor);
+  // }
+
+  // const containColor = ({ colors }, query) => {
+  //   return colors.some(color => color.includes(query));
+  // };
+
+  // useEffect(() => {
+  //   handleColor()
+  // }, []);
+
+  // // sort
+  // const handlesort = (title) => {
+  //   if (title === 'price') {
+  //     products.sort((a, b) => {
+  //       const priceA = a.price || 0; // Default to 0 if price is missing
+  //       const priceB = b.price || 0;
+  //       return !sortOrder ? priceA - priceB : priceB - priceA;
+  //     });
+  //     setProducts(products);
+  //   } else if (title === 'rate') {
+  //     products.sort((a, b) => {
+  //       const rateA = a.rate || 0; // Default to 0 if price is missing
+  //       const rateB = b.rate || 0;
+  //       return !sortOrder ? rateA - rateB : rateB - rateA;
+  //     });
+  //     setProducts(products);
+  //   } else {
+  //     setProducts(filterproduct);
+  //   }
+  // }
+  // const handleAll = (title) => {
+  //   if (title === 'all') {
+  //     setProducts(filterproduct);
+  //   }
+  // }
+
+  // const { products, isLoading } = useContext(DataContext);
+  // const [womenProducts, setWomenProducts] = useState([]);
+  // const [filterProduct, setFilterProduct] = useState([]);
+  // const [sortType, setSortType] = useState(null);
+  // const [sortOrder, setSortOrder] = useState(true); // true للصعود، false للنزول
+  // useEffect(() => {
+  //   console.log('products.woman:', products.woman);
+  //   if (products.woman && products.woman.length > 0) {
+  //     const filteredProducts = products.woman.filter(product => {
+  //       return product.price < 1000; // على سبيل المثال، فلترة المنتجات ذات السعر أقل من 100
+  //     });
+  //     setWomenProducts(filteredProducts);
+  //     setFilterProduct(filteredProducts);
+  //     console.log(filteredProducts);
+  //   } else {
+  //     console.log("No products found in 'woman' collection.");
+  //   }
+  // }, [products.woman]);
+
+  useEffect(() => {
+    console.log('products.woman:', products.woman);
+    const filteredWomenProducts = products.woman || []; 
+    setWomenProducts(filteredWomenProducts);
+    setFilterProduct(filteredWomenProducts);
+    console.log(filteredWomenProducts);
+    applySort(filteredWomenProducts, sortType, sortOrder);
+  }, [products, sortType, sortOrder]);
+
+  const applySort = (productsData, type, order) => {
+    if (!productsData) {
+      return;
+    }
+    let sortedProducts = [...productsData];
+    if (type === 'price') {
+      sortedProducts.sort((a, b) => {
+        const priceA = a.price || 0;
+        const priceB = b.price || 0;
+        return order ? priceA - priceB : priceB - priceA;
+      });
+    } else if (type === 'rate') {
+      sortedProducts.sort((a, b) => {
+        const rateA = a.rate || 0;
+        const rateB = b.rate || 0;
+        return order ? rateA - rateB : rateB - rateA;
+      });
+    }
+    setFilterProduct(sortedProducts);
+  };
+
   const handleSize = (title) => {
-    const filterSize = filterproduct.filter(product => containsize(product, title))
-    setProducts(filterSize);
-  }
-  const containsize = ({ sizes }, query) => {
+    const filterSize = womenProducts.filter(product => containsSize(product, title));
+    setFilterProduct(filterSize);
+  };
+
+  const containsSize = ({ sizes }, query) => {
     return sizes.some(size => size.includes(query));
   };
 
   useEffect(() => {
-    handleSize()
+    handleSize();
   }, []);
 
-  // by color
   const handleColor = (title) => {
+    const filterColor = womenProducts.filter(product => containsColor(product, title));
+    setFilterProduct(filterColor);
+  };
 
-    const filterColor = filterproduct.filter(product => containColor(product, title))
-    setProducts(filterColor);
-  }
-
-  const containColor = ({ colors }, query) => {
+  const containsColor = ({ colors }, query) => {
     return colors.some(color => color.includes(query));
   };
 
   useEffect(() => {
-    handleColor()
+    handleColor();
   }, []);
 
-  // sort
-  const handlesort = (title) => {
-    if (title === 'price') {
-      products.sort((a, b) => {
-        const priceA = a.price || 0; // Default to 0 if price is missing
-        const priceB = b.price || 0;
-        return !sortOrder ? priceA - priceB : priceB - priceA;
-      });
-      setProducts(products);
-    } else if (title === 'rate') {
-      products.sort((a, b) => {
-        const rateA = a.rate || 0; // Default to 0 if price is missing
-        const rateB = b.rate || 0;
-        return !sortOrder ? rateA - rateB : rateB - rateA;
-      });
-      setProducts(products);
-    } else {
-      setProducts(filterproduct);
-    }
-  }
+  const handleSort = (title) => {
+    setSortType(title);
+  };
+
   const handleAll = (title) => {
     if (title === 'all') {
-      setProducts(filterproduct);
+      setFilterProduct(womenProducts);
     }
+  };
+
+  if (isLoading) {
+    return <ActivityIndicator size="large" color="#0000ff" />;
   }
+
+
+  
 
   const handleProductPress = (product) => {
     navigation.navigate("WomanDetails", { product });
@@ -487,7 +585,7 @@ const ProductsListWoman = ({ navigation }) => {
         ) : (
           <FlatList
             numColumns={2}
-            data={products}
+            data={womenProducts}
             renderItem={renderProduct}
             keyExtractor={(item) => item.id}
           />
@@ -507,7 +605,7 @@ const WomanDetails = ({ route, navigation }) => {
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
-  const [userId, setUserId] = useState("");
+  // const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
   const product_id = product.id;
   const [comments, setComment] = useState(0);
@@ -524,34 +622,55 @@ const WomanDetails = ({ route, navigation }) => {
   const [isPressed, setIsPressed] = useState("");
   const numberOfInitialReviews = 3;
 
-  // get user id
+  const { products, user, userId, isLoading } = useContext(DataContext);
+  // const [productt, setProductt] = useState(null);
+
+  // const [comment, setComment] = useState(0);
+
+
+
+  //get user id
   useEffect(() => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
-      setUserId(id);
+      // setUserId(id);
       getCartItems(id)
     };
     getUserId();
 
   }, [isFocused]);
 
-  // get product
-  useEffect(() => {
-    const fetchItem = async (product_id) => {
-      const documentSnapshot = await getDoc(doc(db, "woman", product_id));
-      let tempData = [];
-      tempData.push({
-        id: documentSnapshot.id,
-        data: {
-          ...documentSnapshot.data(),
-          reviews: [],
-        },
-      });
-      setProductt(tempData);
-    };
-    fetchItem(product_id);
+  //get product
+  // useEffect(() => {
+  //   const fetchItem = async (product_id) => {
+  //     const documentSnapshot = await getDoc(doc(db, "woman", product_id));
+  //     let tempData = [];
+  //     tempData.push({
+  //       id: documentSnapshot.id,
+  //       data: {
+  //         ...documentSnapshot.data(),
+  //         reviews: [],
+  //       },
+  //     });
+  //     setProductt(tempData);
+  //   };
+  //   fetchItem(product_id);
 
-  }, [isFocused]);
+  // }, [isFocused]);
+  useEffect(() => {
+    if (isFocused) {
+      if (products && products.woman) {
+        const product = products.woman.find(p => p.id === product_id);
+        if (product) {
+          setProductt([product]); 
+          console.log(product);
+        } else {
+          console.error(`Product with id ${product_id} not found`);
+        }
+      }
+    }
+  }, [isFocused, product_id]);
+  
 
   useEffect(() => {
     if (modalVisibleCart) {
@@ -704,7 +823,135 @@ const WomanDetails = ({ route, navigation }) => {
 
     setIsPressed(!!existingItem);
   };
+////////////////////////////new//////////////////////
+// useEffect(() => {
+//   if (isFocused) {
+//     if (products && products.woman) {
+//       const product = products.woman.find(p => p.id === product_id);
+//       if (product) {
+//         setProductt([product]); // تأكد من أن setProductt يتوقع مصفوفة من المنتجات
+//         console.log(product);
+//       } else {
+//         console.error(`Product with id ${product_id} not found`);
+//       }
+//     }
+//   }
+// }, [isFocused, products, product_id, setProductt]);
 
+
+// // تحديث عدد العناصر في السلة
+// useEffect(() => {
+//   if (userId) {
+//     getCartItems(userId);
+//     fetchAllReviews();
+//   }
+// }, [userId]);
+
+// // جلب عناصر السلة
+// const getCartItems = async (id) => {
+//   const userRef = doc(db, "users", id);
+//   const userSnap = await getDoc(userRef);
+//   const cartCount = userSnap?.data()?.cart?.length ?? 0;
+//   setCartCount(cartCount);
+// };
+
+// جلب جميع التقييمات
+// const fetchAllReviews = async () => {
+//   try {
+//     const productRef = doc(db, "woman", product_id);
+//     const productDoc = await getDoc(productRef);
+//     const productData = productDoc.data();
+//     setReviews(productData.reviews || []);
+
+//     if (productData.reviews && productData.reviews.length > 0) {
+//       const averageRating =
+//         productData.reviews.reduce(
+//           (total, review) => total + review.rating,
+//           0
+//         ) / productData.reviews.length;
+//       setComment(productData.reviews.length);
+//       setRating(averageRating);
+//       await updateDoc(productRef, { rate: averageRating });
+//     } else {
+//       setRating(0);
+//       setComment(0);
+//       await updateDoc(productRef, { rate: 0 });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching reviews: ", error);
+//   }
+// };
+
+// const onAddToCart = async (item, selectedColor, selectedSize) => {
+//   const newDate = new Date();
+//   newDate.setDate(newDate.getDate() + 2);
+//   const userRef = doc(db, "users", userId);
+//   const userSnap = await getDoc(userRef);
+//   const { cart = [] } = userSnap.data() ?? {};
+//   let existingItem = cart.find((itm) => itm.id === item.id);
+
+//   if (existingItem) {
+//     existingItem.qty += 1;
+//     setShowGoToCartButton(true);
+//   } else {
+//     cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
+//   }
+//   await updateDoc(userRef, { cart });
+//   getCartItems(userId);
+//   if (selectedColor && selectedSize) {
+//     setShowGoToCartButton(true);
+//     setModalVisibleCart(true);
+//   } else if (selectedColor || selectedSize) {
+//     setShowGoToCartButton(true);
+//     setModalVisibleCart(true);
+//   } else {
+//     setModalVisibleCart(true);
+//     setShowGoToCartButton(false);
+//   }
+// };
+
+// const handleGoToCart = () => {
+//   navigation.navigate("CartScreen", { userId: userId });
+// };
+
+// إدارة العناصر المفضلة
+// const getFavItems = async () => {
+//   const userRef = doc(db, "users", userId);
+//   const userSnap = await getDoc(userRef);
+//   const favCount = userSnap?.data()?.fav?.length ?? 0;
+//   setFavCount(favCount);
+// };
+
+// const onAddToFav = async (item) => {
+//   setIsPressed(!isPressed);
+//   const userRef = doc(db, "users", userId);
+//   const userSnap = await getDoc(userRef);
+//   const { fav = [] } = userSnap.data() ?? {};
+//   let existingItem = fav.find((itm) => itm.id === item.id);
+
+//   if (existingItem) {
+//     existingItem.qty += 1;
+//   } else {
+//     fav.push({ ...item, qty: 1 });
+//   }
+//   await updateDoc(userRef, { fav });
+//   getFavItems();
+// };
+
+// const handelHeart = async (item) => {
+//   const userRef = doc(db, "users", userId);
+//   const userSnap = await getDoc(userRef);
+//   const { fav = [] } = userSnap.data() ?? {};
+//   const existingItem = fav.find(itm => itm.id === item.id);
+
+//   setIsPressed(!!existingItem);
+// };
+
+// useEffect(() => {
+//   if (isFocused) {
+//     handelHeart(product[0]); // Assuming productt has at least one item
+//   }
+// }, [isFocused, product]);
   //  discribtion
   const wordsPerLine = 7;
   const words = product.description.split(" ");
