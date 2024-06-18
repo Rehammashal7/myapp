@@ -2,7 +2,7 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input,Dimensions} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -295,8 +295,9 @@ if (docSnap.exists()) {
 const styles = StyleSheet.create({
   buttonsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
+    justifyContent: 'space-between',
+     width: '100%',
+   // width: Dimensions.get("window").width,
   },
   container: {
     flex: 1,
@@ -343,8 +344,8 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
     verticalAlign: 'middle',
-    borderRadius: '50%',
-    borderWidth: '5px',
+    //borderRadius: '50%',
+   // borderWidth: '5px',
     borderColor: 'gray',
     borderStyle: 'outset',
   },
@@ -366,7 +367,7 @@ const styles = StyleSheet.create({
       backgroundColor: 'black',
       paddingVertical: 10,
       paddingHorizontal: 20,
-      marginHorizontal: 5, // Add space between buttons horizontally
+      marginHorizontal: 15, // Add space between buttons horizontally
       borderRadius: 5,
       alignItems: 'center'
     },
@@ -380,7 +381,9 @@ const styles = StyleSheet.create({
     },
 
   logoutButton: {
-    width: 380,
+     width: '100%',
+    //width: 380,
+    
     marginLeft: 5,
     backgroundColor: "black",
     padding: 10,

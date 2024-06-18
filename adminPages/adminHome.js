@@ -9,7 +9,6 @@ import { db } from '../firebase';
 import Food, { filterData, productt, option, size } from "../data";
 
 import COLORS from '../Consts/Color';
-import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/adminbar';
 import { useIsFocused } from '@react-navigation/native';
@@ -293,84 +292,12 @@ useEffect(() => {
             <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 200 }} />
         </View>
     );
-//     return (
-//         <View style={styles.container}>
-//             <View >
-//                 <Text style={styles.Text}> AToZ </Text>
-//             </View>
-//             <Search />
-//             <ScrollView>
-//                 <View style={styles.header} >
-//                     <FlatList
-//                         horizontal={true}
-//                         showsHorizontalScrollIndicator={false}
-//                         data={filterData}
-//                         keyExtractor={(item) => item.id}
-//                         extraData={indexCheck}
-//                         renderItem={({ item, index }) => (
-//                             <Pressable
-//                                 onPress={() => navigation.navigate('admin'+item.name)}
-//                             >
-//                                 <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
-//                                     <View>
-//                                         <Text style={[styles.regularText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
-//                                     </View>
-//                                 </View>
-//                             </Pressable>
-//                         )}
-//                     />
-
-//                 </View>
-// {/* 
-//                 <Carousel
-//                     ref={carouselRef}
-//                     data={data}
-//                     renderItem={renderItem}
-//                     sliderWidth={width}
-//                     itemWidth={300}
-//                     autoplay={true}
-//                     autoplayInterval={3000}
-//                     loop={true}
-//                 /> */}
-
-               
-            
-
-               
-//                 <View style={styles.bottoms}></View>
-//             </ScrollView>
-//             <BottomNavigator item="adminHome" navigation={navigation} userId={userId} />
-//         </View>
-//     );
-
 return (
     <View style={styles.container}>
        <View >
                 <Text style={styles.Text}> AToZ </Text>
             </View> 
-             <Search />
              <ScrollView>
-             <View style={styles.header} >
-                    <FlatList
-                        horizontal={true}
-                        showsHorizontalScrollIndicator={false}
-                        data={filterData}
-                        keyExtractor={(item) => item.id}
-                        extraData={indexCheck}
-                        renderItem={({ item, index }) => (
-                            <Pressable
-                                onPress={() => navigation.navigate('admin'+item.name)}
-                            >
-                                <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
-                                    <View>
-                                        <Text style={[styles.regularText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
-                                    </View>
-                                </View>
-                            </Pressable>
-                        )}
-                    />
-
-                </View>
 
                 <View style={styles.chartContainer}>
       
@@ -395,13 +322,7 @@ return (
             strokeWidth: "2",
             stroke: "#0000FF"
           }, 
-          // propsForBezier: {
-          //   stroke: 'blue' 
-          // },
-          // propsForBezierLines: {
-          //   stroke: 'blue' 
-          // },
-          propsForBackgroundLines: {
+                 propsForBackgroundLines: {
             stroke: 'black' , 
             strokeWidth: "1",
              strokeDasharray: ""
@@ -468,7 +389,6 @@ const styles = StyleSheet.create({
         // marginBottom: 20,
         // borderColor: '#000000',
         width: Dimensions.get("window").width,
-       // height:Dimensions.get("window").width ,
         paddingVertical: 5,
         paddingHorizontal: 5, 
         shadowColor: '#000',
