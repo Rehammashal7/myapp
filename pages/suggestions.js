@@ -1,19 +1,37 @@
+
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../firebase';
-import { useRoute, useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const Suggestions = () => {
   const route = useRoute();
   const navigation = useNavigation();
   const { weather, userId } = route.params || {};
   const [governorate, setGovernorate] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [displayedImages, setDisplayedImages] = useState([]);
+  const [combinations, setCombinations] = useState([]);
+  const [displayedCombinations, setDisplayedCombinations] = useState([]);
   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+
+  useEffect(() => {
+    if (weather) {
+      setGovernorate(weather.location);
+      fetchSuggestions(weather);
+    }
+  }, [weather]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      if (weather) {
+        fetchSuggestions(weather);
+      }
+    }, [weather])
+  );
 
   const getSeason = (temp) => {
     if (temp >= 25) return 'summer';
@@ -22,10 +40,10 @@ const Suggestions = () => {
     return 'winter';
   };
 
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = async (weatherData) => {
     try {
       setLoading(true);
-      const season = getSeason(weather.temp);
+      const season = getSeason(weatherData.temp);
 
       const userRef = doc(db, 'users', userId);
       const userSnap = await getDoc(userRef);
@@ -33,39 +51,25 @@ const Suggestions = () => {
       if (userSnap.exists()) {
         const userData = userSnap.data();
         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
-        const seasonSuggestions = seasonOrders.reduce((acc, order) => {
-          if (!acc[order.type]) acc[order.type] = [];
-          acc[order.type].push(order.image);
-          return acc;
-        }, {});
+        const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
 
-        const allImages = Object.values(seasonSuggestions).flat();
-        const filteredImages = allImages.filter(image => !displayedImages.includes(image));
+        const combinedItems = [...seasonOrders, ...seasonClothes];
+        const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+        const trousers = combinedItems.filter(item => item.type === 'trousers');
+        const dresses = combinedItems.filter(item => item.type === 'dress');
 
-        if (filteredImages.length > 0) {
-          const randomIndex = Math.floor(Math.random() * filteredImages.length);
-          const selectedImage = filteredImages[randomIndex];
+        const allCombinations = [
+          ...tShirts.flatMap(tShirt =>
+            trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+          ),
+          ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+        ];
 
-          let pairedImage = null;
-          if (seasonSuggestions['t-shirt'] && seasonSuggestions['t-shirt'].includes(selectedImage)) {
-            const trousers = seasonSuggestions['trousers'].filter(image => !displayedImages.includes(image));
-            if (trousers.length > 0) {
-              pairedImage = trousers[Math.floor(Math.random() * trousers.length)];
-            }
-          } else if (seasonSuggestions['trousers'] && seasonSuggestions['trousers'].includes(selectedImage)) {
-            const tShirts = seasonSuggestions['t-shirt'].filter(image => !displayedImages.includes(image));
-            if (tShirts.length > 0) {
-              pairedImage = tShirts[Math.floor(Math.random() * tShirts.length)];
-            }
-          }
+        setCombinations(allCombinations);
+        setNoMoreSuggestions(false);
+        setDisplayedCombinations([]);
 
-          setSuggestions(pairedImage ? [selectedImage, pairedImage] : [selectedImage]);
-          setDisplayedImages([...displayedImages, selectedImage, pairedImage].filter(Boolean));
-
-          setNoMoreSuggestions(false);
-        } else {
-          setNoMoreSuggestions(true);
-        }
+        getNextCombination(allCombinations);
       } else {
         console.error('No such user document!');
       }
@@ -76,138 +80,4212 @@ const Suggestions = () => {
     }
   };
 
-  useEffect(() => {
-    if (weather) {
-      fetchSuggestions();
-      setGovernorate(weather.location);
+  const getNextCombination = (combinationsArray = combinations) => {
+    const remainingCombinations = combinationsArray.filter(
+      combo => !displayedCombinations.some(displayedCombo =>
+        (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+        (combo.dress && displayedCombo.dress === combo.dress)
+      )
+    );
+
+    if (remainingCombinations.length === 0) {
+      setNoMoreSuggestions(true);
+      return null;
     }
-  }, [weather]);
+
+    const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+    const nextCombination = remainingCombinations[randomIndex];
+
+    setDisplayedCombinations([...displayedCombinations, nextCombination]);
+    return nextCombination;
+  };
 
   const handleLocationPress = () => {
     navigation.navigate('weathersearch', { userId });
   };
 
-  const handleRefreshPress = () => {
-    fetchSuggestions();
+  const handleRefreshPress = async () => {
+    setRefreshing(true);
+    try {
+      let nextCombination;
+      if (selectedItem) {
+        const filteredCombinations = combinations.filter(
+          combo =>
+            (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+            (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+            (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+        );
+
+        nextCombination = filteredCombinations.find(
+          combo => !displayedCombinations.some(displayedCombo =>
+            (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+            (combo.dress && displayedCombo.dress === combo.dress)
+          )
+        );
+      } else {
+        nextCombination = getNextCombination();
+      }
+
+      if (nextCombination) {
+        setDisplayedCombinations([...displayedCombinations, nextCombination]);
+      }
+    } catch (error) {
+      console.error('Error fetching suggestions:', error);
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleRepeatPress = () => {
-    setDisplayedImages([]);
+    setDisplayedCombinations([]);
     setNoMoreSuggestions(false);
-    fetchSuggestions();
+    setSelectedItem(null);
+    getNextCombination(combinations);
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.weatherInfo}>
-          {weather ? (
-            <>
-              <Text style={styles.text}>{weather.temp} °C</Text>
-              <Text style={styles.text}>{weather.description}</Text>
-            </>
-          ) : (
-            <Text style={styles.text}></Text>
-          )}
-        </View>
-        <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
-          {governorate ? (
-            <Text style={styles.text}>{governorate}</Text>
-          ) : (
-            <Ionicons name="location-sharp" size={30} color="black" />
-          )}
-        </TouchableOpacity>
-      </View>
+  const handleItemPress = (item, type) => {
+    if (selectedItem && selectedItem.image === item) {
+      setSelectedItem(null);
+    } else {
+      setSelectedItem({ image: item, type });
+    }
+  };
 
-      {!weather ? (
-        <View style={styles.placeholderContainer}>
-          <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
-          <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
-        </View>
-      ) : (
-        <>
-          {loading ? (
-            <ActivityIndicator size="large" color="black" />
-          ) : (
-            <>
-              {suggestions.length > 0 ? (
-                suggestions.map((image, index) => (
-                  <View key={index} style={styles.suggestionItem}>
-                    <Image source={{ uri: image }} style={styles.suggestionImage} />
-                  </View>
-                ))
-              ) : (
-                <Text style={styles.text}>No suggestions available</Text>
-              )}
-            </>
-          )}
-          <View style={styles.buttonContainer}>
-            {!noMoreSuggestions && (
-              <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
-            )}
-            {noMoreSuggestions && (
-              <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
-            )}
-          </View>
-        </>
-      )}
+  const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+
+return (
+  <View style={styles.container}>
+    <View style={styles.header}>
+      <View style={styles.weatherInfo}>
+        {weather ? (
+          <>
+            <Text style={styles.text}>{weather.temp} °C</Text>
+            <Text style={styles.text}>{weather.description}</Text>
+          </>
+        ) : (
+          <Text style={styles.text}></Text>
+        )}
+      </View>
+      <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+        {governorate ? (
+          <Text style={styles.text}>{governorate}</Text>
+        ) : (
+          <Ionicons name="location-sharp" size={35} color="black" />
+        )}
+      </TouchableOpacity>
     </View>
-  );
+
+    <TouchableOpacity onPress={() => navigation.navigate('addclothes')} style={styles.addIcon}>
+      <Ionicons name="add-circle-outline" size={50} color="black" />
+    </TouchableOpacity>
+
+    {!weather ? (
+      <View style={styles.placeholderContainer}>
+        <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+        <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+      </View>
+    ) : (
+      <>
+        {loading ? (
+          <ActivityIndicator size="large" color="black" />
+        ) : (
+          <>
+            {noMoreSuggestions ? (
+              <Text style={styles.text}>No more suggestions available</Text>
+            ) : (
+              <>
+                {currentCombination ? (
+                  <>
+                    {currentCombination.tShirt && currentCombination.trouser ? (
+                      <>
+                        <TouchableOpacity
+                          style={[
+                            styles.suggestionItem,
+                            selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+                          ]}
+                          onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+                        >
+                          <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[
+                            styles.suggestionItem,
+                            selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+                          ]}
+                          onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+                        >
+                          <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <TouchableOpacity
+                        style={[
+                          styles.suggestionItem,
+                          selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+                        ]}
+                        onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+                      >
+                        <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+                      </TouchableOpacity>
+                    )}
+                  </>
+                ) : (
+                  <Text style={styles.text}>No suggestions available</Text>
+                )}
+              </>
+            )}
+          </>
+        )}
+        <View style={styles.buttonContainer}>
+          {refreshing ? (
+            <ActivityIndicator size="small" color="black" />
+          ) : (
+            !noMoreSuggestions && (
+              <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+            )
+          )}
+
+          {noMoreSuggestions && (
+            <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+          )}
+        </View>
+      </>
+    )}
+  </View>
+);
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  locationIcon: {
-    marginRight: 10,
-  },
-  weatherInfo: {
-    flex: 1,
-    alignItems: 'flex-start',
-  },
-  text: {
-    fontSize: 18,
-  },
-  buttonContainer: {
-    marginTop: 20,
-    alignItems: 'center',
-  },
-  suggestionItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-  },
-  suggestionImage: {
-    width: '100%',
-    height: 200,
-    resizeMode: 'cover',
-  },
-  placeholderContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  placeholderImage: {
-    width: 200,
-    height: 200,
-    marginBottom: 20,
-  },
-  placeholderText: {
-    fontSize: 18,
-    textAlign: 'center',
-  },
+container: {
+  flex: 1,
+  padding: 20,
+  backgroundColor: '#fff',
+},
+header: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 20,
+},
+locationIcon: {
+  marginRight: 8,
+},
+weatherInfo: {
+  flex: 1,
+  alignItems: 'flex-start',
+},
+text: {
+  fontSize: 18,
+},
+buttonContainer: {
+  marginTop: 20,
+  alignItems: 'center',
+},
+suggestionItem: {
+  padding: 10,
+  borderBottomWidth: 1,
+  borderBottomColor: '#ccc',
+},
+suggestionImage: {
+  width: '100%',
+  height: 200,
+  resizeMode: 'cover',
+},
+placeholderContainer: {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+placeholderImage: {
+  width: 150,
+  height: 150,
+  marginBottom: 20,
+},
+placeaholderText: {
+  fontSize: 18,
+  textAlign: 'center',
+},
+selectedItem: {
+  borderColor: 'black',
+  borderWidth: 2,
+},
+addIcon: {
+  position: 'absolute',
+  bottom:10,
+  right: 9,
+  zIndex: 10,
+ 
+},
 });
 
 export default Suggestions;
+
+
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [loading, setLoading] = useState(true);
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   useEffect(() => {
+//     if (weather) {
+//       setGovernorate(weather.location);
+//       fetchSuggestions(weather);
+//     }
+//   }, [weather]);
+
+//   useFocusEffect(
+//     React.useCallback(() => {
+//       if (weather) {
+//         fetchSuggestions(weather);
+//       }
+//     }, [weather])
+//   );
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async (weatherData) => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weatherData.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setNoMoreSuggestions(false);
+//         setDisplayedCombinations([]);
+
+//         getNextCombination(allCombinations);
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = (combinationsArray = combinations) => {
+//     const remainingCombinations = combinationsArray.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     setSelectedItem(null);
+//     getNextCombination(combinations);
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {noMoreSuggestions ? (
+//                 <Text style={styles.text}>No more suggestions available</Text>
+//               ) : (
+//                 <>
+//                   {currentCombination ? (
+//                     <>
+//                       {currentCombination.tShirt && currentCombination.trouser ? (
+//                         <>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                           >
+//                             <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                           >
+//                             <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                         </>
+//                       ) : (
+//                         <TouchableOpacity
+//                           style={[
+//                             styles.suggestionItem,
+//                             selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                           ]}
+//                           onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                         >
+//                           <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                         </TouchableOpacity>
+//                       )}
+//                     </>
+//                   ) : (
+//                     <Text style={styles.text}>No suggestions available</Text>
+//                   )}
+//                 </>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+
+//         // Only get the next combination if there are no displayed combinations yet
+//         if (displayedCombinations.length === 0) {
+//           getNextCombination(allCombinations);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = (combinationsArray = combinations) => {
+//     const remainingCombinations = combinationsArray.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     setSelectedItem(null);
+//     getNextCombination(combinations); // Pass the current combinations directly
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {noMoreSuggestions ? (
+//                 <Text style={styles.text}>No more suggestions available</Text>
+//               ) : (
+//                 <>
+//                   {currentCombination ? (
+//                     <>
+//                       {currentCombination.tShirt && currentCombination.trouser ? (
+//                         <>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                           >
+//                             <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                           >
+//                             <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                         </>
+//                       ) : (
+//                         <TouchableOpacity
+//                           style={[
+//                             styles.suggestionItem,
+//                             selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                           ]}
+//                           onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                         >
+//                           <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                         </TouchableOpacity>
+//                       )}
+//                     </>
+//                   ) : (
+//                     <Text style={styles.text}>No suggestions available</Text>
+//                   )}
+//                 </>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+
+//         // Only get the next combination if there are no displayed combinations yet
+//         if (displayedCombinations.length === 0) {
+//           getNextCombination(allCombinations);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = (combinationsArray = combinations) => {
+//     const remainingCombinations = combinationsArray.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {noMoreSuggestions ? (
+//                 <Text style={styles.text}>No more suggestions available</Text>
+//               ) : (
+//                 <>
+//                   {currentCombination ? (
+//                     <>
+//                       {currentCombination.tShirt && currentCombination.trouser ? (
+//                         <>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                           >
+//                             <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                           <TouchableOpacity
+//                             style={[
+//                               styles.suggestionItem,
+//                               selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                             ]}
+//                             onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                           >
+//                             <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                           </TouchableOpacity>
+//                         </>
+//                       ) : (
+//                         <TouchableOpacity
+//                           style={[
+//                             styles.suggestionItem,
+//                             selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                           ]}
+//                           onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                         >
+//                           <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                         </TouchableOpacity>
+//                       )}
+//                     </>
+//                   ) : (
+//                     <Text style={styles.text}>No suggestions available</Text>
+//                   )}
+//                 </>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+
+//         // Only get the next combination if there are no displayed combinations yet
+//         if (displayedCombinations.length === 0) {
+//           getNextCombination(allCombinations);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = (combinationsArray = combinations) => {
+//     const remainingCombinations = combinationsArray.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   {currentCombination.tShirt && currentCombination.trouser ? (
+//                     <>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                       >
+//                         <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                       >
+//                         <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                     </>
+//                   ) : (
+//                     <TouchableOpacity
+//                       style={[
+//                         styles.suggestionItem,
+//                         selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                       ]}
+//                       onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                     >
+//                       <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                     </TouchableOpacity>
+//                   )}
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+//         getNextCombination(allCombinations); // Get the first combination after fetching suggestions
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = (combinationsArray = combinations) => {
+//     const remainingCombinations = combinationsArray.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   {currentCombination.tShirt && currentCombination.trouser ? (
+//                     <>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                       >
+//                         <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                       >
+//                         <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                     </>
+//                   ) : (
+//                     <TouchableOpacity
+//                       style={[
+//                         styles.suggestionItem,
+//                         selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                       ]}
+//                       onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                     >
+//                       <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                     </TouchableOpacity>
+//                   )}
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+//         getNextCombination(); // Get the first combination after fetching suggestions
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = () => {
+//     const remainingCombinations = combinations.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true);
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   {currentCombination.tShirt && currentCombination.trouser ? (
+//                     <>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                       >
+//                         <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                       >
+//                         <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                     </>
+//                   ) : (
+//                     <TouchableOpacity
+//                       style={[
+//                         styles.suggestionItem,
+//                         selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                       ]}
+//                       onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                     >
+//                       <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                     </TouchableOpacity>
+//                   )}
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+//         const dresses = combinedItems.filter(item => item.type === 'dress');
+
+//         const allCombinations = [
+//           ...tShirts.flatMap(tShirt =>
+//             trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//           ),
+//           ...dresses.map(dress => ({ dress: dress.image || dress.imageUrl })),
+//         ];
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = () => {
+//     const remainingCombinations = combinations.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//         (combo.dress && displayedCombo.dress === combo.dress)
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   // const handleRefreshPress = async () => {
+//   //   setRefreshing(true);
+//   //   let nextCombination;
+//   //   if (selectedItem) {
+//   //     const filteredCombinations = combinations.filter(
+//   //       combo =>
+//   //         (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//   //         (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//   //         (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//   //     );
+
+//   //     nextCombination = filteredCombinations.find(
+//   //       combo => !displayedCombinations.some(displayedCombo =>
+//   //         (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//   //         (combo.dress && displayedCombo.dress === combo.dress)
+//   //       )
+//   //     );
+//   //   } else {
+//   //     nextCombination = getNextCombination();
+//   //   }
+
+//   //   if (nextCombination) {
+//   //     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//   //   }
+//   //   setRefreshing(false);
+//   // };
+//   const handleRefreshPress = async () => {
+//     setRefreshing(true); // Set refreshing to true to show the loading indicator
+  
+//     try {
+//       let nextCombination;
+//       if (selectedItem) {
+//         const filteredCombinations = combinations.filter(
+//           combo =>
+//             (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//             (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser) ||
+//             (selectedItem.type === 'dress' && selectedItem.image === combo.dress)
+//         );
+  
+//         nextCombination = filteredCombinations.find(
+//           combo => !displayedCombinations.some(displayedCombo =>
+//             (combo.tShirt && combo.trouser && displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser) ||
+//             (combo.dress && displayedCombo.dress === combo.dress)
+//           )
+//         );
+//       } else {
+//         nextCombination = getNextCombination();
+//       }
+  
+//       if (nextCombination) {
+//         setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setRefreshing(false); // Set refreshing to false after fetching is complete
+//     }
+//   };
+  
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   {currentCombination.tShirt && currentCombination.trouser ? (
+//                     <>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                       >
+//                         <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                       <TouchableOpacity
+//                         style={[
+//                           styles.suggestionItem,
+//                           selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                         ]}
+//                         onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                       >
+//                         <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                       </TouchableOpacity>
+//                     </>
+//                   ) : (
+//                     <TouchableOpacity
+//                       style={[
+//                         styles.suggestionItem,
+//                         selectedItem && selectedItem.image === currentCombination.dress && styles.selectedItem
+//                       ]}
+//                       onPress={() => handleItemPress(currentCombination.dress, 'dress')}
+//                     >
+//                       <Image source={{ uri: currentCombination.dress }} style={styles.suggestionImage} />
+//                     </TouchableOpacity>
+//                   )}
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//           {refreshing ? (
+//   <ActivityIndicator size="small" color="black" />
+// ) : (
+//   !noMoreSuggestions && (
+//     <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//   )
+// )}
+
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [refreshing, setRefreshing] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+
+//         const allCombinations = tShirts.flatMap(tShirt =>
+//           trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//         );
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = () => {
+//     const remainingCombinations = combinations.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return null;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     setRefreshing(true);
+//     let nextCombination;
+//     if (selectedItem) {
+//       const filteredCombinations = combinations.filter(
+//         combo =>
+//           (selectedItem.type === 't-shirt' && selectedItem.image === combo.tShirt) ||
+//           (selectedItem.type === 'trousers' && selectedItem.image === combo.trouser)
+//       );
+
+//       nextCombination = filteredCombinations.find(
+//         combo => !displayedCombinations.some(displayedCombo =>
+//           displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser
+//         )
+//       );
+//     } else {
+//       nextCombination = getNextCombination();
+//     }
+
+//     if (nextCombination) {
+//       setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     }
+//     setRefreshing(false);
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   <TouchableOpacity
+//                     style={[
+//                       styles.suggestionItem,
+//                       selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                     ]}
+//                     onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                   >
+//                     <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                   </TouchableOpacity>
+//                   <TouchableOpacity
+//                     style={[
+//                       styles.suggestionItem,
+//                       selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                     ]}
+//                     onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                   >
+//                     <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                   </TouchableOpacity>
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {refreshing ? (
+//               <ActivityIndicator size="small" color="black" />
+//             ) : (
+//               !noMoreSuggestions && (
+//                 <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//               )
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2
+
+//   },
+//   text: {
+//       fontSize: 18,
+//   },
+//   buttonContainer: {
+//       marginTop: 20,
+//       alignItems: 'center',
+//   },
+//   suggestionItem: {
+//       padding: 10,
+//       borderBottomWidth: 1,
+//       borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//       width: '100%',
+//       height: 200,
+//       resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//       flex: 1,
+//       justifyContent: 'center',
+//       alignItems: 'center',
+//   },
+//   placeholderImage: {
+//       width: 200,
+//       height: 200,
+//       marginBottom: 20,
+//   },
+//   placeholderText: {
+//       fontSize: 18,
+//       textAlign: 'center',
+//   },
+//   selectedItem: {
+//       borderColor: 'black',
+//       borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [combinations, setCombinations] = useState([]);
+//   const [displayedCombinations, setDisplayedCombinations] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedItems = [...seasonOrders, ...seasonClothes];
+//         const tShirts = combinedItems.filter(item => item.type === 't-shirt');
+//         const trousers = combinedItems.filter(item => item.type === 'trousers');
+
+//         const allCombinations = tShirts.flatMap(tShirt =>
+//           trousers.map(trouser => ({ tShirt: tShirt.image || tShirt.imageUrl, trouser: trouser.image || trouser.imageUrl }))
+//         );
+
+//         setCombinations(allCombinations);
+//         setDisplayedCombinations([]);
+//         setNoMoreSuggestions(false);
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const getNextCombination = () => {
+//     const remainingCombinations = combinations.filter(
+//       combo => !displayedCombinations.some(displayedCombo =>
+//         displayedCombo.tShirt === combo.tShirt && displayedCombo.trouser === combo.trouser
+//       )
+//     );
+
+//     if (remainingCombinations.length === 0) {
+//       setNoMoreSuggestions(true);
+//       return;
+//     }
+
+//     const randomIndex = Math.floor(Math.random() * remainingCombinations.length);
+//     const nextCombination = remainingCombinations[randomIndex];
+
+//     setDisplayedCombinations([...displayedCombinations, nextCombination]);
+//     return nextCombination;
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedCombinations([]);
+//     setNoMoreSuggestions(false);
+//     const nextCombination = getNextCombination();
+//     if (nextCombination) {
+//       setSelectedItem(null);
+//     }
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   const currentCombination = displayedCombinations[displayedCombinations.length - 1];
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {currentCombination ? (
+//                 <>
+//                   <TouchableOpacity
+//                     style={[
+//                       styles.suggestionItem,
+//                       selectedItem && selectedItem.image === currentCombination.tShirt && styles.selectedItem
+//                     ]}
+//                     onPress={() => handleItemPress(currentCombination.tShirt, 't-shirt')}
+//                   >
+//                     <Image source={{ uri: currentCombination.tShirt }} style={styles.suggestionImage} />
+//                   </TouchableOpacity>
+//                   <TouchableOpacity
+//                     style={[
+//                       styles.suggestionItem,
+//                       selectedItem && selectedItem.image === currentCombination.trouser && styles.selectedItem
+//                     ]}
+//                     onPress={() => handleItemPress(currentCombination.trouser, 'trousers')}
+//                   >
+//                     <Image source={{ uri: currentCombination.trouser }} style={styles.suggestionImage} />
+//                   </TouchableOpacity>
+//                 </>
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {!noMoreSuggestions && (
+//               <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [suggestions, setSuggestions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [displayedImages, setDisplayedImages] = useState([]);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+//   const [selectedItem, setSelectedItem] = useState(null);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async (refreshSelectedItem = false) => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedImages = [...seasonOrders, ...seasonClothes].reduce((acc, item) => {
+//           if (!acc[item.type]) acc[item.type] = [];
+//           acc[item.type].push(item.image || item.imageUrl);
+//           return acc;
+//         }, {});
+
+//         const allImages = Object.values(combinedImages).flat();
+//         const filteredImages = allImages.filter(image => !displayedImages.includes(image));
+
+//         if (filteredImages.length > 0) {
+//           let selectedImage;
+//           let pairedImage;
+
+//           if (refreshSelectedItem && selectedItem) {
+//             const otherType = selectedItem.type === 't-shirt' ? 'trousers' : 't-shirt';
+//             const otherImages = combinedImages[otherType].filter(image => !displayedImages.includes(image));
+
+//             if (otherImages.length > 0) {
+//               const randomIndex = Math.floor(Math.random() * otherImages.length);
+//               selectedImage = otherImages[randomIndex];
+//               pairedImage = selectedItem.image;
+//             }
+//           } else {
+//             const randomIndex = Math.floor(Math.random() * filteredImages.length);
+//             selectedImage = filteredImages[randomIndex];
+
+//             if (combinedImages['t-shirt'] && combinedImages['t-shirt'].includes(selectedImage)) {
+//               const trousers = combinedImages['trousers'].filter(image => !displayedImages.includes(image));
+//               if (trousers.length > 0) {
+//                 pairedImage = trousers[Math.floor(Math.random() * trousers.length)];
+//               }
+//             } else if (combinedImages['trousers'] && combinedImages['trousers'].includes(selectedImage)) {
+//               const tShirts = combinedImages['t-shirt'].filter(image => !displayedImages.includes(image));
+//               if (tShirts.length > 0) {
+//                 pairedImage = tShirts[Math.floor(Math.random() * tShirts.length)];
+//               }
+//             }
+//           }
+
+//           setSuggestions(pairedImage ? [selectedImage, pairedImage] : [selectedImage]);
+//           setDisplayedImages([...displayedImages, selectedImage, pairedImage].filter(Boolean));
+//           setNoMoreSuggestions(false);
+//         } else {
+//           setNoMoreSuggestions(true);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     fetchSuggestions(true);
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedImages([]);
+//     setNoMoreSuggestions(false);
+//     fetchSuggestions();
+//   };
+
+//   const handleItemPress = (item, type) => {
+//     if (selectedItem && selectedItem.image === item) {
+//       setSelectedItem(null);
+//     } else {
+//       setSelectedItem({ image: item, type });
+//     }
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {suggestions.length > 0 ? (
+//                 suggestions.map((image, index) => (
+//                   <TouchableOpacity 
+//                     key={index} 
+//                     style={[
+//                       styles.suggestionItem, 
+//                       selectedItem && selectedItem.image === image && styles.selectedItem
+//                     ]} 
+//                     onPress={() => handleItemPress(image, index === 0 ? 't-shirt' : 'trousers')}
+//                   >
+//                     <Image source={{ uri: image }} style={styles.suggestionImage} />
+//                   </TouchableOpacity>
+//                 ))
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {!noMoreSuggestions && (
+//               <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+//   selectedItem: {
+//     borderColor: 'black',
+//     borderWidth: 2,
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [suggestions, setSuggestions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [displayedImages, setDisplayedImages] = useState([]);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonClothes = userData.clothes.filter(clothes => clothes.season === season);
+
+//         const combinedImages = [...seasonOrders, ...seasonClothes].reduce((acc, item) => {
+//           if (!acc[item.type]) acc[item.type] = [];
+//           acc[item.type].push(item.image || item.imageUrl);
+//           return acc;
+//         }, {});
+
+//         const allImages = Object.values(combinedImages).flat();
+//         const filteredImages = allImages.filter(image => !displayedImages.includes(image));
+
+//         if (filteredImages.length > 0) {
+//           const randomIndex = Math.floor(Math.random() * filteredImages.length);
+//           const selectedImage = filteredImages[randomIndex];
+
+//           let pairedImage = null;
+//           if (combinedImages['t-shirt'] && combinedImages['t-shirt'].includes(selectedImage)) {
+//             const trousers = combinedImages['trousers'].filter(image => !displayedImages.includes(image));
+//             if (trousers.length > 0) {
+//               pairedImage = trousers[Math.floor(Math.random() * trousers.length)];
+//             }
+//           } else if (combinedImages['trousers'] && combinedImages['trousers'].includes(selectedImage)) {
+//             const tShirts = combinedImages['t-shirt'].filter(image => !displayedImages.includes(image));
+//             if (tShirts.length > 0) {
+//               pairedImage = tShirts[Math.floor(Math.random() * tShirts.length)];
+//             }
+//           }
+
+//           setSuggestions(pairedImage ? [selectedImage, pairedImage] : [selectedImage]);
+//           setDisplayedImages([...displayedImages, selectedImage, pairedImage].filter(Boolean));
+
+//           setNoMoreSuggestions(false);
+//         } else {
+//           setNoMoreSuggestions(true);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     fetchSuggestions();
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedImages([]);
+//     setNoMoreSuggestions(false);
+//     fetchSuggestions();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {suggestions.length > 0 ? (
+//                 suggestions.map((image, index) => (
+//                   <View key={index} style={styles.suggestionItem}>
+//                     <Image source={{ uri: image }} style={styles.suggestionImage} />
+//                   </View>
+//                 ))
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {!noMoreSuggestions && (
+//               <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+// import React, { useState, useEffect, useLayoutEffect } from 'react';
+// import { View, Text, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [suggestions, setSuggestions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [displayedImages, setDisplayedImages] = useState([]);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonSuggestions = seasonOrders.reduce((acc, order) => {
+//           if (!acc[order.type]) acc[order.type] = [];
+//           acc[order.type].push(order.image);
+//           return acc;
+//         }, {});
+
+//         const allImages = Object.values(seasonSuggestions).flat();
+//         const filteredImages = allImages.filter(image => !displayedImages.includes(image));
+
+//         if (filteredImages.length > 0) {
+//           const randomIndex = Math.floor(Math.random() * filteredImages.length);
+//           const selectedImage = filteredImages[randomIndex];
+
+//           let pairedImage = null;
+//           if (seasonSuggestions['t-shirt'] && seasonSuggestions['t-shirt'].includes(selectedImage)) {
+//             const trousers = seasonSuggestions['trousers'].filter(image => !displayedImages.includes(image));
+//             if (trousers.length > 0) {
+//               pairedImage = trousers[Math.floor(Math.random() * trousers.length)];
+//             }
+//           } else if (seasonSuggestions['trousers'] && seasonSuggestions['trousers'].includes(selectedImage)) {
+//             const tShirts = seasonSuggestions['t-shirt'].filter(image => !displayedImages.includes(image));
+//             if (tShirts.length > 0) {
+//               pairedImage = tShirts[Math.floor(Math.random() * tShirts.length)];
+//             }
+//           }
+
+//           setSuggestions(pairedImage ? [selectedImage, pairedImage] : [selectedImage]);
+//           setDisplayedImages([...displayedImages, selectedImage, pairedImage].filter(Boolean));
+
+//           setNoMoreSuggestions(false);
+//         } else {
+//           setNoMoreSuggestions(true);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   useLayoutEffect(() => {
+//     navigation.setOptions({
+//       headerRight: () => (
+//         <TouchableOpacity onPress={() => navigation.navigate('addclothes', { userId })}>
+//           <Ionicons name="add-circle-outline" size={30} color="black" />
+//         </TouchableOpacity>
+//       ),
+//     });
+//   }, [navigation, userId]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     fetchSuggestions();
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedImages([]);
+//     setNoMoreSuggestions(false);
+//     fetchSuggestions();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {suggestions.length > 0 ? (
+//                 suggestions.map((image, index) => (
+//                   <View key={index} style={styles.suggestionItem}>
+//                     <Image source={{ uri: image }} style={styles.suggestionImage} />
+//                   </View>
+//                 ))
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {!noMoreSuggestions && (
+//               <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+// });
+
+// export default Suggestions;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// import React, { useState, useEffect } from 'react';
+// import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ActivityIndicator, Button } from 'react-native';
+// import { Ionicons } from '@expo/vector-icons';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { db } from '../firebase';
+// import { useRoute, useNavigation } from '@react-navigation/native';
+
+// const Suggestions = () => {
+//   const route = useRoute();
+//   const navigation = useNavigation();
+//   const { weather, userId } = route.params || {};
+//   const [governorate, setGovernorate] = useState('');
+//   const [suggestions, setSuggestions] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [displayedImages, setDisplayedImages] = useState([]);
+//   const [noMoreSuggestions, setNoMoreSuggestions] = useState(false);
+
+//   const getSeason = (temp) => {
+//     if (temp >= 25) return 'summer';
+//     if (temp >= 15 && temp < 25) return 'spring';
+//     if (temp >= 5 && temp < 15) return 'fall';
+//     return 'winter';
+//   };
+
+//   const fetchSuggestions = async () => {
+//     try {
+//       setLoading(true);
+//       const season = getSeason(weather.temp);
+
+//       const userRef = doc(db, 'users', userId);
+//       const userSnap = await getDoc(userRef);
+
+//       if (userSnap.exists()) {
+//         const userData = userSnap.data();
+//         const seasonOrders = userData.HistoryOrder.filter(order => order.season === season);
+//         const seasonSuggestions = seasonOrders.reduce((acc, order) => {
+//           if (!acc[order.type]) acc[order.type] = [];
+//           acc[order.type].push(order.image);
+//           return acc;
+//         }, {});
+
+//         const allImages = Object.values(seasonSuggestions).flat();
+//         const filteredImages = allImages.filter(image => !displayedImages.includes(image));
+
+//         if (filteredImages.length > 0) {
+//           const randomIndex = Math.floor(Math.random() * filteredImages.length);
+//           const selectedImage = filteredImages[randomIndex];
+
+//           let pairedImage = null;
+//           if (seasonSuggestions['t-shirt'] && seasonSuggestions['t-shirt'].includes(selectedImage)) {
+//             const trousers = seasonSuggestions['trousers'].filter(image => !displayedImages.includes(image));
+//             if (trousers.length > 0) {
+//               pairedImage = trousers[Math.floor(Math.random() * trousers.length)];
+//             }
+//           } else if (seasonSuggestions['trousers'] && seasonSuggestions['trousers'].includes(selectedImage)) {
+//             const tShirts = seasonSuggestions['t-shirt'].filter(image => !displayedImages.includes(image));
+//             if (tShirts.length > 0) {
+//               pairedImage = tShirts[Math.floor(Math.random() * tShirts.length)];
+//             }
+//           }
+
+//           setSuggestions(pairedImage ? [selectedImage, pairedImage] : [selectedImage]);
+//           setDisplayedImages([...displayedImages, selectedImage, pairedImage].filter(Boolean));
+
+//           setNoMoreSuggestions(false);
+//         } else {
+//           setNoMoreSuggestions(true);
+//         }
+//       } else {
+//         console.error('No such user document!');
+//       }
+//     } catch (error) {
+//       console.error('Error fetching suggestions:', error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   useEffect(() => {
+//     if (weather) {
+//       fetchSuggestions();
+//       setGovernorate(weather.location);
+//     }
+//   }, [weather]);
+
+//   const handleLocationPress = () => {
+//     navigation.navigate('weathersearch', { userId });
+//   };
+
+//   const handleRefreshPress = () => {
+//     fetchSuggestions();
+//   };
+
+//   const handleRepeatPress = () => {
+//     setDisplayedImages([]);
+//     setNoMoreSuggestions(false);
+//     fetchSuggestions();
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.header}>
+//         <View style={styles.weatherInfo}>
+//           {weather ? (
+//             <>
+//               <Text style={styles.text}>{weather.temp} °C</Text>
+//               <Text style={styles.text}>{weather.description}</Text>
+//             </>
+//           ) : (
+//             <Text style={styles.text}></Text>
+//           )}
+//         </View>
+//         <TouchableOpacity onPress={handleLocationPress} style={styles.locationIcon}>
+//           {governorate ? (
+//             <Text style={styles.text}>{governorate}</Text>
+//           ) : (
+//             <Ionicons name="location-sharp" size={30} color="black" />
+//           )}
+//         </TouchableOpacity>
+//       </View>
+
+//       {!weather ? (
+//         <View style={styles.placeholderContainer}>
+//           <Image source={require('../assets/placeholder.webp')} style={styles.placeholderImage} />
+//           <Text style={styles.placeholderText}>Please select your location to get suggestions</Text>
+//         </View>
+//       ) : (
+//         <>
+//           {loading ? (
+//             <ActivityIndicator size="large" color="black" />
+//           ) : (
+//             <>
+//               {suggestions.length > 0 ? (
+//                 suggestions.map((image, index) => (
+//                   <View key={index} style={styles.suggestionItem}>
+//                     <Image source={{ uri: image }} style={styles.suggestionImage} />
+//                   </View>
+//                 ))
+//               ) : (
+//                 <Text style={styles.text}>No suggestions available</Text>
+//               )}
+//             </>
+//           )}
+//           <View style={styles.buttonContainer}>
+//             {!noMoreSuggestions && (
+//               <Button title="Refresh Suggestions" onPress={handleRefreshPress} color="black" />
+//             )}
+//             {noMoreSuggestions && (
+//               <Button title="Repeat Suggestions" onPress={handleRepeatPress} color="black" />
+//             )}
+//           </View>
+//         </>
+//       )}
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     backgroundColor: '#fff',
+//   },
+//   header: {
+//     flexDirection: 'row',
+//     justifyContent: 'space-between',
+//     alignItems: 'center',
+//     marginBottom: 20,
+//   },
+//   locationIcon: {
+//     marginRight: 10,
+//   },
+//   weatherInfo: {
+//     flex: 1,
+//     alignItems: 'flex-start',
+//   },
+//   text: {
+//     fontSize: 18,
+//   },
+//   buttonContainer: {
+//     marginTop: 20,
+//     alignItems: 'center',
+//   },
+//   suggestionItem: {
+//     padding: 10,
+//     borderBottomWidth: 1,
+//     borderBottomColor: '#ccc',
+//   },
+//   suggestionImage: {
+//     width: '100%',
+//     height: 200,
+//     resizeMode: 'cover',
+//   },
+//   placeholderContainer: {
+//     flex: 1,
+//     justifyContent: 'center',
+//     alignItems: 'center',
+//   },
+//   placeholderImage: {
+//     width: 200,
+//     height: 200,
+//     marginBottom: 20,
+//   },
+//   placeholderText: {
+//     fontSize: 18,
+//     textAlign: 'center',
+//   },
+// });
+
+// export default Suggestions;
 
 
 

@@ -58,6 +58,7 @@ import { Recycle, RecycleDetails } from './pages/Catigory/Recycle';
 import AddUserProduct from './pages/Catigory/AddUserProduct';
 import suggestions from './pages/suggestions';
 import weathersearch from './pages/weathersearch' ;
+import addclothes from'./pages/addclothes';
 const Stack = createNativeStackNavigator();
 export default function App() {
   return (
@@ -66,6 +67,7 @@ export default function App() {
 
       <Stack.Navigator initialRouteName="Welcome">
       <Stack.Screen name="weathersearch" component={weathersearch} />
+      <Stack.Screen name="addclothes" component={addclothes} />
 
       <Stack.Screen name="suggestions" component={suggestions} />
 
