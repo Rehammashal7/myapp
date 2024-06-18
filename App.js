@@ -2,6 +2,7 @@
 import Welcome from './pages/Welcome';
 //  import 'react-native-get-random-values';
   // import { v4 as uuidv4 } from 'uuid';
+  import { registerRootComponent } from 'expo';
 
 import LoginScreen from './pages/LoginScreen'
 import SignUpScreen from './pages/SignUpScreen'
@@ -62,8 +63,9 @@ import AddUserProduct from './pages/Catigory/AddUserProduct';
 import { AdminRecycle, AdminRecycleDetails } from './adminPages/AdminRecycle';
 import UserRecycleProduct from './pages/UserRecycleProduct';
 import EditProductPage from './adminPages/EditProductPage';
-import Chatbot from'./pages/Chatbot';
+// import Chatbot from'./pages/Chatbot';
 import pay from './pages/pay';
+import ImageSearch from './pages/ImageSearch';
 // import ChatComponent from './ChatComponent';
 // import Favorite from './pages/favorite';
 // import './shim';
@@ -73,12 +75,14 @@ export default function App() {
  
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator initialRouteName="ImageSearch">
       <Stack.Screen name="PurchasedProductsScreen" component={PurchasedProductsScreen} />
 <Stack.Screen name='waitingitem' component={Waitingitem}/>
       <Stack.Screen name="PayWithCard" component={PayWithCard} />
         <Stack.Screen name="Welcome" component={Welcome} />
-        <Stack.Screen name="Chatbot" component={Chatbot} />
+        <Stack.Screen name="ImageSearch" component={ImageSearch} />
+
+        {/* <Stack.Screen name="Chatbot" component={Chatbot} /> */}
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="WOMAN" component={ProductsListWoman} />
         <Stack.Screen name="WomanDetails" component={WomanDetails} />
