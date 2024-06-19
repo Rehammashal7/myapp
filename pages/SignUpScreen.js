@@ -49,7 +49,24 @@ const SignUpScreen = ({ navigation }) => {
     setShowPassword(!showPassword);
   };
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
+    // try {
+    //   const usersRef = collection(db, "users");
+    //   const querySnapshot = await getDocs(usersRef);
+
+    //   for (const userDoc of querySnapshot.docs) {
+    //     const userData = userDoc.data();
+    //     if (userData.isAdmin) {
+         
+    //           const currentcount = userData.count || 0;
+    //           const newcount = currentcount + 1;
+    //           const userRef = doc(db, "users", userDoc.id);
+    //           await updateDoc(userRef, { count: newcount });
+    //         }
+    //               }
+    //       } catch (error) {
+    //   console.error("Error updating checkoutcount: ", error);
+    // }
 
     if (password.length < 8) {
       alert('Password must be at least 8 characters long!');

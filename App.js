@@ -6,7 +6,7 @@ import HomeScreen from './pages/HomeScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import adminprofile from './adminPages/adminprofile';
-import favorite from './pages/Favorite';
+import favorite from './pages/favorite';
 import profile from './pages/profile';
 import userr from './adminPages/userr';
 
@@ -127,7 +127,6 @@ export default function App() {
         <Stack.Screen name="adminMEN" component={adminProductsListMen} />
         <Stack.Screen name="adminMenDetails" component={adminMenDetails} />
         <Stack.Screen name="EditProductPage" component={EditProductPage} />
-    
       </Stack.Navigator>
     </NavigationContainer>
   );

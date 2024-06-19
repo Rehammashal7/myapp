@@ -2,7 +2,7 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input,Dimensions} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input,Dimensions,TouchableWithoutFeedback} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -11,6 +11,10 @@ import { doc, updateDoc ,getDoc } from "firebase/firestore";
 import { auth , db , storage}  from '../firebase';
 import COLORS from "../Consts/Color";
 import BottomNavigator from '../components/adminbar';
+import { MaterialIcons } from '@expo/vector-icons';
+
+const { width } = Dimensions.get("screen");
+const { height } = Dimensions.get("screen");
 
 const adminProfile = ({navigation}) => {
   const currentUser = useAuth();
@@ -74,7 +78,12 @@ const adminProfile = ({navigation}) => {
   // };
 
 
-
+  const handleusers = () => {
+    navigation.navigate("userr");
+  };
+  const handleadmin = () => {
+    navigation.navigate("addadmin");
+  };
   const getUser = async() => {
     const docRef = doc(db, "users", auth.currentUser.uid);
 const docSnap = await getDoc(docRef);
@@ -120,6 +129,12 @@ if (docSnap.exists()) {
       return unsub;
     }, [])
   
+
+  
+
+
+
+
     return currentUser;
   }
 
@@ -150,7 +165,9 @@ if (docSnap.exists()) {
     <View  >
       <Image
         style={styles.profileImage}
-        source={photoURL}
+        // source={photoURL}
+         source={{ uri: photoURL }}
+          resizeMode="cover"
     
       />
      {/* <Feather name="file" color="#333333" size={20} />
@@ -161,13 +178,16 @@ if (docSnap.exists()) {
       */}
     </View>
 
-
-    
-
-
-
       {mode === 'view' && (
         <>
+
+<TouchableOpacity style={styles.editButton} onPress={handleEdit}>
+            <Text style={styles.buttonTextt}>Edit</Text>
+            <FontAwesome name="edit" color="black" size={20} />
+          </TouchableOpacity>
+
+       
+
           <View style={styles.field}>
           <FontAwesome name="user-o" color="#333333" size={20}  />
             <Text style={styles.label}> frist Name:</Text>
@@ -198,18 +218,34 @@ if (docSnap.exists()) {
             <Text style={styles.value2} >{birthDate}
             </Text>
           </View> */}
-          <View style={styles.buttonsRow}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Edit Profile</Text>
-      </TouchableOpacity></View>
-          
-      {/* <View style={styles.containerButton}><TouchableOpacity style={styles.logoutEdit} onPress={handleEdit}>
-        <Text style={styles.buttonText}>Add admin</Text>
-      </TouchableOpacity></View> */}
 
-      
+<TouchableOpacity onPress={handleusers}>
+            <View style={styles.aboutuscontainer}>
+              <MaterialIcons name="group" size={30} color="black" />
+              <View style={styles.textAndArrowContainer}>
+              <Text style={styles.abouttext}>Users</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={25} color="black"  />
+              </View>
+              </View>
+            </View>
+          </TouchableOpacity >
 
-          {/* <Button  title="Edit" onPress={handleEdit} /> */}
-        </>
+          <TouchableOpacity onPress={handleadmin}>
+            <View style={styles.aboutuscontainer}>
+              <MaterialIcons name="person-add" size={25} color="black" />
+              <View style={styles.textAndArrowContainer}>
+              <Text style={styles.abouttext}>Add Admin</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+              </View>
+              </View>
+            </View>
+          </TouchableOpacity >
+
+
+       
+                </>
       )}
 
       {mode === 'edit' && (
@@ -262,23 +298,6 @@ if (docSnap.exists()) {
       )}
 
 
-
-<View style={styles.buttonsRow}>
-
-<View style={styles.containerButton}>
-  <TouchableOpacity style={styles.logoutadd} onPress={() => navigation.navigate("addadmin")}>
-    <Text style={styles.buttonText}>Add Admin</Text>
-  </TouchableOpacity>
-</View>
-
-<View style={styles.containerButton}>
-  <TouchableOpacity style={styles.logoutadd} onPress={() => navigation.navigate('userr')}>
-    <Text style={styles.buttonText}>Users</Text>
-  </TouchableOpacity>
-</View>
-</View>
-
-
 <View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
         <Text style={styles.buttonTextLoggout}>Logout</Text>
       </TouchableOpacity></View>        
@@ -293,10 +312,33 @@ if (docSnap.exists()) {
 };
 
 const styles = StyleSheet.create({
+  editButton: {
+    //position: 'absolute',
+    //top: 20,
+    //right: 20,
+    flexDirection: 'row',
+    //backgroundColor: 'black',
+    justifyContent: 'flex-end',
+    paddingVertical: 2,
+    //paddingHorizontal: 20,
+    //borderRadius: 5,
+    alignItems: 'center',
+  }
+  ,  buttonTextt: {
+    color: 'black',
+    fontWeight: 'bold',
+    fontSize:15,
+    textDecorationLine: 'underline',
+    marginRight: 5,
+  },
+
   buttonsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-     width: '100%',
+    justifyContent: 'center',
+    //alignItems: 'flex-start',
+     marginTop: 20,
+     paddingRight: 0,
+      // width: '100%',
    // width: Dimensions.get("window").width,
   },
   container: {
@@ -343,11 +385,37 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    verticalAlign: 'middle',
+   // verticalAlign: 'middle',
     //borderRadius: '50%',
    // borderWidth: '5px',
-    borderColor: 'gray',
-    borderStyle: 'outset',
+   // borderColor: 'gray',
+   // borderStyle: 'outset',
+  },
+  aboutuscontainer: {
+    flexDirection: "row",
+    width: width - 10,
+    height: height / 18,
+    alignItems: "center",
+    marginLeft: 1,
+    marginTop: 8,
+    backgroundColor: "#FBFAFF",
+    borderStyle: "solid",
+    borderColor: "black",
+    // borderWidth: 0.5,
+  },
+  abouttext: {
+    fontSize: 15,
+    marginLeft: 10,
+
+
+  },
+  textAndArrowContainer: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginLeft: 5,
+    marginRight:8
   },
   containerButton:{
   //   // display: flex,
@@ -357,39 +425,55 @@ const styles = StyleSheet.create({
   // //margin:3,
   //   justifyContent: 'space-between',
   
-    flexDirection: 'row', // To place items next to each other in the same row
-    justifyContent: 'space-between', // To evenly distribute items along the horizontal axis
-    paddingHorizontal: 2, // Important for some spacing between buttons
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    paddingHorizontal: 2, 
     marginTop: 10,
 
   },
-    logoutEdit:{
-      backgroundColor: 'black',
-      paddingVertical: 10,
-      paddingHorizontal: 20,
-      marginHorizontal: 15, // Add space between buttons horizontally
-      borderRadius: 5,
-      alignItems: 'center'
+    // logoutEdit:{
+    //   backgroundColor: 'black',
+    //   paddingVertical: 10,
+    //   paddingHorizontal: 20,
+    //  // marginHorizontal: 15,
+    //   borderRadius: 5,
+    //   alignItems: 'center'
+    // },
+    logoutEdit: {
+      backgroundColor: COLORS.dark,
+      
+      padding: 10,
+      width: '100%',
+      alignItems: 'center',
+      marginTop: 10,
     },
     logoutadd:{
       backgroundColor: 'black',
       paddingVertical: 10,
       paddingHorizontal: 20,
-      marginHorizontal: 5, // Add space between buttons horizontally
+      marginHorizontal: 5, 
       borderRadius: 5,
-      alignItems: 'center'
+      alignItems: 'center',
     },
 
   logoutButton: {
      width: '100%',
     //width: 380,
-    
-    marginLeft: 5,
+    //marginLeft: 5,
     backgroundColor: "black",
     padding: 10,
     marginTop: 10,
     alignItems: "center",
+   
   },
+//   logoutButton: {
+//     width: '100%',
+//     backgroundColor: "black",
+//     paddingVertical: 10,
+//    alignItems: "center",
+//  // justifyContent: 'center', 
+//     borderRadius: 5,
+//   },
   buttonText: {
     color: "white",
     fontWeight: "bold",
@@ -422,3 +506,4 @@ iconBehave: {
 },
 });
 export default adminProfile;
+

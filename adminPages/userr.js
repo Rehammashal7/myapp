@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore'; // Import Firestore functions
 import { db } from "../firebase";
 
@@ -43,20 +43,26 @@ const userr = () => {
 
   return (
     <View style={styles.container}>
+      <ScrollView>
+     
       <Text style={styles.title}>User List</Text>
-      
       {users.map((user) => (
         <View key={user.id} style={styles.userContainer}>
           <View style={styles.userInfo}>
+          <View style={styles.nameContainer}>
             <Text style={styles.userName}>{user.name}</Text>
+            {user.isAdmin && <Text style={styles.adminText}>(admin)</Text>}
+            </View>
             <Text style={styles.userEmail}>{user.email}</Text>
+           
           </View>
           <TouchableOpacity onPress={() => handleDeleteUser(user.id)} style={styles.deleteButton}>
             <Text style={styles.deleteButtonText}>Delete</Text>
           </TouchableOpacity>
+          
         </View>
       ))}
-      
+      </ScrollView>
     </View>
   );
 };
@@ -94,6 +100,15 @@ const styles = StyleSheet.create({
   userEmail: {
     fontSize: 14, 
     color: '#666666',
+  },
+  adminText: {
+    fontSize: 12,
+    color: '#888888',
+    marginLeft: 8,
+  },
+  nameContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   deleteButton: {
     backgroundColor: 'red',
