@@ -209,6 +209,9 @@ const Profile = ({ navigation }) => {
   const handleRecycleProduct = () => {
     navigation.navigate("UserRecycleProduct");
   };
+  const handleSuggestions = () => {
+    navigation.navigate("suggestions");
+  };
   const handleEditProfile = () => {
     navigation.navigate("EditProfile");
   };
@@ -361,7 +364,7 @@ const Profile = ({ navigation }) => {
               </View>
             </View>
           </TouchableOpacity >
-          <TouchableOpacity onPress={handleRecycleProduct}>
+          <TouchableOpacity onPress={handleSuggestions}>
             <View style={styles.aboutuscontainer}>
             <MaterialCommunityIcons
               style={styles.weatherIcon}

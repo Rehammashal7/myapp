@@ -42,7 +42,7 @@ const BottomNavigator = ({ item, navigation, userId }) => {
           <Text style={styles.Text}>Home</Text>
         </Pressable>
 
-        <Pressable onPress={() => navigation.navigate("suggestions", { userId: userId })} style={styles.iconBehave}>
+        <Pressable onPress={() => navigation.navigate("favorite", { userId: userId })} style={styles.iconBehave}>
           <Icon name={iconheart} size={25} color={COLORS.dark} style={styles.iconBehave} />
           <Text style={styles.Text}>favorite</Text>
         </Pressable>
