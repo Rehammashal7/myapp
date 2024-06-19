@@ -32,6 +32,7 @@ import BottomNavigator from "../components/bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
+import createIconSet from 'react-native-vector-icons';
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
@@ -360,6 +361,23 @@ const Profile = ({ navigation }) => {
               </View>
             </View>
           </TouchableOpacity >
+          <TouchableOpacity onPress={handleRecycleProduct}>
+            <View style={styles.aboutuscontainer}>
+            <MaterialCommunityIcons
+              style={styles.weatherIcon}
+              name="weather-cloudy"
+              size={35}
+              color="black"
+            />
+              <View style={styles.textAndArrowContainer}>
+              <Text style={styles.abouttext}>Suggestion for clothes</Text>
+              <View>
+                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+              </View>
+              </View>
+            </View>
+          </TouchableOpacity >
+
           <TouchableOpacity onPress={handleLogOut} style={styles.logoutButton}>
             <Text style={styles.logoutButtonText}>LogOut</Text>
           </TouchableOpacity>

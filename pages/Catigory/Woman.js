@@ -21,6 +21,7 @@ import {
   getDoc,
   arrayUnion,
 } from "firebase/firestore";
+
 import { useRef } from "react";
 import { auth, db, storage } from "../../firebase";
 import Food, { filterData, productt, option, size } from "../../data";
@@ -877,7 +878,7 @@ const WomanDetails = ({ route, navigation }) => {
             keyExtractor={(image, index) => index}
             onScroll={(event) => handleScroll(event, product.id)}
           />
-          <View style={styles.dotsContainerDetails}>
+          <View style={productpage.dotsContainerDetails}>
             {product.images?.map((_, index) => (
               <View
                 key={index}

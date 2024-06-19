@@ -15,14 +15,14 @@ import { collection, getDocs } from 'firebase/firestore';
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCbW6TFYhnqZkdP8JpM4DOgE1EpWuaIgQc",
-  authDomain: "software-engineering-dcd78.firebaseapp.com",
-  projectId: "software-engineering-dcd78",
-  storageBucket: "software-engineering-dcd78.appspot.com",
-  messagingSenderId: "880271325840",
-  appId: "1:880271325840:web:f4c4934be1f8b7e45a3615"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyCbW6TFYhnqZkdP8JpM4DOgE1EpWuaIgQc",
+//   authDomain: "software-engineering-dcd78.firebaseapp.com",
+//   projectId: "software-engineering-dcd78",
+//   storageBucket: "software-engineering-dcd78.appspot.com",
+//   messagingSenderId: "880271325840",
+//   appId: "1:880271325840:web:f4c4934be1f8b7e45a3615"
+// };
 // const firebaseConfig = {
 //   apiKey: "AIzaSyASuGru62hK6n5D1d6J42wUxFn9WP4PVd4",
 //   authDomain: "atoz-fd758.firebaseapp.com",
@@ -32,6 +32,22 @@ const firebaseConfig = {
 //   appId: "1:243055050436:web:126adf43a29d6950305391",
 //   measurementId: "G-MG32J1V30N"
 // };
+const firebaseConfig = {
+
+  apiKey: "AIzaSyB6wf8xG6S8diCkCZlu5k2O7Hpjaxk4WH8",
+
+  authDomain: "test-a74c1.firebaseapp.com",
+
+  projectId: "test-a74c1",
+
+  storageBucket: "test-a74c1.appspot.com",
+
+  messagingSenderId: "438157288823",
+
+  appId: "1:438157288823:web:5e1bab90b8548f29006d72"
+
+};
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
