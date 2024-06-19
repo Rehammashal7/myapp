@@ -415,6 +415,8 @@ const Checkout = ({ navigation }) => {
             description: cartItem.data.description,
             color: cartItem.color,
             size: cartItem.size,
+            season:cartItem.data.season,
+            type:cartItem.data.type,
           };
           userOrders.push(newOrder);
         });
