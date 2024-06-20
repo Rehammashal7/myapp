@@ -607,10 +607,7 @@ const KidsDetails = ({ route, navigation }) => {
   const [reviews, setReviews] = useState([]);
   const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
   const productId = product.id;
-  const [disLike, setDislikes] = useState([0]);
-  const [reviews, setReviews] = useState([]);
-  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
-  const productId = product.id;
+
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -790,11 +787,11 @@ const KidsDetails = ({ route, navigation }) => {
   useEffect(() => {
     handelHeart(product);
   }, [handelHeart]);
-  }, [handelHeart]);
+ 
   useEffect(() => {
     console.log(isPressed);
   }, [isPressed]);
-  }, [isPressed]);
+
 
   const [Newprice, setNewprice] = useState(product.price);
 
