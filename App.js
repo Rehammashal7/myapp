@@ -1,8 +1,5 @@
 
 import Welcome from './pages/Welcome';
-//  import 'react-native-get-random-values';
-  // import { v4 as uuidv4 } from 'uuid';
-
 import LoginScreen from './pages/LoginScreen'
 import SignUpScreen from './pages/SignUpScreen'
 import HomeScreen from './pages/HomeScreen';
@@ -21,7 +18,6 @@ import { AdminMenDetails, AdminProductsListMen } from './adminPages/adminMen' ;
 import Checkout from './pages/checkout';
 import EditProfile from './pages/EditProfile';
 import AddProductForm from './adminPages/AddProductForm';
-// import products from './pages/AddProducts';
 
 import { OfferDetailsAdmin, ProductsListOfferAdmin, EditOfferPage } from './adminPages/OfferAdmin';
 import CartScreen from './pages/CartScreen'

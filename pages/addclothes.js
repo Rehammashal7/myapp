@@ -6,7 +6,7 @@ import { auth, db, storage } from '../firebase';
 import COLORS from '../Consts/Color';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-const addclothes = () => {
+const Addclothes = () => {
   const [type, setType] = useState('');
   const [image, setImage] = useState(null);
   const [season, setSeason] = useState('');
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export default addclothes;
+export default Addclothes;
 
 
 

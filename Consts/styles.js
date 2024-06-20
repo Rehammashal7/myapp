@@ -73,7 +73,7 @@ const Homestyles = StyleSheet.create({
     Text: {
         color: COLORS.darkblue,
         fontSize: 35,
-        fontFamily: 'SofiaRegular',
+    //    fontFamily: 'SofiaRegular',
         fontWeight: "bold",
         alignItems: 'center',
     },

@@ -132,7 +132,7 @@ const AddReviewWoman = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => deleteReview(item)}>
           <Icon name="trash" size={20} color="red" />
         </TouchableOpacity>
-        {"\n"}
+       
       </View>
       <Text style={[styles.reviewText, { marginTop: 15 }]}>
         Comment: {item.comment}
