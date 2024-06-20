@@ -1,7 +1,7 @@
 // import { createStackNavigator } from '@react-navigation/stack';
 // import { NavigationContainer } from '@react-navigation/native';
 //import Checkout from './Checkout';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 // import firebase from 'firebase/app';
 // import 'firebase/firestore';
 
@@ -25,11 +25,13 @@ import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/fi
 import { db } from "../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
+import chart from '../adminPages/chart';
 
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2;
 
 const Checkout = ({ navigation }) => {
+  //const [currentCount, setCurrentCount] = useState(0);
   const [amount, setAmount] = useState("");
   const [error, setError] = useState(null);
   const [IconArr, setIconArr] = useState(false);
@@ -196,9 +198,87 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice();
   }, [deliveryprice]);
+  // const updateProductCount = async (productName) => {
+  //   try {
+  //     const docRef = firestore().collection('productCounts').doc('counts');
+  //     await docRef.update({
+  //       [productName]: firestore.FieldValue.increment(1)
+  //     });
+  //     console.log(`Count for ${productName} updated successfully.`);
+  //   } catch (error) {
+  //     console.error(`Error updating count for ${productName}:`, error);
+  //   }
+  // };
+
+  //   const updateProductCount = async (categoryName, productName) => {
+  //     try {
+  //         // Perform database operation to update product count based on category
+  //         // For example:
+  //         const docRef = firestore().collection('productCounts').doc('counts');
+  //         await docRef.update({
+  //             [categoryName]: firestore.FieldValue.increment(1)
+  //         });
+
+  //         console.log(`Count for product ${productName} in category ${categoryName} updated successfully.`);
+  //     } catch (error) {
+  //         console.error(`Error updating count for product ${productName} in category ${categoryName}:`, error);
+  //     }
+  // };
 
   const handleCheckout = async () => {
+    console.log("Button pressed");
     try {
+      const usersRef = collection(db, "users");
+      const querySnapshot = await getDocs(usersRef);
+
+      for (const userDoc of querySnapshot.docs) {
+        const userData = userDoc.data();
+        if (userData.isAdmin) {
+          cartList.forEach(async (cartItem) => {
+           
+            if (cartItem.data.categoryName == 'WOMAN') {
+             // console.log(cartItem.data.categoryName)
+              const currentcount = userData.woman || 0;
+              const newwoman = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { woman: newwoman });
+            }
+            else if (cartItem.data.categoryName == 'MEN') {
+
+              const currentcount = userData.men || 0;
+              const newmen = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { men: newmen });
+            }
+            else if (cartItem.data.categoryName == 'KIDS') {
+
+              const currentcount = userData.kids || 0;
+              const newkids = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { kids: newkids });
+            }
+            else if (cartItem.data.categoryName == 'BABY') {
+
+              const currentcount = userData.baby || 0;
+              const newbaby = currentcount + 1;
+              const userRef = doc(db, "users", userDoc.id);
+              await updateDoc(userRef, { baby: newbaby });
+            }
+
+          });
+
+          // const currentcount = userData.cou || 0;
+          // const newCount = currentcount + 1;
+          // const userRef = doc(db, "users", userDoc.id);
+          // await updateDoc(userRef, { cou: newCount });
+
+        }
+      }
+    } catch (error) {
+      console.error("Error updating checkoutcount: ", error);
+    }
+
+      try {
       const items = [];
 
       cartList.forEach((item) => {
@@ -214,6 +294,7 @@ const Checkout = ({ navigation }) => {
           description: data.description,
           category: data.categoryName,
         });
+
       });
 
       const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
@@ -232,6 +313,8 @@ const Checkout = ({ navigation }) => {
     } catch (error) {
       console.error("Error saving purchased products to Firestore:", error);
     }
+
+
   };
 
   // const handleCheckout = async () => {
@@ -457,10 +540,29 @@ const Checkout = ({ navigation }) => {
     }
   };
 
+
+  // useEffect(() => {
+  //   const fetchCheckoutCount = async () => {
+  //     try {
+  //       const userRef = doc(db, "users", userId);
+  //       const userSnap = await getDoc(userRef);
+  //       const userData = userSnap.data();
+
+  //       const count = userData.cou || 0;
+  //       setCurrentCount(count);
+  //     } catch (error) {
+  //       console.error("Error fetching checkout count:", error);
+  //     }
+  //   };
+
+  //   fetchCheckoutCount();
+  // }, [userId]);
   return (
+
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={[styles.Text, { textAlign: "center" }]}> Checkout</Text>
+
+        <Text style={[styles.Text, { textAlign: "center" }]}> Checkout </Text>
       </View>
       <ScrollView style={styles.container}>
         {/* delivery */}
@@ -697,9 +799,11 @@ const Checkout = ({ navigation }) => {
 
       {cartList.length > 0 && (
         <View style={styles.checkoutView}>
+          {/* <chart currentCount={currentCount} /> */}
           <Text style={{ color: COLORS.dark, fontWeight: '600' }}>
             {'Items(' + getTotalItems() + ')\nTotal: $' + (getTotal() + delprice - getTotalOfers()).toFixed(2)}
           </Text>
+          {/* <chart currentCount={currentCount} /> */}
           <TouchableOpacity
             style={styles.checkButton}
             onPress={() => {

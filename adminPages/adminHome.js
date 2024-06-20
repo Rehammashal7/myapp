@@ -3,7 +3,7 @@ import {
     View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
     ScrollView, Dimensions, TouchableWithoutFeedback
 } from 'react-native';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs,updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 // import filterData from '../data';
 import Food, { filterData, productt, option, size } from "../data";
@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/adminbar';
 import { getAuth } from "firebase/auth";
 import { useIsFocused } from '@react-navigation/native';
+import { LineChart , BarChart, PieChart} from 'react-native-chart-kit';
 // import Carousel from 'react-native-snap-carousel';
 
 const { width } = Dimensions.get('screen');
@@ -29,7 +30,120 @@ const HomeScreen = ({ navigation }) => {
     const [activeIndexes, setActiveIndexes] = useState({});
     const imageWidth = cardwidth;
     const isFocused = useIsFocused();
-    const auth = getAuth();
+    const [user, setUser] = useState("");
+     const [chartData, setChartData] = useState({
+    labels: [ "WOMAN", "MEN", "KIDS", "BABY"],
+    datasets: [{
+      data: [0, 0, 0, 0] 
+    }]
+  });
+  const [piedata,setpiedata] = useState({
+ 
+    data: [  {
+     name: "LOST",
+     population: 0,
+     color: "rgb(0, 0, 255)",
+     legendFontColor: "#7F7F7F",
+     legendFontSize: 15
+   },{
+     name: "WALLET",
+     population: 0,
+     color: "#F00",
+     legendFontColor: "#7F7F7F",
+     legendFontSize: 15
+   },]
+ 
+});
+
+useEffect(() => {
+ const getUserId = async () => {
+   const id = await AsyncStorage.getItem("USERID");
+   setUserId(id);
+   getChartItems(id);
+ };
+ getUserId();
+}, [isFocused]);
+
+const getChartItems = async (id) => {
+ try {
+   const userRef = doc(db, "users", id);
+   const userSnap = await getDoc(userRef);
+   const userData = userSnap.data();
+
+   if (userData) {
+     const newData = {
+       labels: ["WOMAN", "MEN", "KIDS", "BABY"],
+       datasets: [{
+         data: [userData?.woman || 0, userData?.men || 0, userData?.kids || 0, userData?.baby || 0]
+       }]
+     };
+     setChartData(newData);
+   } else {
+     console.log("User data not found");
+   }
+ } catch (error) {
+   console.error("Error retrieving user data:", error);
+ }
+};
+
+const cancelfun = async () => {
+  
+ try {
+   const usersRef = collection(db, "users");
+   const querySnapshot = await getDocs(usersRef);
+   let lost = 0;
+   let lwalet=0;
+   
+   for (const userDoc of querySnapshot.docs) {
+     const userData = userDoc.data();
+     const cancelOrder = userData.cancelOrder?? {};
+     
+     console.log(cancelOrder);
+     if (cancelOrder.length > 0) {
+       cancelOrder.map((item) => {
+         lost = lost + item.totalPrice * 0.2 ;
+       })
+       console.log(lost);
+       console.log(lwalet);
+     }
+     if (userData.isAdmin) {
+           const userRef = doc(db, "users", userDoc.id);
+           const userSnap = await getDoc(userRef);
+           const userData = userSnap.data();
+           await updateDoc(userRef, { lost: lost });
+           lwalet = userData.walet;
+           console.log(lwalet);
+         }     
+   }
+   console.log(lwalet);
+   const newData = {
+       data: [{  
+         name: "WALLET",
+         population: lwalet,
+         color: "rgb(0, 0, 255)",
+         legendFontColor: "#7F7F7F",
+         legendFontSize: 15
+       },{
+         name: "LOST",
+         population: lost,
+         color: "#F00",
+         legendFontColor: "#7F7F7F",
+         legendFontSize: 15
+       },]
+   };
+
+   setpiedata(  newData);
+
+ } catch (error) {
+   console.error("Error updating : ", error);
+ }
+
+}
+useEffect(() => {
+ cancelfun();
+});
+
+
     useEffect(() => {
         getUser();
       }, [isFocused]);
@@ -196,14 +310,64 @@ const handelNavigation=(Category)=>{
             <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 200 }} />
         </View>
     );
-    return (
-        <View style={styles.container}>
-            <View >
+//     return (
+//         <View style={styles.container}>
+//             <View >
+//                 <Text style={styles.Text}> AToZ </Text>
+//             </View>
+//             <Search />
+//             <ScrollView>
+//                 <View style={styles.header} >
+//                     <FlatList
+//                         horizontal={true}
+//                         showsHorizontalScrollIndicator={false}
+//                         data={filterData}
+//                         keyExtractor={(item) => item.id}
+//                         extraData={indexCheck}
+//                         renderItem={({ item, index }) => (
+//                             <Pressable
+//                                 onPress={() => navigation.navigate('admin'+item.name)}
+//                             >
+//                                 <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
+//                                     <View>
+//                                         <Text style={[styles.regularText, indexCheck === item.id ? styles.selectedCardText : null]}>{item.name}</Text>
+//                                     </View>
+//                                 </View>
+//                             </Pressable>
+//                         )}
+//                     />
+
+//                 </View>
+// {/* 
+//                 <Carousel
+//                     ref={carouselRef}
+//                     data={data}
+//                     renderItem={renderItem}
+//                     sliderWidth={width}
+//                     itemWidth={300}
+//                     autoplay={true}
+//                     autoplayInterval={3000}
+//                     loop={true}
+//                 /> */}
+
+               
+            
+
+               
+//                 <View style={styles.bottoms}></View>
+//             </ScrollView>
+//             <BottomNavigator item="adminHome" navigation={navigation} userId={userId} />
+//         </View>
+//     );
+
+return (
+    <View style={styles.container}>
+       <View >
                 <Text style={styles.Text}> AToZ </Text>
-            </View>
-            <Search />
-            <ScrollView>
-                <View style={styles.header} >
+            </View> 
+             <Search />
+             <ScrollView>
+             <View style={styles.header} >
                     <FlatList
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -212,7 +376,7 @@ const handelNavigation=(Category)=>{
                         extraData={indexCheck}
                         renderItem={({ item, index }) => (
                             <Pressable
-                                onPress={() => handelNavigation(item.name)}
+                                onPress={() => navigation.navigate('admin'+item.name)}
                             >
                                 <View style={[styles.smallCard, indexCheck === item.id ? styles.smallCardSelected : null]}>
                                     <View>
@@ -224,68 +388,112 @@ const handelNavigation=(Category)=>{
                     />
 
                 </View>
-{/* 
-                <Carousel
-                    ref={carouselRef}
-                    data={data}
-                    renderItem={renderItem}
-                    sliderWidth={width}
-                    itemWidth={300}
-                    autoplay={true}
-                    autoplayInterval={3000}
-                    loop={true}
-                /> */}
 
-                <View style={styles.headerTextView}>
-                    <Text style={[styles.headerText, { color: 'red' }]}> Discound product : </Text>
-                </View>
-                <View>
-                    <ScrollView horizontal={true}>
-                        <FlatList
-                            style={{ marginTop: 10, marginBottom: 10 }}
-                            horizontal={true}
-                            data={products.slice(0, 7)}
-                            showsHorizontalScrollIndicator={false}
-                            renderItem={renderProduct}
-                            keyExtractor={(item) => item.id}
-                        />
+                <View style={styles.chartContainer}>
+      
+      <Text style={styles.stylishText}>SALES</Text>
+      <LineChart
+              data={chartData}
+        width={Dimensions.get("window").width * 0.9}
+        height={220}      
+        yAxisInterval={2}
+        chartConfig={{
+          backgroundColor: "#FFFFFF",
+          backgroundGradientFrom: "#FFFFFF",
+          backgroundGradientTo: "#FFFFFF",
+          decimalPlaces: 2,
+          color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`, 
+          labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+          style: {
+            borderRadius: 16
+          },
+          propsForDots: {
+            r: "0",
+            strokeWidth: "2",
+            stroke: "#0000FF"
+          }, 
+          // propsForBezier: {
+          //   stroke: 'blue' 
+          // },
+          // propsForBezierLines: {
+          //   stroke: 'blue' 
+          // },
+          propsForBackgroundLines: {
+            stroke: 'black' , 
+            strokeWidth: "1",
+             strokeDasharray: ""
+          },
+          fillShadowGradient:'#00BFFF' ,
+          fillShadowGradientOpacity: 1,
+        }}
+        
+        withInnerLines={false}
+        bezier
+        style={{
+          marginVertical: 8,
+          borderRadius: 16
+        }}
+      />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
-                            <Text style={styles.discoverText}>{'See All >>'}</Text>
-                        </TouchableOpacity>
-
-                    </ScrollView>
-                </View>
-
-                <View style={styles.headerTextView}>
-                    <Text style={styles.headerText}>TRENDS </Text>
-                </View>
-
-                <View style={{ flexDirection: 'row' }}>
-                    <ScrollView horizontal={true}>
-                        <FlatList
-                            style={{ marginTop: 10, marginBottom: 10 }}
-                            horizontal={true}
-                            data={products.slice(0, 3)}
-                            showsHorizontalScrollIndicator={false}
-                            renderItem={renderProduct}
-                            keyExtractor={(item) => item.id}
-                        />
-
-                        <TouchableOpacity onPress={() => navigation.navigate('WOMAN')} style={styles.discoverButton}>
-                            <Text style={styles.discoverText}>{'See All >>'} </Text>
-                        </TouchableOpacity>
-
-                    </ScrollView>
-                </View>
-                <View style={styles.bottoms}></View>
-            </ScrollView>
-            <BottomNavigator item="adminHome" navigation={navigation} userId={userId} />
-        </View>
-    );
+      </View>
+      <View style={styles.chartpieContainer}>
+      <Text style={styles.stylishText}> Profits and Loss </Text>
+      <PieChart
+  data={piedata.data}
+  width={Dimensions.get("window").width * 0.9}
+  height={Dimensions.get("window").width * 0.6}
+  chartConfig={{
+    backgroundColor: "#e26a00",
+    backgroundGradientFrom: "#fb8c00",
+    backgroundGradientTo: "#ffa726",
+    decimalPlaces: 2,
+    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+       style:{
+      height:100,
+       }
+  }}
+  accessor={"population"}
+  backgroundColor={"transparent"}
+  paddingLeft={"15"}
+  center={[2,-15]}
+  absolute
+/>
+      </View>
+      </ScrollView>
+         <BottomNavigator item="adminHome" navigation={navigation} userId={userId} />
+   
+    </View>
+    
+  );
 }
 
 const styles = StyleSheet.create({
+    chartContainer: {
+        // marginBottom: 20,
+        // borderColor: '#000000',
+        width: Dimensions.get("window").width,
+        paddingVertical: 20,
+        paddingHorizontal: 20, 
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        marginBottom: 20,
+      },
+      chartpieContainer: {
+        // marginBottom: 20,
+        // borderColor: '#000000',
+        width: Dimensions.get("window").width,
+       // height:Dimensions.get("window").width ,
+        paddingVertical: 5,
+        paddingHorizontal: 5, 
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        marginBottom: 20,
+      },
     cardView: {
         marginBottom: 20,
         marginTop: 5,
@@ -356,6 +564,13 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         alignItems: 'center',
     },
+    stylishText: {
+        fontStyle: 'italic',
+        fontWeight: 'bold',
+        fontFamily: 'Georgia, serif',
+        fontSize: 18,
+        color: '#000', 
+      },
     headerTextView: {
         backgroundColor: 'White',
         // marginTop: 10
