@@ -25,7 +25,7 @@ import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/fi
 import { db } from "../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
-import chart from '../adminPages/chart';
+import chart from '../adminPages/adminHome';
 
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2;
