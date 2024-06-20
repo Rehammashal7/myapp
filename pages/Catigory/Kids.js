@@ -1389,7 +1389,7 @@ const KidsDetails = ({ route, navigation }) => {
                 })
               }
             >
-              <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
+              <Text style= {[{color:'white',fontSize:20} ] }>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
@@ -2082,7 +2082,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    height: 40,
+    height: height/20,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -2110,8 +2110,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     // marginTop:20,
     // marginBottom:10,
-    marginLeft: 20,
-    width: width-cardwidth/2,
+    marginLeft: 40,
+    width: 300,
+    marginBottom:2,
+
   },
   addToCartBton2: {
     backgroundColor: "black",

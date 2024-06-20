@@ -2,7 +2,7 @@
 import { getAuth, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 import React, { useState ,useEffect} from 'react';
-import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,input} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet , Image, TouchableOpacity ,Pressable ,Input} from 'react-native';
 //import { upload ,useAuth} from '../firebase';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
@@ -216,7 +216,7 @@ if (docSnap.exists()) {
         <>
         <View style={styles.field}>
         <Feather name="file" color="#333333" size={20} />
-       <input type="file" onChange={handleChange} />
+       <Input type="file" onChange={handleChange} />
         </View>
      
           <View style={styles.field}>
@@ -316,6 +316,8 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#f2f2f2',
         paddingBottom: 5,
+        marginLeft: 10,
+
   },
   label: {
     flex: 1,
@@ -343,10 +345,11 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
     verticalAlign: 'middle',
-    borderRadius: '50%',
-    borderWidth: '5px',
+    borderWidth: 4,
     borderColor: 'gray',
     borderStyle: 'outset',
+    marginLeft: 10,
+
   },
   containerButton:{
   //   // display: flex,

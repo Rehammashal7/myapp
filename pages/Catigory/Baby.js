@@ -1372,7 +1372,7 @@ const BabyDetails = ({ route, navigation, props }) => {
                 })
               }
             >
-              <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
+              <Text style= {[{color:'white',fontSize:20} ] }>Add a Review</Text>
             </TouchableOpacity>
           }
         </View>
@@ -1649,5 +1649,561 @@ const BabyDetails = ({ route, navigation, props }) => {
     </View>
   );
 };
+const styles = StyleSheet.create({
+  headerWrapper: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+  },
+  headerRight: {
+    backgroundColor: COLORS.background,
+    padding: 12,
+    borderRadius: 10,
+    borderColor: COLORS.background,
+    marginLeft: 10,
+    marginBottom: 5,
+    marginTop: 10,
+    width: 40,
+    borderWidth: 2,
+  },
+  cardView: {
+    marginHorizontal: 1,
+    marginBottom: 30,
+    marginTop: 0,
+    // borderRadius: 15,
+    width: cardwidth,
+    // width:220,
+    height: 370,
+    elevation: 13,
+    backgroundColor: "white",
+  },
+  image: {
+    borderTopLeftRadius: 5,
+    borderTopRightRadius: 5,
+    height: 150,
+    width: 170,
+  },
 
+  Name: {
+    fontSize: 14,
+    // fontWeight: 'bold',
+    color: "#131A2C",
+    marginTop: 0,
+    marginLeft: 10,
+    marginBottom: 0,
+    height:40
+    // left: 200,
+  },
+  titlesWrapper: {
+    paddingHorizontal: 5,
+    marginTop: 5,
+  },
+  Name2: {
+    fontFamily: "Montserrat-Bold",
+    fontSize: 32,
+    color: COLORS.dark,
+  },
+  priceWrapper: {
+    marginTop: 10,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  price: {
+    color: COLORS.dark,
+    fontFamily: "Montserrat-Bold",
+    fontSize: 24,
+  },
+  HeartIcone: {
+    height: 30,
+    width: 30,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  sizeContainer: {
+    paddingVertical: 20,
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  size: {
+    height: 30,
+    width: 100,
+    marginRight: 7,
+    borderRadius: 30,
+    alignItems: "center",
+    paddingHorizontal: 5,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#FFFF",
+    //flexDirection:"row",
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  container2: {
+    flex: 1,
+    backgroundColor: "#FBFAFF",
+    flexDirection: "row",
+
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  heading: {
+    color: "WHITE",
+    fontSize: 40,
+    alignItems: "center",
+    marginBottom: 5,
+  },
+  header: {
+    flexDirection: "row",
+    backgroundColor: "#FBFAFF",
+    height: 70,
+  },
+  bottoms: {
+    flexDirection: "row",
+    backgroundColor: "#FBFAFF",
+    height: 35,
+    bottom: 20,
+  },
+  headerText: {
+    color: "#131A2C",
+    fontSize: 17,
+    fontWeight: "bold",
+    alignItems: "center",
+    marginLeft: 10,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  Text: {
+    color: "#0B0E21",
+    fontSize: 40,
+    fontWeight: "bold",
+    alignItems: "center",
+  },
+  discribtion: {
+    color: "#0B0E21",
+    fontSize: 20,
+    fontWeight: "bold",
+    alignItems: "center",
+  },
+  imageCounter: {
+    width: 200,
+    height: 250,
+    justifyContent: "space-evenly",
+    alignItems: "center",
+    padding: 10,
+    left: 7,
+    backgroundColor: "black",
+    marginTop: 10,
+  },
+  smallCard: {
+    // borderRadius: 30,
+    backgroundColor: "white",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    height: 70,
+    borderBottomColor: "transparent",
+    borderBottomWidth: 2,
+  },
+  smallCardSelected: {
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+    alignItems: "center",
+    width: 100,
+    height: 70,
+    shadowColor: "black",
+    borderBottomColor: "black",
+    borderBottomWidth: 2,
+  },
+  smallCardTextSected: {
+    color: "#131A2C",
+  },
+  regularText: {
+    fontWeight: "normal",
+    fontSize: 16,
+  },
+  boldText: {
+    fontWeight: "bold",
+    fontSize: 18,
+  },
+
+  smallCardText: {
+    fontSize: 14,
+    color: "black",
+    textAlign: "center",
+    marginTop: 5,
+  },
+  NavContainer: {
+    position: "absolute",
+    alignItems: "center",
+    bottom: 5,
+    borderBottomLeftRadius: 15,
+    borderBottomRightRadius: 15,
+  },
+  Navbar: {
+    flexDirection: "row",
+    backgroundColor: COLORS.dark,
+    width: width,
+    justifyContent: "space-evenly",
+    borderRadius: 30,
+    height: 40,
+  },
+  iconBehave: {
+    padding: 35,
+    bottom: 30,
+  },
+  Textt: {
+    color: COLORS.darkblue,
+    fontSize: 35,
+    fontFamily: "SofiaRegular",
+    fontWeight: "bold",
+    alignItems: "center",
+  },
+  headerName: {
+    flexDirection: "row",
+    backgroundColor: COLORS.background,
+    height: "10%",
+  },
+  dotsContainer: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 262,
+    //  zIndex: 1
+    //marginBottom:30,
+  },
+  dot: {
+    width: 40,
+    height: 2,
+    marginBottom: 20,
+    // borderRadius: 5,
+    backgroundColor: "black",
+
+    marginHorizontal: 5,
+  },
+  activeDot: {
+    marginBottom: 20,
+    backgroundColor: "white",
+  },
+
+  scrollView: {
+    height: 200,
+  },
+  imagee: {
+    position: "relative",
+    width: 220,
+    height: 300,
+    // width: width * 0.5,
+    // height: width * 0.8 * 0.95,
+  },
+  ///////////////////add new style/////////////////
+  productContainer: {
+    padding: 0,
+    flex: 1,
+  },
+  productName: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  productDescription: {
+    fontSize: 16,
+    marginBottom: 10,
+  },
+  productPrice: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 5,
+  },
+  productOffer: {
+    fontSize: 16,
+    color: "red",
+    marginBottom: 10,
+  },
+  productImage: {
+    width: width,
+    height: 490,
+    marginRight: 10,
+  },
+  dotsContainerDetails: {
+    position: "absolute",
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 475,
+    //  zIndex: 1
+    //marginBottom:30,
+    marginLeft: 175,
+  },
+  dotDetails: {
+    width: 5,
+    height: 5,
+    marginBottom: 20,
+    borderRadius: 30,
+    backgroundColor: "black",
+
+    marginHorizontal: 5,
+  },
+  activeDotDetails: {
+    marginBottom: 20,
+    backgroundColor: "white",
+  },
+
+  colorsContainer: {
+    marginTop: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  sizesContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: "bold",
+    marginRight: 10,
+  },
+  colorButton: {
+    width: 25,
+    height: 25,
+    borderRadius: 20,
+    marginHorizontal: 5,
+  },
+  selectedColorButton: {
+    borderWidth: 3,
+    borderColor: "black",
+  },
+  blackButtonStyle: {
+    borderWidth: 2,
+    borderColor: "#df2600",
+  },
+  sizeButton: {
+    width: 70,
+    height: 40,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    margin: 3,
+  },
+  sizeButtonText: {
+    position: "relative",
+  },
+
+  selectedSizeButton: {
+    backgroundColor: "transparent",
+    borderWidth: 1,
+    borderColor: "black",
+    // alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  sizeText: {
+    fontSize: 16,
+    color: "black",
+  },
+  NameD: {
+    fontSize: 14,
+    // fontWeight: 'bold',
+    color: "#131A2C",
+    marginTop: 5,
+    marginLeft: 10,
+    marginBottom: 0,
+    // left: 200,
+  },
+  line: {
+    width: "100%",
+    height: 1,
+    backgroundColor: "#b3b3b3",
+    marginTop: 5,
+  },
+
+  description: {
+    fontSize: 15,
+    marginTop: 2,
+    marginLeft: 10,
+  },
+  bottomBar: {
+    position: "absolute",
+    alignItems: "center",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    // borderBottomLeftRadius: 15,
+    // borderBottomRightRadius: 15,
+  },
+  // buttonContainer: {
+  //   flexDirection: 'row',
+  //   justifyContent: 'space-between',
+  //   alignItems: 'center',
+  //   marginBottom: 10,
+  // },
+  // Navbarr: {
+  //   flexDirection: 'row',
+  //   backgroundColor: COLORS.white,
+  //   width: width,
+  //   justifyContent: 'space-evenly',
+  //   height: 60
+
+  // },
+  bottomBar: {
+  //  position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: "#ffffff",
+    borderTopWidth: 1,
+    borderColor: "#cccccc",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  Navbarr: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: height/20,
+  },
+  buttonContainer: {
+    flexDirection: "row",
+   // justifyContent: "start",
+
+    alignItems: "center",
+  },
+  addToCartBton1: {
+    backgroundColor: "black",
+    paddingHorizontal: 20,
+    // paddingVertical: 10,
+    // marginRight: 10,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    // marginTop:20,
+    // marginBottom:10,
+    marginLeft: 40,
+    width: 300,
+    marginBottom:2,
+
+  },
+  addToCartBton2: {
+    backgroundColor: "black",
+    paddingHorizontal: 20,
+
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
+
+    marginLeft: 60,
+    width: 150,
+  },
+  priceText: {
+    fontSize: 12,
+    fontWeight: "bold",
+    color: "black",
+  },
+  reviewContainer: {
+    backgroundColor: "rgb(250, 250, 250)",
+    // borderRadius: 10,
+    padding: 5,
+    marginBottom: 5,
+    elevation: 3,
+  },
+  reviewText: {
+    fontSize: 15,
+    // marginTop:10
+    // marginBottom: 8,
+  },
+  addToCartButtonText: {
+    color: "white",
+    fontSize: 18,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContent: {
+    backgroundColor: "white",
+    padding: 30,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  okButton: {
+    backgroundColor: "black",
+    padding: 5,
+    // marginTop: 5,
+    // borderRadius: 5,
+  },
+  okButtonText: {
+    color: "white",
+    fontSize: 16,
+  },
+  containerfs: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingTop: 5,
+    marginBottom:20
+  },
+  dropdownButtonStyle: {
+    width: 90,
+    height: 50,
+    // backgroundColor: '#E9ECEF',
+    // borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+  },
+  dropdownButtonTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#393e46',
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 22,
+    marginLeft: 5
+  },
+  // dropdownButtonIconStyle: {
+  //   fontSize: 18,
+  //   marginRight: 8,
+  // },
+  dropdownMenuStyle: {
+    backgroundColor: '#E9ECEF',
+    borderRadius: 8,
+  },
+  dropdownItemStyle: {
+    // width: '100%',
+    flexDirection: 'row',
+    paddingHorizontal: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 8,
+  },
+  numbertypecontainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: 'space-evenly',
+    width: 80,
+    height: 45,
+    borderBottomColor: "black",
+    borderBottomWidth: 1,
+  },
+  dropdownItemTxtStyle: {
+    // flex: 1,
+    fontSize: 16,
+    // fontWeight: '500',
+    color: '#151E26',
+  },
+});
 export { ProductsListBaby, BabyDetails };

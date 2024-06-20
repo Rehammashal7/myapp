@@ -151,13 +151,16 @@ const AdminProductsListKids = ({ navigation }) => {
         </View>
         <View
           style={{
+            // flexDirection: "row",
+            marginTop: 1,
+            height:  height/8,
 
             marginTop: 1,
             height: 100,
           }}
         >
-          <View style={{ marginTop: 10, flexDirection: "row" }}>
-            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
+          <View style={{ flexDirection: "row" }}>
+            <Text style={styles.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
           </View>
@@ -188,7 +191,7 @@ const AdminProductsListKids = ({ navigation }) => {
             </>
           ) : (
             <Text
-              style={card.price}
+              style={{ fontSize: 18, fontWeight: "bold", marginHorizontal: 10 ,marginBottom:60}}
             >
               {item.price} EGP
             </Text>
@@ -200,9 +203,7 @@ const AdminProductsListKids = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerName}>
-        <Text style={styles.Textt}> AToZ </Text>
-      </View>
+     
       <Search />
 
       <View style={styles.header}>
@@ -297,7 +298,7 @@ const [disLike, setDislikes] = useState([0]);
   const numberOfInitialReviews = 3;
 
   const handleSeeAllReviews = () => {
-    navigation.navigate("AllReviewsPage", { reviews });
+    navigation.navigate("AdminAllReview", { reviews });
     <Text style={styles.seeAllText}>
       See All ({reviews ? reviews.length : 0})
     </Text>;
@@ -551,18 +552,22 @@ const handleDislike = async (index) => {
   }
 };
   
+const deleteProduct = async (productId) => {
+  try {
+    await deleteDoc(doc(db, "baby", productId));
+    console.log(`Product with ID ${productId} deleted successfully.`);
+    navigation.goBack(); // للعودة إلى الصفحة السابقة بعد الحذف
+  } catch (error) {
+    console.error("Error deleting product: ", error);
+  }
+};
 
 
   return (
     <View style={styles.productContainer}>
       <ScrollView onScroll={handleScroll2}>
       <View style={styles.editButtonContainer}>
-  <TouchableOpacity
-    style={styles.editButton}
-    onPress={() => navigation.navigate('EditProductPage', { product })}
-  >
-    <Text style={styles.editButtonText}>Edit</Text>
-  </TouchableOpacity>
+  
 </View>
         <View>
           <FlatList
@@ -907,173 +912,18 @@ const handleDislike = async (index) => {
             </View>
           </View>
         </View>
-        <View>
-          {
-            <TouchableOpacity
-              style={styles.addToCartBton1}
-              onPress={() =>
-                navigation.navigate("AddReviewKids", {
-                  product: { id: product_id },
-                  fetchAllReviews,
-                })
-              }
-            >
-              <Text style={styles.buttonText}>Add a Review</Text>
-            </TouchableOpacity>
-          }
-        </View>
+        
       </ScrollView>
       <View style={styles.bottomBar}>
-        <View style={styles.Navbarr}>
-          <FlatList
-            data={productt}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                key={index}
-                activeOpacity={0.8}
-                onPress={() => setSelectedOptionIndex(index)}
-              >
-                {showPrice ? (
-                  <View style={styles.buttonContainer}>
-                    <Text style={styles.priceText}>
-                      {" "}
-                      {product.offer !== 0 ? (
-                        <>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              fontWeight: "bold",
-                              marginLeft: 10,
-                              marginRight: 40,
-                              color: "white",
-                              backgroundColor: "#df2600",
-                              width: 90,
-                              height: 22,
-                            }}
-                          >
-                            {product.offer}% Discount{"\n"}
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              color: "#df2600",
-                              marginLeft: 14,
-                            }}
-                          >
-                            {Math.floor(
-                              product.price - product.price / product.offer
-                            )}{" "}
-                            EGP
-                          </Text>
-                        </>
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginHorizontal: 10,
-                            marginRight: 45,
-                          }}
-                        >
-                          {product.price} EGP
-                        </Text>
-                      )}
-                    </Text>
-                    <TouchableOpacity
-                      style={styles.addToCartBton2}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                ) : (
-                  <View style={styles.buttonContainer}>
-                    <Pressable onPress={() => onAddToFav(item, index)}>
-                      <Icon
-                        name="heart"
-                        size={30}
-                        color={isPressed ? "black" : "grey"}
-                      />
-                    </Pressable>
-                    <TouchableOpacity
-                      style={styles.addToCartBton1}
-                      onPress={() => {
-                        if (product.colors.length !== 1) {
-                          if (selectedColor && selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        } else {
-                          if (selectedColor || selectedSize) {
-                            onAddToCart(
-                              item,
-                              index,
-                              selectedColor,
-                              selectedSize
-                            );
-                          } else {
-                            alert(
-                              "Please select a size and color if available"
-                            );
-                          }
-                        }
-                      }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>
-                        {" "}
-                        Add to Cart
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-
-                <View></View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+      <View style={styles.Navbarr}>
+        <TouchableOpacity style={styles.saveButton} onPress={() => deleteProduct(product.id)}>
+          <Text style={styles.saveButtonText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate('EditProductPage', { product })}>
+          <Text style={styles.saveButtonText}>Edit</Text>
+        </TouchableOpacity>
       </View>
+    </View>
     </View>
   );
 
@@ -1118,12 +968,12 @@ const styles = StyleSheet.create({
   },
   cardView: {
     marginHorizontal: 1,
-    marginBottom: 20,
-    marginTop: 20,
-    borderRadius: 5,
+    marginBottom: 10,
+    marginTop: 10,
+    // borderRadius: 15,
     width: cardwidth,
     // width:220,
-    height: 370,
+    height: height/2,
     elevation: 13,
     backgroundColor: "white",
   },
@@ -1136,13 +986,13 @@ const styles = StyleSheet.create({
 
   Name: {
     fontSize: 14,
-    // fontWeight: 'bold',
+    fontWeight: 'bold',
     color: "#131A2C",
-    marginTop: 0,
+    marginTop: -1,
     marginLeft: 10,
-    marginBottom: 0,
-    left: 200,
-  },
+    marginBottom: 5,
+    width: cardwidth - 20
+},
   titlesWrapper: {
     paddingHorizontal: 5,
     marginTop: 5,
@@ -1211,8 +1061,8 @@ const styles = StyleSheet.create({
   bottoms: {
     flexDirection: "row",
     backgroundColor: "#FBFAFF",
-    height: 35,
-    bottom: 20,
+    height: height/12,
+    bottom: 0,
   },
   headerText: {
     color: "#131A2C",
@@ -1460,7 +1310,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 10,
     marginBottom: 0,
-    left: 200,
   },
   line: {
     width: "100%",
@@ -1513,6 +1362,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     height: 30,
+  },
+  saveButton: {
+    width: cardwidth-20,
+height:height/22,
+    marginLeft: 5,
+    backgroundColor: "black",
+    padding: 5,
+    alignItems: "center",
+  },
+  saveButtonText: {
+    color: "white",
+    fontWeight: "bold",
+    fontSize: 18,
   },
   buttonContainer: {
     flexDirection: "row",

@@ -70,6 +70,9 @@ import pay from './pages/pay';
 // import ChatComponent from './ChatComponent';
 // import Favorite from './pages/favorite';
 // import './shim';
+
+import AdminAllReview from './adminPages/AdminAllReview';
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -153,7 +156,8 @@ export default function App() {
         <Stack.Screen name="adminRecycle" component={AdminRecycle} />
         <Stack.Screen name="EditProductPage" component={EditProductPage} />
         <Stack.Screen name="UserRecycleProduct" component={UserRecycleProduct} />
-    
+        <Stack.Screen name="AdminAllReview" component={AdminAllReview} />
+
       </Stack.Navigator>
     </NavigationContainer>
   );
