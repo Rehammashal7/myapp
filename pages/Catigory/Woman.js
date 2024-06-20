@@ -657,9 +657,7 @@ const WomanDetails = ({ route, navigation }) => {
     } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }
-    else {
+    } else {
       setModalVisibleCart(true);
       setShowGoToCartButton(false);
     }
@@ -1623,7 +1621,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   container: {
-    flex: 1,
+    //flex: 1,
+    //height:height,
     backgroundColor: "#FFFF",
     //flexDirection:"row",
     // alignItems: 'center',
@@ -1740,7 +1739,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+    //fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },

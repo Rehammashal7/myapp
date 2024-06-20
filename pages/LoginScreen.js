@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert ,Dimensions} from 'react-native';
 import {
   signInWithEmailAndPassword, signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider, sendPasswordResetEmail
@@ -10,12 +10,16 @@ import { Image } from 'react-native';
 import googleicon from "../assets/iconn.png";
 import faceicon from '../assets/fac.png';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Chatbot from './Chatbot';
+import { Ionicons } from "@expo/vector-icons";
+
 
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
 import COLORS from '../Consts/Color';
-
+const { width } = Dimensions.get('screen');
+const { height } = Dimensions.get('window');
+const cardheight = height / 2 ;
+const cardwidth = width / 2;
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -170,20 +174,25 @@ const LoginScreen = ({ navigation }) => {
         placeholder="Email"
         style={styles.input}
       />
-      <TextInput
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={!showPassword}
-        placeholder="Password"
-        style={styles.input}
-      />
-      <TouchableOpacity onPress={togglePasswordVisibility} style={styles.iconContainer}>
-        <Icon
-          name={showPassword ? 'eye' : 'eye-slash'}
-          size={20}
-          color="gray"
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.inputpass}
+          placeholder="Password"
+          secureTextEntry={!showPassword}
+          value={password}
+          onChangeText={(text) => setPassword(text)}
         />
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => setShowPassword(!showPassword)}
+          style={styles.iconContainer}
+        >
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="black"
+          />
+        </TouchableOpacity>
+      </View>
       <TouchableOpacity
         onPress={handleLogin}
         style={styles.buttonlogin}
@@ -230,21 +239,37 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textAlign: 'left',
   },
-  input: {
-    backgroundColor: '#FFFFFF',
-    width: '100%',
-    padding: 10,
-    borderRadius: 10,
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 20,
-    backgroundColor: '#D3D3D3'
+    width: width-20,
+  },
+  input: {
+    //flex: 1,
+    width:width-20,
+    height: height/20,
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    paddingHorizontal: 10,
+    marginBottom:10,
+  },
+  iconContainer: {
+    marginLeft: 10,
+  },
+  inputpass: {
+    //flex: 1,
+    width:width-60,
+    height: height/20,
+    borderBottomWidth: 1,
+    borderBottomColor: "black",
+    marginBottom:10,
   },
   buttonlogin: {
     backgroundColor: COLORS.dark,
-    
     padding: 10,
-    width: '100%',
+    width: width -30,
     alignItems: 'center',
-    marginTop: 10,
   },
 
   buttonText: {
@@ -276,13 +301,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
-  iconContainer: {
-    position: 'absolute',
-    right: 35,
-    top: '41.3%',
-    transform: [{ translateY: -10 }],
-    zIndex: 1
-  },
+  
 });
 
 export default LoginScreen;

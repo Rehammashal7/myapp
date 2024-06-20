@@ -591,6 +591,9 @@ const MenDetails = ({ route, navigation }) => {
   const [disLike, setDislikes] = useState([0]);
   const [reviews, setReviews] = useState([]);
   const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
+  const [disLike, setDislikes] = useState([0]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
 
   const [isPaymentCompleted, setPaymentCompleted] = useState(false);
   const scrollViewRef = useRef(null);
@@ -605,6 +608,7 @@ const MenDetails = ({ route, navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const numberOfInitialReviews = 3;
+  const categoryName = "Man";
   const categoryName = "Man";
 
   const handleSeeAllReviews = () => {
@@ -703,6 +707,7 @@ const MenDetails = ({ route, navigation }) => {
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + 2);
+    newDate.setDate(newDate.getDate() + 2);
     console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
@@ -719,15 +724,14 @@ const MenDetails = ({ route, navigation }) => {
     getCartItems();
 
     if (selectedColor && selectedSize) {
+    if (selectedColor && selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
 
     } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }
-    else {
+    } else {
       setModalVisibleCart(true);
       setShowGoToCartButton(false);
     }
@@ -768,11 +772,14 @@ const MenDetails = ({ route, navigation }) => {
     setIsPressed(!!existingItem);
   };
 
+
   useEffect(() => {
     handelHeart(product);
   }, [handelHeart]);
+  }, [handelHeart]);
   useEffect(() => {
     console.log(isPressed);
+  }, [isPressed]);
   }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
@@ -807,6 +814,7 @@ const MenDetails = ({ route, navigation }) => {
       setShowPrice(false);
     }
   };
+
 
   let flagAdmin = false;
   const fetchAllReviews = async () => {
@@ -858,11 +866,12 @@ const MenDetails = ({ route, navigation }) => {
         })
       );
 
+
       setReviewsWithLikes(updatedReviews);
       setReviews(updatedReviews)
 
     } catch (error) {
-      console.log('Error loading likes and dislikes:', error);
+      console.log("Error loading likes and dislikes:", error);
     }
   };
 
@@ -1858,7 +1867,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+   // fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },
@@ -2051,6 +2060,7 @@ const styles = StyleSheet.create({
 
   // },
   bottomBar: {
+    //position: "fixed",
     //position: "fixed",
     bottom: 0,
     left: 0,

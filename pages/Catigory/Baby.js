@@ -584,7 +584,7 @@ const BabyDetails = ({ route, navigation, props }) => {
   const [selectedfav, setSelectedfav] = React.useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
-  //const navigation = useNavigation(); 
+  //const navigation = useNavigation();
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
 
   const [userId, setUserId] = useState("");
@@ -716,7 +716,13 @@ const BabyDetails = ({ route, navigation, props }) => {
     if (existingItem) {
       existingItem.qty += 1;
     } else {
-      cart.push({ ...item, qty: 1, color: selectedColor, size: selectedSize, delivery: newDate });
+      cart.push({
+        ...item,
+        qty: 1,
+        color: selectedColor,
+        size: selectedSize,
+        delivery: newDate,
+      });
     }
 
     await updateDoc(userRef, { cart });
@@ -724,13 +730,10 @@ const BabyDetails = ({ route, navigation, props }) => {
     if (selectedColor && selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
     } else if (selectedColor || selectedSize) {
       setShowGoToCartButton(true);
       setModalVisibleCart(true);
-
-    }
-    else {
+    } else {
       setModalVisibleCart(true);
       setShowGoToCartButton(false);
     }
@@ -864,7 +867,7 @@ const BabyDetails = ({ route, navigation, props }) => {
       setReviews(updatedReviews)
 
     } catch (error) {
-      console.log('Error loading likes and dislikes:', error);
+      console.log("Error loading likes and dislikes:", error);
     }
   };
 
@@ -1858,7 +1861,7 @@ const styles = StyleSheet.create({
   Textt: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: "SofiaRegular",
+    //fontFamily: "SofiaRegular",
     fontWeight: "bold",
     alignItems: "center",
   },

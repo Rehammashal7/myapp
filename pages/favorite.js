@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
   Texts: {
     color: COLORS.darkblue,
     fontSize: 35,
-    fontFamily: 'SofiaRegular',
+   // fontFamily: 'SofiaRegular',
     fontWeight: "bold",
     alignItems: 'center',
     marginLeft: width / 2 - 80
