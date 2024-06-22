@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, StyleSheet, Image, Dimensions, CheckBox, ScrollView, TouchableOpacity, Pressable } from 'react-native';
-import COLORS from '../Consts/Color';
+
 import Search from '../components/search';
 import { filterData } from '../data';
 import { card } from '../Consts/styles';
-
+import theme from '../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
 const cardheight = screenHeight / 2 - 30;

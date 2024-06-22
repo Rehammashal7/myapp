@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, Dimensions } from 'react-native';
-import COLORS from '../Consts/Color';
-import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
+import theme from '../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const { width } = Dimensions.get('screen');
 const cardwidth = width / 2;
 

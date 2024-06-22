@@ -5,12 +5,11 @@ import {
 } from 'react-native';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
-import COLORS from '../Consts/Color';
+
 import Search from '../components/search';
 import BottomNavigator from '../components/bar';
 import { useRoute } from '@react-navigation/native';
-import { card } from '../Consts/styles';
-
+import { Categorys, card } from '../Consts/styles';
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
 const cardheight = screenHeight / 2 - 30;
@@ -19,9 +18,11 @@ const cardwidth = width / 2;
 const Category = ({ navigation }) => {
     const route = useRoute();
     const [userId, setUserId] = useState(route.params.userId);
-
+    const COLORS =route.params.COLORS;
+    const styles =Categorys(COLORS)
+    const cards =card(COLORS);
     const handlePress = (type, name) => {
-         navigation.navigate('categoryresult', { type: type, categoryName: name, userId: userId });
+         navigation.navigate('categoryresult', { type: type, categoryName: name, userId: userId ,COLORS:COLORS });
     };
 
     return (
@@ -162,7 +163,7 @@ const Category = ({ navigation }) => {
                 </View>
                 <View style={styles.bottoms}></View>
             </ScrollView>
-            <BottomNavigator item="catigory" navigation={navigation} />
+            <BottomNavigator item="catigory" navigation={navigation} COLORS={COLORS} />
         </View>
     )
 };
@@ -173,7 +174,9 @@ const CatigoryResult = ({ route, navigation }) => {
     const [userId, setUserId] = useState(route.params.userId);
     const [products, setProducts] = useState([]);
     const [activeIndexes, setActiveIndexes] = useState({});
-
+    const COLORS =route.params.COLORS;
+    const styles =Categorys(COLORS)
+    const cards =card(COLORS);
     useEffect(() => {
         const getProducts = async () => {
             try {
@@ -220,25 +223,25 @@ const CatigoryResult = ({ route, navigation }) => {
 
     const renderItem = ({ item, index }) => (
         <TouchableOpacity onPress={() => { handleProductPress(item, item.categoryName) }}>
-            <View style={card.cardView}>
+            <View style={cards.cardView}>
                 <FlatList
                     horizontal
                     data={item.images}
                     showsHorizontalScrollIndicator={false}
                     renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={card.imagee} />
+                        <Image key={index} source={{ uri: image }} style={cards.imagee} />
                     )}
                     keyExtractor={(image, index) => index.toString()}
                     onScroll={(event) => handleScroll(event, item.id)}
                 />
-                <View style={card.dotsContainer}>
+                <View style={cards.dotsContainer}>
                     {item.images.map((_, index) => (
                         <View
                             key={index}
                             style={[
-                                card.dot,
+                                cards.dot,
                                 index === (activeIndexes[item.id] || 0)
-                                    ? card.activeDot
+                                    ? cards.activeDot
                                     : null,
                             ]}
                         />
@@ -246,16 +249,16 @@ const CatigoryResult = ({ route, navigation }) => {
                 </View>
 
                 <View style={{ height: 100, width: '95%' }}>
-                    <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
+                    <Text style={cards.Name} numberOfLines={2} ellipsizeMode="tail">{item.name}</Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text
-                style={card.pricewithoffer}
+                style={cards.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
               <Text
-                style={card.offer}
+                style={cards.offer}
               >
                 🏷️{item.offer}% Discount{" "}
                 <Text style={{ fontSize: 13, fontWeight: "bold" }}>
@@ -268,7 +271,7 @@ const CatigoryResult = ({ route, navigation }) => {
             </>
           ) : (
             <Text
-              style={card.price}
+              style={cards.price}
             >
               {item.price} EGP
             </Text>
@@ -283,7 +286,7 @@ const CatigoryResult = ({ route, navigation }) => {
             <View style={styles.header}>
                 <Text style={styles.Text}> AToZ </Text>
             </View>
-            <Search />
+            <Search COLORS={COLORS} />
             <View style={styles.headerTextView}>
                 <Text style={[styles.headerText, { color: COLORS.dark }]}> {collectionName.toUpperCase() + ' : ' + type.toUpperCase()}  </Text>
             </View>
@@ -298,120 +301,12 @@ const CatigoryResult = ({ route, navigation }) => {
                 </View>
                 <View style={styles.bottoms}></View>
             </ScrollView>
-            <BottomNavigator navigation={navigation} userId={userId} />
+            <BottomNavigator navigation={navigation} userId={userId} COLORS={COLORS} />
         </View>
     );
 
 };
 
 
-const styles = StyleSheet.create({
-    cardView: {
-        marginBottom: 20,
-        marginTop: 5,
-        marginRight: 5,
-        borderRadius: 5,
-        width: cardwidth,
-        height: cardheight - 30,
-        elevation: 13,
-        backgroundColor: 'white',
-    },
-    discoverButton: {
-        marginBottom: 20,
-        marginTop: 10,
-        marginRight: 5,
-        borderRadius: 15,
-        width: cardwidth,
-        height: cardheight - 30,
-        elevation: 13,
-        backgroundColor: '#ECF0F1',
-    },
-    containerItem: {
-        backgroundColor: COLORS.white
-    },
-    containerHeart: {
-        position: 'absolute',
-        marginLeft: 20,
-        zIndex: 1,
-        borderRadius: 40,
-        alignItems: 'center',
-    },
-    discoverText: {
-        textAlign: 'center',
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: COLORS.white,
-        marginTop: cardheight - 80
-    },
-    container: {
-        flex: 1,
-        backgroundColor: COLORS.background,
-    },
-    header: {
-        flexDirection: "row",
-        backgroundColor: COLORS.background,
-        height: '10%',
-    },
-    bottoms: {
-        flexDirection: "row",
-        backgroundColor: COLORS.background,
-        height: 60,
-        bottom: 20
-    },
-    headerText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        alignItems: 'center',
-        margin: 10
-    },
-    image: {
-        position: "relative",
-        height: cardheight - 130,
-        width: cardwidth,
-    },
-    slid: {
-        position: "relative",
-        height: cardheight - 30,
-        width: '95%',
-    },
-    dotsContainer: {
-        position: "absolute",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginTop: cardheight - 150,
-    },
-    dot: {
-        width: 40,
-        height: 2,
-        marginBottom: 20,
-        backgroundColor: "black",
-        marginHorizontal: 5,
-    },
-    activeDot: {
-        marginBottom: 20,
-        backgroundColor: "white",
-    },
-    Name: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: "#131A2C",
-        marginTop: 5,
-        marginLeft: 10,
-        marginBottom: 5,
-        height: 40,
-        width: '95%'
-    },
-    Text: {
-        color: COLORS.darkblue,
-        fontSize: 35,
-        fontFamily: 'SofiaRegular',
-        fontWeight: "bold",
-        alignItems: 'center',
-    },
-    headerTextView: {
-        backgroundColor: 'White',
-        marginTop: 10
-    },
-});
+
 export { Category, CatigoryResult };

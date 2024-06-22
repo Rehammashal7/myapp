@@ -11,9 +11,7 @@ import {
   Pressable,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import { filterOrder } from "../../data";
-
 import {
   doc,
   collection,
@@ -41,7 +39,7 @@ const HistoryOrder = ({ navigation }) => {
 
   const getOrders = async () => {
     try {
-      // استرجاع بيانات المستخدم
+
       const userId = await AsyncStorage.getItem("USERID");
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
@@ -57,13 +55,13 @@ const HistoryOrder = ({ navigation }) => {
   };
 
   const formatDate = (timestamp) => {
-    // Check if the timestamp is a Firebase Timestamp
+
     if (timestamp && timestamp.seconds && timestamp.nanoseconds) {
-      // Convert Firebase Timestamp to JavaScript Date
+
       const date = new Date(
         timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
       );
-      // Check if the parsedDate is a valid date
+
       if (!isNaN(date.getTime())) {
         return date.toLocaleDateString();
       }
@@ -101,12 +99,12 @@ const HistoryOrder = ({ navigation }) => {
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
         console.log("userData", userData);
-        const currentWalletAmount = userData.walet || 0; // القيمة الحالية للمحفظة
+        const currentWalletAmount = userData.walet || 0;
         const refundedAmount = parseFloat(
           userData.HistoryOrder[index].totalPrice
-        ); // قيمة الطلب الملغى
+        );
 
-        const updatedWalletAmount = currentWalletAmount + refundedAmount; // قيمة المحفظة المحدثة
+        const updatedWalletAmount = currentWalletAmount + refundedAmount;
         await updateDoc(userDocRef, { walet: updatedWalletAmount });
         console.log("Wallet value updated after refund:", updatedWalletAmount);
         const cancelOrders = userData.cancelOrder || [];
@@ -212,7 +210,7 @@ const HistoryOrder = ({ navigation }) => {
                         styles.logoutButton,
                         !handleShowButton(item.timestamp) && {
                           display: "none",
-                        }, // إخفاء الزر إذا كانت المدة أكثر من 24 ساعة
+                        },
                       ]}
                     >
                       <Text style={styles.logoutButtonText}>CancelOrder</Text>
@@ -234,16 +232,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   containeritem: {
-    backgroundColor: "#FBFAFF",
+    backgroundColor: "white",
     width: width,
   },
   header: {
     flexDirection: "row",
-    backgroundColor: "#FBFAFF",
+    backgroundColor: "white",
     height: 70,
   },
   smallCard: {
-    // borderRadius: 30,
     backgroundColor: "white",
     justifyContent: "center",
     alignItems: "center",
@@ -283,13 +280,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   itemContainer: {
-    // flex:1,
     flexDirection: "row",
     backgroundColor: " black",
-    // padding: 1,
     marginTop: 10,
     marginBottom: 10,
-    // marginRight:10 ,
     borderWidth: 1,
     width: width,
     height: height / 4.8,
@@ -302,7 +296,6 @@ const styles = StyleSheet.create({
   itemImage: {
     width: cardwidth - 100,
     height: height / 5.4,
-    // borderRadius: 10,
   },
   textContainer: {
     marginLeft: 10,
@@ -319,7 +312,6 @@ const styles = StyleSheet.create({
     textAlign: "left",
     flexWrap: "wrap",
     width: "70%",
-    // marginTop:30,
   },
   dateText: {
     fontSize: 10,
@@ -328,7 +320,6 @@ const styles = StyleSheet.create({
   },
   dateContainer: {
     alignItems: "flex-end",
-
     flexWrap: "wrap",
     width: "70%",
   },
@@ -338,10 +329,6 @@ const styles = StyleSheet.create({
     height: cardwidth - 160,
     marginLeft: 35,
     backgroundColor: "black",
-
-    // bottom: 5,
-
-    // position: 'absolute',
     alignItems: "center",
   },
   logoutButtonText: {

@@ -17,8 +17,9 @@ import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "fire
 import { auth, db, storage } from '../firebase';
 import BottomNavigator from '../components/bar';
 import Search from '../components/search';
-import COLORS from '../Consts/Color';
+
 import Icon from 'react-native-vector-icons/Ionicons';
+import { cartStyle } from '../Consts/styles';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -31,6 +32,8 @@ const CartScreen = ({ navigation }) => {
   const [cartList, setCartList] = useState([]);
   //const [userId, setUserId] = useState('');
   const route = useRoute();
+  const COLORS =route.params.COLORS;
+  const styles = cartStyle(COLORS)
   //const userId = route.params.userId;
   const [userId, setUserId] = useState(route.params.userId);
   const [HistoryOrder, setHistoryOrder] = useState([]);
@@ -49,23 +52,6 @@ const CartScreen = ({ navigation }) => {
       ...prevState,
       [productId]: currentIndex,
     }));
-  };
-  const handleSomeAction = async () => {
-    try {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      const userData = userSnap.data();
-
-      console.log('Current Bonus Points:', userData.boun);
-
-      const currentPoints = userData.boun || 0;
-      const newPoints = currentPoints + 10;
-
-      await updateDoc(userRef, { boun: newPoints });
-      console.log('Bonus points increased by 10.');
-    } catch (error) {
-      console.error('Error increasing bonus points:', error);
-    }
   };
   const [points, setpoints] = useState(0);
   useEffect(() => {
@@ -105,20 +91,15 @@ const CartScreen = ({ navigation }) => {
       console.log("Types:", types);
       setType(types);
 
-      // Fetch recommended products for each category and type
       const recommendedProductsPromises = categories.map((item, index) =>
         getRecommendProduct(item, types[index], prices[index], Name)
       );
 
-
-      // Wait for all fetches to complete
       const recommendedProducts = await Promise.all(recommendedProductsPromises);
-      // const recommendedProducts2 = Name.map((item, index) =>
-      //   recommendedProducts.filter(product =>  product.name != item)
-      // );
+
       const allRecommendedProducts = recommendedProducts.flat();
 
-      // Use a Set to remove duplicates based on product ID
+ 
       const uniqueProducts = [];
       const productIds = new Set();
 
@@ -470,7 +451,7 @@ const CartScreen = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={[styles.Text, { textAlign: 'center' }]}> My basket </Text>
       </View>
-      <Search />
+      <Search COLORS={COLORS}/>
       <ScrollView style={[styles.container, { marginTop: 10 }]} nestedScrollEnabled={true}>
         <TouchableOpacity
           style={[
@@ -689,206 +670,14 @@ const CartScreen = ({ navigation }) => {
 
               handleCheckout();
             }}>
-            <Text style={{ color: '#fff' }}>Checkout</Text>
+            <Text style={{ color: COLORS.white }}>Checkout</Text>
           </TouchableOpacity>
         </View>
       )}
 
-      <BottomNavigator item="cart" navigation={navigation} userId={userId} />
+      <BottomNavigator item="cart" navigation={navigation} userId={userId} COLORS={COLORS}/>
     </View>
   );
 };
 
 export default CartScreen;
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    backgroundColor: COLORS.white
-  },
-  containerTotal: {
-    padding: 10,
-    borderWidth: 0.1,
-    borderColor: COLORS.grey,
-    borderWidth: 0.1,
-    borderRadius: 1,
-    elevation: 13,
-    flexDirection: 'column',
-    backgroundColor: COLORS.white,
-    marginBottom: 10,
-    margin: 5
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 5,
-  },
-  header: {
-    flexDirection: "row",
-    backgroundColor: COLORS.background,
-    height: '10%',
-    alignItems: 'center',
-    textAlign: 'center'
-  }, Text: {
-    color: COLORS.darkblue,
-    fontSize: 35,
-    fontFamily: 'SofiaRegular',
-    fontWeight: "bold",
-    alignItems: 'center',
-    marginLeft: width / 2 - 80
-
-  },
-  headerTextView: {
-    backgroundColor: 'White',
-    marginTop: 10
-  }, headerText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    alignItems: 'center',
-    margin: 10
-  },
-  deliveryText: {
-    marginLeft: 60,
-    fontSize: 18,
-    fontWeight: '700',
-    color: COLORS.grey
-  },
-  iconBehave: {
-    marginTop: 50,
-    marginLeft: 10,
-    marginRight: 10
-  },
-  cardView: {
-    flexDirection: 'row',
-    marginBottom: 5,
-    marginTop: 20,
-    borderRadius: 15,
-    width: width - 20,
-    height: 210,
-    elevation: 13,
-    backgroundColor: COLORS.white,
-    marginLeft: 20,
-  },
-  cardView2: {
-    marginBottom: 20,
-    marginTop: 5,
-    marginRight: 5,
-    borderRadius: 15,
-    width: cardwidth,
-    height: cardheight - 30,
-    elevation: 13,
-    backgroundColor: 'white',
-  },
-  itemView: {
-    flexDirection: 'row',
-    width: '90%',
-    alignSelf: 'center',
-    backgroundColor: '#fff',
-    elevation: 4,
-    marginTop: 10,
-    borderRadius: 10,
-    height: 100,
-    marginBottom: 10,
-    alignItems: 'center',
-    marginLeft: 70,
-  },
-  itemImage: {
-    width: cardwidth - 90,
-    height: 210,
-    marginLeft: 5,
-    marginRight: 5
-  },
-  nameView: {
-    width: '50%',
-    margin: 10,
-    height: 90
-
-  },
-  priceView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  nameText: {
-    fontSize: 18,
-    color: COLORS.dark,
-    fontWeight: '500',
-    marginBottom: 10
-  },
-  descText: {
-    fontSize: 18,
-    color: COLORS.dark,
-    fontWeight: '600',
-    marginBottom: 10
-  },
-  priceText: {
-    fontSize: 16,
-    color: COLORS.dark,
-    fontWeight: '700',
-    marginBottom: 5
-  },
-  discountText: {
-    fontSize: 16,
-    color: "green",
-    fontWeight: '700',
-    textDecorationLine: 'line-through',
-    marginLeft: 5,
-    marginBottom: 5
-  },
-  addRemoveView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    textAlign: 'center'
-  },
-  addToCartBtn: {
-    padding: 10,
-
-  },
-  checkoutView: {
-    width: '100%',
-    height: 60,
-    backgroundColor: '#fff',
-    position: 'absolute',
-    bottom: 60,
-    elevation: 5,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-  },
-  checkButton: {
-    width: cardwidth,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.dark,
-
-  }, bottoms: {
-    flexDirection: "row",
-    backgroundColor: COLORS.white,
-    height: 150,
-    bottom: 0
-  },
-  total: {
-    width: '90%',
-    height: 60,
-    backgroundColor: COLORS.white,
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
-
-  },
-  image: {
-    position: "relative",
-    height: cardheight - 130,
-    width: cardwidth,
-  },
-  Name: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: "#131A2C",
-    marginTop: 5,
-    marginLeft: 10,
-    marginBottom: 5,
-    height: 40,
-    width: cardwidth - 20
-  },
-});

@@ -26,19 +26,23 @@ import Icon from "react-native-vector-icons/FontAwesome5";
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { Entypo } from "@expo/vector-icons";
 import { auth, db, storage } from "../firebase";
-import COLORS from "../Consts/Color";
+
 import * as ImagePicker from "expo-image-picker";
 import BottomNavigator from "../components/bar";
 import { Fontisto } from "@expo/vector-icons";
 import { SimpleLineIcons } from "@expo/vector-icons";
 import { Ionicons } from '@expo/vector-icons';
+import { profilee } from "../Consts/styles";
 
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 const cardheight = height / 2;
 const cardwidth = width / 2;
 
-const Profile = ({ navigation }) => {
+const Profile  = ({ navigation ,route}) => {
+  console.log(route.params)
+  const COLORS=route.params.COLORS
+  const styles =profilee(COLORS)
   const currentUser = useAuth();
   const [fristName, setFristName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -245,7 +249,7 @@ const Profile = ({ navigation }) => {
             </Text>
             <View style={styles.pencil}>
               <Pressable onPress={handleEditProfile}>
-                <SimpleLineIcons name="pencil" size={20} color="black" />
+                <SimpleLineIcons name="pencil" size={20} color={COLORS.dark} />
               </Pressable>
             </View>
 
@@ -259,7 +263,7 @@ const Profile = ({ navigation }) => {
                     style={styles.icon}
                     name="eye-circle-outline"
                     size={35}
-                    color="black"
+                    color={COLORS.dark}
                   />
                   <Text style={styles.text}> Recently Visited </Text>
                 </View>
@@ -273,7 +277,7 @@ const Profile = ({ navigation }) => {
                     style={styles.icon}
                     name="map-marked-alt"
                     size={35}
-                    color="black"
+                    color={COLORS.dark}
                   />
                   <Text style={styles.text}>My Address</Text>
                 </View>
@@ -292,21 +296,21 @@ const Profile = ({ navigation }) => {
             <View style={styles.pressableContainer}>
               <Pressable style={styles.pressable} onPress={() => setShowBouns(!showBouns)}>
                 <View style={styles.row}>
-                  <Entypo name="star-outlined" size={35} color="black" />
+                  <Entypo name="star-outlined" size={35} color={COLORS.dark} />
                   <Text style={styles.text}> Bouns </Text>
                 </View>
               </Pressable>
               <Pressable style={styles.pressable} onPress={handleMyOrderPress}>
                 <View style={styles.row}>
-                  <Fontisto name="shopping-bag-1" size={35} color="black" />
+                  <Fontisto name="shopping-bag-1" size={35} color={COLORS.dark} />
                   <Text style={styles.text}> Orders </Text>
                 </View>
               </Pressable>
               <Pressable style={styles.pressable} onPress={handleMyOrderPressed}>
                 <View style={styles.row}>
                   <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                    <Fontisto name="shopping-bag-1" size={40} color="black" />
-                    <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
+                    <Fontisto name="shopping-bag-1" size={40} color={COLORS.dark} />
+                    <MaterialCommunityIcons name="cancel" size={30} color={COLORS.white} style={{ position: 'absolute', top: 10, left: 5 }} />
                   </View>
                   <Text style={styles.text}> Cancle Order </Text>
                 </View>
@@ -318,26 +322,26 @@ const Profile = ({ navigation }) => {
           )}
           <TouchableOpacity onPress={handleAboutUs}>
             <View style={styles.aboutuscontainer}>
-              <MaterialIcons name="stars" size={30} color="black" />
+              <MaterialIcons name="stars" size={30} color={COLORS.dark} />
               <View style={styles.textAndArrowContainer}>
               <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color={COLORS.dark}  />
               </View>
               </View>
             </View>
           </TouchableOpacity >
           <Pressable onPress={() => setShowWallet(!showWallet)}>
             <View style={styles.aboutuscontainer} >
-              <Ionicons name="wallet-outline" size={24} color="black" />
+              <Ionicons name="wallet-outline" size={24} color={COLORS.dark} />
               <View style={styles.textAndArrowContainer}>
               <Text style={styles.abouttext}>MyWallet</Text>
               <View>
                 {!showWallet && (
-                  <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+                  <MaterialIcons name="keyboard-arrow-right" size={30} color={COLORS.dark}  />
                 )}
                 {showWallet && (
-                  <MaterialIcons name="keyboard-arrow-down" size={30} color="black"  />
+                  <MaterialIcons name="keyboard-arrow-down" size={30} color={COLORS.dark}  />
                 )}
               </View>
               </View>
@@ -351,11 +355,11 @@ const Profile = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity onPress={handleRecycleProduct}>
             <View style={styles.aboutuscontainer}>
-              <Icon name="recycle" size={25} color="black" />
+              <Icon name="recycle" size={25} color={COLORS.dark} />
               <View style={styles.textAndArrowContainer}>
               <Text style={styles.abouttext}>Recycle Product</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black"  />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color={COLORS.dark}  />
               </View>
               </View>
             </View>
@@ -378,7 +382,7 @@ const Profile = ({ navigation }) => {
                     style={styles.icon}
                     name="eye-circle-outline"
                     size={35}
-                    color="black"
+                    color={COLORS.dark}
                   />
                   <Text style={styles.text}> Recently Visited </Text>
                 </View>
@@ -389,7 +393,7 @@ const Profile = ({ navigation }) => {
                     style={styles.icon}
                     name="map-marked-alt"
                     size={35}
-                    color="black"
+                    color={COLORS.dark}
                   />
                   <Text style={styles.text}> My Address </Text>
                 </View>
@@ -424,13 +428,13 @@ const Profile = ({ navigation }) => {
             <View style={styles.pressableContainer}>
               <Pressable style={styles.pressable} onPress={handleSignUp}>
                 <View style={styles.row}>
-                  <Entypo name="star-outlined" size={35} color="black" />
+                  <Entypo name="star-outlined" size={35} color={COLORS.dark} />
                   <Text style={styles.text}> Bouns </Text>
                 </View>
               </Pressable>
               <Pressable style={styles.pressable} onPress={handleSignUp}>
                 <View style={styles.row}>
-                  <Fontisto name="shopping-bag-1" size={35} color="black" />
+                  <Fontisto name="shopping-bag-1" size={35} color={COLORS.dark} />
 
                   <Text style={styles.text}> Orders </Text>
                 </View>
@@ -438,8 +442,8 @@ const Profile = ({ navigation }) => {
               <Pressable style={styles.pressable} onPress={handleSignUp} >
                 <View style={styles.row}>
                   <View style={{ flexDirection: 'column', alignItems: 'center' }}>
-                    <Fontisto name="shopping-bag-1" size={40} color="black" />
-                    <MaterialCommunityIcons name="cancel" size={30} color="white" style={{ position: 'absolute', top: 10, left: 5 }} />
+                    <Fontisto name="shopping-bag-1" size={40} color={COLORS.dark} />
+                    <MaterialCommunityIcons name="cancel" size={30} color={COLORS.white} style={{ position: 'absolute', top: 10, left: 5 }} />
                   </View>
                   <Text style={styles.text}> Cancel Order </Text>
                 </View>
@@ -448,10 +452,10 @@ const Profile = ({ navigation }) => {
           </View>
           <TouchableOpacity onPress={handleAboutUs}>
             <View style={styles.aboutuscontainer}>
-              <MaterialIcons name="stars" size={30} color="black" />
+              <MaterialIcons name="stars" size={30} color={COLORS.dark} />
               <Text style={styles.abouttext}>AboutUs</Text>
               <View>
-                <MaterialIcons name="keyboard-arrow-right" size={30} color="black" style={[{ marginLeft: width / 1.7 }]} />
+                <MaterialIcons name="keyboard-arrow-right" size={30} color={COLORS.dark} style={[{ marginLeft: width / 1.7 }]} />
               </View>
             </View>
           </TouchableOpacity>
@@ -459,278 +463,11 @@ const Profile = ({ navigation }) => {
         </View>
 
       )}
-      <BottomNavigator item="profile" navigation={navigation} />
+      <BottomNavigator item="profile" navigation={navigation} COLORS={COLORS}/>
     </>
     //     <BottomNavigator item="profile" navigation={navigation} />
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    // padding: 16,
-    backgroundColor: "#ffffff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  field: {
-    flexDirection: "row",
-    marginTop: 10,
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#f2f2f2",
-    paddingBottom: 5,
-  },
 
-  label: {
-    flex: 1,
-    fontWeight: "bold",
-    Color: "#131A2C",
-  },
-
-  value: {
-    flex: 2,
-    color: "#FFDE9B",
-  },
-  value2: {
-    flex: 2,
-    color: "#67788B",
-  },
-  input: {
-    flex: 2,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 4,
-    paddingHorizontal: 8,
-  },
-  logoutButton: {
-    width: width - 10,
-    height: cardheight / 10,
-    marginLeft: 5,
-    backgroundColor: "black",
-    padding: 10,
-    marginTop: 10,
-    alignItems: "center",
-  },
-  logoutButtonText: {
-    color: "white",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  profileImage: {
-    width: 30,
-    height: 30,
-    borderRadius: 75,
-    // verticalAlign: "middle",
-    // position: "absolute",
-    // borderRadius: "50%",
-    // borderWidth: "5px",
-    // borderColor: "gray",
-    // borderStyle: "outset",
-    marginLeft: 10,
-    position: "absolute",
-    left: 5,
-    top: 10,
-  },
-  containerButton: {
-    // display: flex,
-    flexDirection: "row",
-    //  flex:1,
-    //   alignItems: 'center',
-    //margin:3,
-    justifyContent: "space-between",
-  },
-
-
-  buttonTextLoggout: {
-    color: "#131A2C",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  NavContainer: {
-    position: "absolute",
-    alignItems: "center",
-    bottom: 5,
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-  },
-  Navbar: {
-    flexDirection: "row",
-    backgroundColor: COLORS.dark,
-    width: width,
-    justifyContent: "space-evenly",
-    borderRadius: 30,
-    height: 40,
-  },
-  iconBehave: {
-    padding: 35,
-    bottom: 30,
-  },
-  welcomecontainer: {
-    backgroundColor: "#ffffff",
-    width: width - 10,
-    height: "20%",
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    alignSelf: "flex-start",
-    marginTop: 5,
-    marginLeft: 5,
-    marginRight: 10,
-    borderStyle: "solid",
-    borderColor: "black",
-    borderWidth: 0.5,
-    position: "relative",
-    textAlign: "right",
-    // flexDirection: 'row',
-    // marginLeft:5,
-    // marginRight:0,
-  },
-  welcomeinput: {
-    flex: 1,
-    // fontWeight: "bold",
-    color: "black",
-    marginLeft: 50,
-    marginTop: 10,
-    fontSize: 20,
-    textAlign: "right",
-  },
-  pressableContainer: {
-    flexDirection: "row",
-    // alignItems: 'center',
-    marginBottom: 20,
-    marginLeft: 30,
-  },
-  pressable: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    // backgroundColor: '#007bff',
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  row: {
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  column: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  text: {
-    color: "#000",
-    fontSize: 17,
-    marginLeft: 10,
-    flexDirection: "row",
-  },
-  icon: {
-    marginRight: -10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    marginTop: 10,
-  },
-  button: {
-    // paddingVertical: 15,
-    // paddingHorizontal: 20,
-    // borderRadius: 0,
-    marginHorizontal: 5,
-    width: cardwidth - 10,
-    height: height / 20,
-    borderWidth: 1,
-    borderColor: "black",
-    textAlign: "center",
-  },
-  buttonText: {
-    color: "#000",
-    fontSize: 20,
-    marginTop: 3,
-    // textAlign: "center",
-    justifyContent: "center",
-    alignItems: "center",
-    alignSelf: "center",
-  },
-  ordercontainer: {
-    backgroundColor: "#ffffff",
-    width: width - 10,
-    height: "20%",
-    justifyContent: "center",
-    alignItems: "flex-start",
-    alignSelf: "flex-start",
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 10,
-    borderStyle: "solid",
-    borderColor: "black",
-    borderWidth: 0.5,
-  },
-  SeeAll: {
-    position: "absolute",
-    top: 10,
-    right: 15,
-    alignSelf: "flex-end",
-    color: "black",
-    marginRight: 5,
-    textDecorationLine: "underline",
-  },
-  offer: {
-    marginTop: 10,
-    marginLeft: 5,
-    marginRight: 10,
-    borderStyle: "solid",
-    borderColor: "black",
-    borderWidth: 0.5,
-  },
-  bounsText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "black",
-    marginTop: 10,
-    marginLeft: 10,
-  },
-  walletText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "black",
-    marginTop: 10,
-    marginLeft: 30,
-  },
-
-  pencil: {
-    position: "absolute",
-    top: 15,
-    // left: 200,
-    right: 15,
-  },
-  aboutuscontainer: {
-    flexDirection: "row",
-    width: width - 10,
-    height: height / 18,
-    alignItems: "center",
-    marginLeft: 10,
-    marginTop: 10,
-    backgroundColor: "#ffffff",
-    borderStyle: "solid",
-    borderColor: "black",
-    // borderWidth: 0.5,
-
-  },
-  abouttext: {
-    fontSize: 20,
-    marginLeft: 10,
-
-
-  },
-  textAndArrowContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginLeft: 5,
-    marginRight:8
-  },
-});
 export default Profile;

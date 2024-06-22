@@ -4,16 +4,20 @@ import {
     ScrollView, Dimensions, TouchableWithoutFeedback, Modal, Keyboard
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import COLORS from '../Consts/Color';
+
 import Icon from 'react-native-vector-icons/Ionicons';
 import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import ProductPage from '../pages/ResultSearch';
+import { launchImageLibrary } from 'react-native-image-picker';
+import MlkitOcr from 'react-native-mlkit-ocr';
+import { search } from '../Consts/styles';
 
 const { width } = Dimensions.get('screen');
-const Search = () => {
+const Search = ({COLORS}) => {
+    const styles =search(COLORS)
     const navigation = useNavigation();
     const isFocused = useIsFocused();
     const [modalVisible, setModalVisible] = useState(false);
@@ -26,7 +30,9 @@ const Search = () => {
     const [length, setlength] = useState(0);
     const [isempty, setisempty] = useState(true);
     const [searchText, setText] = useState("");
-
+    const [imageUri, setImageUri] = useState(null);
+    const [ocrText, setOcrText] = useState('');
+   
     useEffect(() => {
         getsearchItems();
         fetchData();
@@ -86,6 +92,24 @@ const Search = () => {
         }
     };
 
+    const handleImagePick = async () => {
+        const result = await launchImageLibrary({ mediaType: 'photo', quality: 1 });
+        if (result.assets && result.assets.length > 0) {
+          const uri = result.assets[0].uri;
+          setImageUri(uri);
+    
+          try {
+            console.log('OCR Result:', uri);
+            const visionResp = await MlkitOcr.detectFromUri(uri);
+            const ocrResult = visionResp.map(item => item.text).join(' ');
+            console.log('OCR Result:', ocrResult);
+            setOcrText(ocrResult);
+            handleSearch(ocrResult);
+          } catch (error) {
+            console.error('Error detecting text:', error);
+          }
+        }
+      };
     const onAddTosearch = async (item) => {
         try {
             const userRef = doc(db, "users", userId);
@@ -247,8 +271,9 @@ const Search = () => {
                     <Icon name="search"
                         style={styles.searchIcon}
                         size={25}
+                        color={COLORS.dark}
                     />
-                    <Text style={{ fontSize: 15 }}>What are you looking for ?</Text>
+                    <Text style={{ fontSize: 15 ,color:COLORS.dark }}>What are you looking for ?</Text>
                 </View>
             </TouchableWithoutFeedback>
             <Modal
@@ -304,6 +329,9 @@ const Search = () => {
                                     />
                                 </Pressable>
                             </Animatable.View>
+                            <TouchableOpacity onPress={handleImagePick}>
+                                <Icon name="camera" size={28} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <ScrollView nestedScrollEnabled={true}>
@@ -373,90 +401,6 @@ const Search = () => {
 }
 
 
-const styles = StyleSheet.create({
-    total: {
-        width: '90%',
-        height: 60,
-        backgroundColor: COLORS.white,
-        marginLeft: 5,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
 
-    },
-    TextInput: {
-        borderWidth: 1,
-        borderRadius: 12,
-        marginHorizontal: 0,
-        borderColor: "#86939e",
-        flexDirection: "row",
-        justifyContent: "space-evenly",
-        alignContent: "center",
-        alignItems: "center",
-        paddingLeft: 10,
-        paddingRight: 10
-    },
-    SearchArea: {
-        width: "94%",
-        height: 40,
-        backgroundColor: COLORS.background,
-        borderWidth: 1,
-        borderColor: 'black',
-        flexDirection: "row",
-        alignItems: "center",
-        paddingLeft:10
-    },
-    searchIcon: {
-        marginRight: 10,
-    },
-    view1: {
-        height: 70,
-        justifyContent: "center",
-        paddingHorizontal: 10,
-    },
-    view2: {
-        flexDirection: 'row',
-        padding: 15,
-        alignItems: 'center',
-    },
-    icon2: {
-        fontSize: 24,
-        padding: 5,
-        color: COLORS.grey,
-    },
-    modal: {
-        flex: 1
-    },
-    NavContainer: {
-        position: 'absolute',
-        alignItems: 'center',
-        bottom: 1,
-        borderBottomLeftRadius: 15,
-        borderBottomRightRadius: 15,
-    },
-    Navbar: {
-        flexDirection: 'row',
-        backgroundColor: COLORS.white,
-        width: width,
-        justifyContent: 'space-evenly',
-        height: 60
-
-    },
-    iconBehave: {
-        alignItems: 'center',
-        marginTop: 3
-    },
-    Text: {
-        fontWeight: "bold",
-        color: COLORS.dark
-    },
-    searchInput: {
-        width: '80%',
-        borderWidth: 0,
-        borderColor: 'transparent',
-        height: 25,
-        padding: 0,
-    },
-});
 
 export default Search;

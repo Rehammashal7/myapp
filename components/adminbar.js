@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Fontisto } from '@expo/vector-icons'; // Import Fontisto
-import COLORS from '../Consts/Color';
 
+import theme from '../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const { width } = Dimensions.get('screen');
 
 const BottomNavigator = ({ item, navigation, userId }) => {

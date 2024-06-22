@@ -14,8 +14,9 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db, storage } from '../firebase';
-import COLORS from '../Consts/Color';
 
+import theme from '../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

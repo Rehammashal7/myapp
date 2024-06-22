@@ -98,7 +98,7 @@ const SignUpScreen = ({ navigation }) => {
       cancelOrder:cancelOrder,
       HistoryOrder:HistoryOrder,
     });
-    
+    console.log(doc(db, "users", auth.currentUser.uid))
 
   };
 

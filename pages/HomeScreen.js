@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View, Text, TextInput, Image, TouchableOpacity, StyleSheet, FlatList, Pressable,
-    ScrollView, Dimensions, TouchableWithoutFeedback
+    ScrollView, Dimensions, TouchableWithoutFeedback, ActivityIndicator
 } from 'react-native';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, updateDoc } from 'firebase/firestore';
 import { db } from '../firebase';
 // import filterData from '../data';
 import Food, { filterData, productt, option, size } from "../data";
+import Icon from 'react-native-vector-icons/Ionicons';
 
-import COLORS from '../Consts/Color';
 import Search from '../components/search';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomNavigator from '../components/bar';
@@ -16,133 +16,102 @@ import { useIsFocused } from '@react-navigation/native';
 import { getAuth } from "firebase/auth";
 // import Carousel from 'react-native-snap-carousel';
 import Homestyles from '../Consts/styles';
-
+import theme from '../Consts/Color';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
-const cardheight = screenHeight / 2 - 30;
-const cardwidth = width / 2;
+const cardWidth = width / 2;
 
 const HomeScreen = ({ navigation }) => {
     const [searchQuery, setSearchQuery] = useState('');
-    const [indexCheck, setIndexCheck] = useState("0")
+    const [indexCheck, setIndexCheck] = useState("0");
     const [products, setProducts] = useState([]);
-    const [TRENDS, setTRENDS] = useState([]);
+    const [trends, setTrends] = useState([]);
     const [userId, setUserId] = useState('');
-    const [activeIndexes, setActiveIndexes] = useState({});
-    const imageWidth = cardwidth;
+    const [isLoading, setIsLoading] = useState(true);
     const isFocused = useIsFocused();
-    const auth = getAuth();
-    useEffect(() => {
-        getUser();
-    }, [isFocused]);
+    const [dark, setDark] = useState(false);
+    const [COLORS, setColor] = useState(theme.LIGHT_COLORS);
+    const Homestyle = Homestyles(COLORS);
 
-    useEffect(() => {
-        const getProducts = async () => {
-            const collections = ['woman', 'men', 'kids', 'baby'];
-            const allProducts = [];
-
-            for (const collectionName of collections) {
-                const productsCollection = collection(db, collectionName);
-                const productsSnapshot = await getDocs(productsCollection);
-                const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allProducts.push(...productsData);
-            }
-            const filteredProducts = allProducts.filter(product => product.offer > 0);
-            console.log(filteredProducts);
-            setProducts(filteredProducts);
-        };
-        getProducts();
-
-    }, []);
-
-    useEffect(() => {
-        const getProducts = async () => {
-            const collections = ['woman', 'men', 'kids', 'baby'];
-            const allProducts = [];
-
-            for (const collectionName of collections) {
-                const productsCollection = collection(db, collectionName);
-                const productsSnapshot = await getDocs(productsCollection);
-                const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                allProducts.push(...productsData);
-            }
-            const filteredProducts = allProducts.filter(product => product.rate > 2);
-            filteredProducts.sort((a, b) => {
-                const rateA = a.rate ; // Default to 0 if price is missing
-                const rateB = b.rate ;
-                return rateB - rateA;
-              });
-            console.log(filteredProducts);
-            setTRENDS(filteredProducts);
-        };
-        getProducts();
-
-    }, []);
-
-    useEffect(() => {
-        const getUserId = async () => {
-            const id = await AsyncStorage.getItem('USERID');
-            setUserId(id);
-            console.log(id);
-        };
-        getUserId();
-
-    }, []);
-
-    const getUser = async () => {
-        const docRef = doc(db, "users", auth.currentUser.uid);
-        const docSnap = await getDoc(docRef);
-    };
-    const handleProductPress = async (product, Category) => {
+    const handledark = async () => {
         try {
-            if (Category === "KIDS") {
-                navigation.navigate('KidsDetails', { product });
-            } else if (Category === "MEN") {
-                navigation.navigate('MenDetails', { product });
-            } else if (Category === "BABY") {
-                navigation.navigate('BabyDetails', { product });
+            console.log(!dark)
+            if (!dark) {
+                setColor(theme.DARK_COLORS)
             } else {
-                navigation.navigate('WomanDetails', { product });
+                setColor(theme.LIGHT_COLORS)
             }
+
         } catch (error) {
-            console.error("Error fetching product: ", error);
+            console.error("Error updating theme: ", error);
         }
     };
+    const auth = getAuth();
 
-    const handleScroll = (event, productId) => {
-        const contentOffsetX = event.nativeEvent.contentOffset.x;
-        const currentIndex = Math.floor(contentOffsetX / imageWidth);
-        setActiveIndexes((prevState) => ({
-            ...prevState,
-            [productId]: currentIndex,
-        }));
+
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const collections = ['woman', 'men', 'kids', 'baby'];
+            const allProducts = [];
+
+            for (const collectionName of collections) {
+                const productsCollection = collection(db, collectionName);
+                const productsSnapshot = await getDocs(productsCollection);
+                const productsData = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                allProducts.push(...productsData);
+            }
+
+            const offerProducts = allProducts.filter(product => product.offer > 0);
+            setProducts(offerProducts);
+
+            const trendProducts = allProducts.filter(product => product.rate > 2);
+            trendProducts.sort((a, b) => b.rate - a.rate);
+            setTrends(trendProducts);
+
+            setIsLoading(false);
+        };
+
+        fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        const fetchUserId = async () => {
+            const id = await AsyncStorage.getItem('USERID');
+            setUserId(id);
+        };
+
+        fetchUserId();
+    }, []);
+
+
+
+    const handleProductPress = (product, category) => {
+        const routes = {
+            KIDS: 'KidsDetails',
+            MEN: 'MenDetails',
+            BABY: 'BabyDetails',
+            default: 'WomanDetails'
+        };
+        navigation.navigate(routes[category] || routes.default, { product ,COLORS:COLORS});
     };
 
     const renderProduct = ({ item }) => (
         <TouchableOpacity onPress={() => handleProductPress(item, item.categoryName)}>
-            <View style={Homestyles.cardView}>
-
-                <Image source={{ uri: item.images[0] }} style={Homestyles.image} />
-
+            <View style={Homestyle.cardView}>
+                <Image source={{ uri: item.images[0] }} style={Homestyle.image} />
                 <View style={{ height: 100 }}>
-                    <Text style={Homestyles.Name} numberOfLines={2} ellipsizeMode="tail">
+                    <Text style={Homestyle.Name} numberOfLines={2} ellipsizeMode="tail">
                         {item.name}
                     </Text>
                     {item.offer !== 0 ? (
                         <>
                             <Text
-                                style={{
-                                    fontSize: 18,
-                                    fontWeight: "bold",
-                                    marginHorizontal: 10,
-                                    textDecorationLine: "line-through",
-                                    height: 20
-                                }}
+                                style={Homestyle.priceO}
                             >
                                 {item.price} EGP
                             </Text>
-
                             <Text
                                 style={{
                                     fontSize: 13,
@@ -155,21 +124,12 @@ const HomeScreen = ({ navigation }) => {
                             >
                                 🏷️{item.offer}% Discount{" "}
                                 <Text style={{ fontSize: 14, fontWeight: "bold" }}>
-                                    {Math.floor(
-                                        item.price - item.price / item.offer
-                                    )}{" "}
-                                    EGP
+                                    {Math.floor(item.price - (item.price * item.offer / 100))} EGP
                                 </Text>
                             </Text>
                         </>
                     ) : (
-                        <Text
-                            style={{
-                                fontSize: 18,
-                                fontWeight: "bold",
-                                marginHorizontal: 10,
-                            }}
-                        >
+                        <Text style={Homestyle.priceO}>
                             {item.price} EGP
                         </Text>
                     )}
@@ -178,27 +138,28 @@ const HomeScreen = ({ navigation }) => {
         </TouchableOpacity>
     );
 
-    const data = [
-        { imageUrl: 'https://cdn.youcan.shop/stores/f725985ece28459e35d7975512972572/others/JJucRU3iTsV1W9zkOqLBOOZONn5iKIIZXEvuuvIf.png' },
-        { imageUrl: 'https://ashtonscorner.com/cdn/shop/files/ACB_-_Kids_20_Fashion_Sale.jpg?v=1705717296&width=3000' },
-        { imageUrl: 'https://img.freepik.com/free-psd/sales-banner-template-with-image_23-2148149654.jpg?size=626&ext=jpg&ga=GA1.1.1224184972.1714003200&semt=ais' },
-        { imageUrl: 'https://img.freepik.com/free-photo/big-sale-discounts-products_23-2150336701.jpg' }
-    ];
-    const carouselRef = useRef(null);
-
     const renderItem = ({ item }) => (
         <View style={{ alignItems: 'center', width: '110%' }}>
             <Image source={{ uri: item.imageUrl }} style={{ width: '100%', height: 200 }} />
         </View>
     );
+
+    // if (isLoading) {
+    //     return <ActivityIndicator size="large" color="#0000ff" style={Homestyle.loading} />;
+    // }
+
     return (
-        <View style={Homestyles.container}>
-            <View >
-                <Text style={Homestyles.Text}> AToZ </Text>
+        <View style={Homestyle.container}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                <Text style={Homestyle.Text}> AToZ </Text>
+                <Pressable onPress={() => { setDark(!dark),handledark() }} style={{ margin: 10 }} >
+                    <Icon name='moon' size={25} color={COLORS.dark} />
+
+                </Pressable>
             </View>
-            <Search />
+            <Search COLORS={COLORS} />
             <ScrollView nestedScrollEnabled={true}>
-                <View style={Homestyles.header} >
+                <View style={Homestyle.header} >
                     <FlatList
                         horizontal={true}
                         showsHorizontalScrollIndicator={false}
@@ -207,11 +168,11 @@ const HomeScreen = ({ navigation }) => {
                         extraData={indexCheck}
                         renderItem={({ item, index }) => (
                             <Pressable
-                                onPress={() => navigation.navigate(item.name)}
+                                onPress={() => navigation.navigate(item.name, COLORS)}
                             >
-                                <View style={[Homestyles.smallCard, indexCheck === item.id ? Homestyles.smallCardSelected : null]}>
+                                <View style={[Homestyle.smallCard, indexCheck === item.id ? Homestyle.smallCardSelected : null]}>
                                     <View>
-                                        <Text style={[Homestyles.regularText, indexCheck === item.id ? Homestyles.selectedCardText : null]}>{item.name}</Text>
+                                        <Text style={[Homestyle.regularText, indexCheck === item.id ? Homestyle.selectedCardText : null]}>{item.name}</Text>
                                     </View>
                                 </View>
                             </Pressable>
@@ -219,7 +180,7 @@ const HomeScreen = ({ navigation }) => {
                     />
 
                 </View>
-{/* 
+                {/* 
                 <Carousel
                     ref={carouselRef}
                     data={data}
@@ -231,8 +192,8 @@ const HomeScreen = ({ navigation }) => {
                     loop={true}
                 /> */}
 
-                <View style={Homestyles.headerTextView}>
-                    <Text style={[Homestyles.headerText, { color: 'red' }]}> Discound product : </Text>
+                <View style={Homestyle.headerTextView}>
+                    <Text style={[Homestyle.headerText, { color: COLORS.offerC }]}> Discound product : </Text>
                 </View>
                 <View>
                     <ScrollView horizontal={true}>
@@ -245,15 +206,15 @@ const HomeScreen = ({ navigation }) => {
                             keyExtractor={(item) => item.id}
                         />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={Homestyles.discoverButton}>
-                            <Text style={Homestyles.discoverText}>{'See All >>'}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={Homestyle.discoverButton}>
+                            <Text style={Homestyle.discoverText}>{'See All >>'}</Text>
                         </TouchableOpacity>
 
                     </ScrollView>
                 </View>
 
-                <View style={Homestyles.headerTextView}>
-                    <Text style={Homestyles.headerText}>TRENDS </Text>
+                <View style={Homestyle.headerTextView}>
+                    <Text style={Homestyle.headerText}>TRENDS </Text>
                 </View>
 
                 <View style={{ flexDirection: 'row' }}>
@@ -261,24 +222,25 @@ const HomeScreen = ({ navigation }) => {
                         <FlatList
                             style={{ marginTop: 10, marginBottom: 10 }}
                             horizontal={true}
-                            data={TRENDS.slice(0, 3)}
+                            data={trends.slice(0, 3)}
                             showsHorizontalScrollIndicator={false}
                             renderItem={renderProduct}
                             keyExtractor={(item) => item.id}
                         />
 
-                        <TouchableOpacity onPress={() => navigation.navigate('offer', TRENDS)} style={Homestyles.discoverButton}>
-                            <Text style={Homestyles.discoverText}>{'See All >>'} </Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('offer', trends)} style={Homestyle.discoverButton}>
+                            <Text style={Homestyle.discoverText}>{'See All >>'} </Text>
                         </TouchableOpacity>
 
                     </ScrollView>
                 </View>
-                <View style={Homestyles.bottoms}></View>
+                <View style={Homestyle.bottoms}></View>
             </ScrollView>
-            <BottomNavigator item="Home" navigation={navigation} userId={userId} />
+            <BottomNavigator item="Home" navigation={navigation} userId={userId} COLORS={COLORS} />
         </View>
     );
 }
 
-
 export default HomeScreen;
+
+

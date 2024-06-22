@@ -16,9 +16,9 @@ import { doc, collection, where, setDoc, updateDoc, getDocs, getDoc } from "fire
 import { auth, db, storage } from '../firebase';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import BottomNavigator from '../components/bar';
-import COLORS from '../Consts/Color';
+
 import Search from '../components/search';
-import { card } from '../Consts/styles';
+import { FavoriteStyle, card } from '../Consts/styles';
 
 const { width } = Dimensions.get('screen');
 const { height: screenHeight } = Dimensions.get('window');
@@ -30,8 +30,13 @@ const Favorite = ({ navigation }) => {
   const [favList, setFavList] = useState([]);
   const [activeIndexes, setActiveIndexes] = useState({});
   const route = useRoute();
+  console.log(route.params)
   const [userId, setUserId] = useState(route.params.userId);
+  const COLORS =route.params.COLORS
   const imageWidth = cardwidth;
+
+  const styles =FavoriteStyle(COLORS);
+  const cards=card(COLORS)
 
   useEffect(() => {
     getFavItems();
@@ -114,7 +119,7 @@ const Favorite = ({ navigation }) => {
       <View style={styles.header}>
         <Text style={[styles.Texts, { textAlign: 'center' }]}>Favorite</Text>
       </View>
-      <Search />
+      <Search COLORS={COLORS}/>
       <ScrollView nestedScrollEnabled={true}>
         <FlatList
           numColumns={2}
@@ -123,44 +128,44 @@ const Favorite = ({ navigation }) => {
             return (
               <TouchableOpacity onPress={() => handleProductPress(item, item.data.categoryName)}>
                 <View style={styles.container}>
-                  <View style={card.cardView}>
+                  <View style={cards.cardView}>
                     <FlatList
                       horizontal
                       data={item.data.images}
                       showsHorizontalScrollIndicator={false}
                       renderItem={({ item: image, index }) => (
-                        <Image key={index} source={{ uri: image }} style={card.imagee} />
+                        <Image key={index} source={{ uri: image }} style={cards.imagee} />
                       )}
                       keyExtractor={(image, index) => index.toString()}
                       onScroll={(event) => handleScroll(event, item.id)}
                     />
-                    <View style={card.dotsContainer}>
+                    <View style={cards.dotsContainer}>
                       {item.data.images.map((_, index) => (
                         <View
                           key={index}
                           style={[
-                            card.dot,
+                            cards.dot,
                             index === (activeIndexes[item.id] || 0)
-                              ? card.activeDot
+                              ? cards.activeDot
                               : null,
                           ]}
                         />
                       ))}
                     </View>
                     <View style={{ height: 100 }}>
-                    <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
+                    <Text style={cards.Name} numberOfLines={2} ellipsizeMode="tail">
                         {item.data.name}
                     </Text>
                     {item.data.offer !== 0 ? (
                         <>
                             <Text
-                                style={card.pricewithoffer}
+                                style={cards.pricewithoffer}
                             >
                                 {item.data.price} EGP
                             </Text>
 
                             <Text
-                                style={card.offer}
+                                style={cards.offer}
                             >
                                 🏷️{item.data.offer}% Discount{" "}
                                 <Text style={{ fontSize: 14, fontWeight: "bold" }}>
@@ -173,7 +178,7 @@ const Favorite = ({ navigation }) => {
                         </>
                     ) : (
                         <Text
-                            style={card.price}
+                            style={cards.price}
                         >
                             {item.data.price} EGP
                         </Text>
@@ -200,98 +205,10 @@ const Favorite = ({ navigation }) => {
         />
         <View style={styles.bottoms}></View>
       </ScrollView>
-      <BottomNavigator item="fav" navigation={navigation} userId={userId} />
+      <BottomNavigator item="fav" navigation={navigation} userId={userId} COLORS={COLORS}/>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: COLORS.white
-  },
-  header: {
-    flexDirection: "row",
-    backgroundColor: COLORS.background,
-    height: '10%',
-    alignItems: 'center',
-    textAlign: 'center'
-  },
-  Texts: {
-    color: COLORS.darkblue,
-    fontSize: 35,
-    fontFamily: 'SofiaRegular',
-    fontWeight: "bold",
-    alignItems: 'center',
-    marginLeft: width / 2 - 80
-  },
-  cardView: {
-    marginBottom: 20,
-    marginTop: 20,
-    borderRadius: 5,
-    width: cardwidth,
-    height: cardheight + 20,
-    elevation: 13,
-    backgroundColor: 'white',
-  },
-  dotsContainer: {
-    position: "absolute",
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: cardheight - 90,
-  },
-  dot: {
-    width: (cardwidth / 4) - 10,
-    height: 2,
-    marginBottom: 15,
-    backgroundColor: "black",
-    marginHorizontal: 5,
-  },
-  activeDot: {
-    marginBottom: 15,
-    backgroundColor: "white",
-  },
-  image: {
-    position: "relative",
-    height: cardheight - 80,
-    width: cardwidth,
-  },
-    Name: {
-      fontSize: 14,
-      fontWeight: 'bold',
-      color: "#131A2C",
-      marginTop: 5,
-      marginLeft: 10,
-      marginBottom: 5,
-      height: 40,
-      width: cardwidth - 20
 
-  },
-  containerHeart: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-    backgroundColor: COLORS.white,
-    borderRadius: 40,
-    alignItems: 'center',
-  },
-  addToFavBtn: {
-    paddingTop: 10,
-    paddingBottom: 8,
-    right: 10,
-    borderRadius: 10,
-    alignItems: 'center',
-    width: 25,
-    justifyContent: 'center',
-    marginLeft: 20
-  },
-  bottoms: {
-    flexDirection: "row",
-    backgroundColor: COLORS.white,
-    height: 50,
-    bottom: 20
-  },
-});
 export default Favorite;

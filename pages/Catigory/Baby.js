@@ -12,7 +12,6 @@ import {
   ActivityIndicator,
   Modal,
 } from "react-native";
-import COLORS from "../../Consts/Color";
 import {
   doc,
   collection,
@@ -38,153 +37,74 @@ import Spinner from "react-native-loading-spinner-overlay";
 import category from "../catigory";
 import SelectDropdown from 'react-native-select-dropdown';
 import { card, filter, productpage, smallCard } from "../../Consts/styles";
+
 const { width } = Dimensions.get("screen");
 const { height } = Dimensions.get("screen");
 
 const cardwidth = width / 2;
 let iconcolor;
-const ProductsListBaby = ({ navigation }) => {
+const ProductsListBaby  = ({ navigation ,route}) => {
+  console.log(route.params)
+  const COLORS=route.params
   const [products, setProducts] = useState([]);
+  const [filterProduct, setFilterProduct] = useState([]);
   const [userId, setUserId] = useState("");
-  const isFocused = useIsFocused();
-  const [isPressed, setIsPressed] = useState("");
-  const [activeIndex, setActiveIndex] = useState(0);
-  const scrollViewRef = useRef(null);
+  const [isPressed, setIsPressed] = useState(false);
   const [activeIndexes, setActiveIndexes] = useState({});
   const [isLoading, setIsLoading] = useState(true);
-  const [filterproduct, setfilterProduct] = useState([]);
-  const [iconsort, seticonsort] = useState(true);
-  const filters = [
-    { title: 'all' },
-    { title: 'size' },
-    { title: 'color' },
-  ];
-  const size = [
-    { title: '1-3 MONTHS' },
-    { title: '3-6 MONTHS' },
-    { title: '6-9 MONTHS' },
-    { title: '9-12 MONTHS' },
-    { title: '12-18 MONTHS' },
-    { title: '18-24 MONTHS' },
-    { title: '24-36 MONTHS' },
-    { title: '3/4 Age' },
-    { title: '4/5 Age' },
-    { title: '5/6 Age' },
-  ];
-  const color = [
-    { title: 'beige' },
-    { title: 'bisque' },
-    { title: 'black' },
-    { title: 'blue' },
-    { title: 'chocolate' },
-    { title: 'fuchsia' },
-    { title: 'gray' },
-    { title: 'green' },
-    { title: 'khaki' },
-    { title: 'navy' },
-    { title: 'red' },
-    { title: 'salmon' },
-    { title: 'white' },
-  ];
-  const handleSize = (title) => {
-
-    const filterSize = filterproduct.filter(product => containsize(product, title))
-    setProducts(filterSize);
-    console.log(filterSize)
-  }
-  useEffect(() => {
-    handleSize()
-  }, [])
-  const handleColor = (title) => {
-
-    const filterColor = filterproduct.filter(product => containColor(product, title))
-    setProducts(filterColor);
-    console.log(filterColor)
-  }
-  useEffect(() => {
-    handleColor()
-  }, [])
-  const containsize = ({ sizes }, query) => {
-    console.log(sizes);
-    console.log(query);
-    // Convert the query to lowercase for case-insensitive comparison
-    const lowerCaseQuery = query;
-    console.log(sizes.some(size => size.includes(lowerCaseQuery)))
-    // Use the some method to check if any color in the list includes the query
-    return sizes.some(size => size.includes(lowerCaseQuery));
-  };
-  const containColor = ({ colors }, query) => {
-    console.log(colors);
-
-    // Convert the query to lowercase for case-insensitive comparison
-    const lowerCaseQuery = query;
-
-    // Use the some method to check if any color in the list includes the query
-    return colors.some(color => color.includes(lowerCaseQuery));
-  };
-  const sort = [
-    { title: 'price' },
-    { title: 'rate' },
-    { title: 'none' },
-  ];
-  const [sortOrder, setSortOrder] = useState(true);
-
-  const handlesort = (title) => {
-    if (title === 'price') {
-      products.sort((a, b) => {
-        const priceA = a.price || 0; // Default to 0 if price is missing
-        const priceB = b.price || 0;
-        return !sortOrder ? priceA - priceB : priceB - priceA;
-      });
-      console.log(iconsort)
-      setProducts(products);
-    } else if (title === 'rate') {
-      products.sort((a, b) => {
-        const rateA = a.rate || 0; // Default to 0 if price is missing
-        const rateB = b.rate || 0;
-        return !sortOrder ? rateA - rateB : rateB - rateA;
-      });
-      console.log(iconsort)
-      setProducts(products);
-    } else {
-      setProducts(filterproduct);
-    }
-  }
-  const handleAll = (title) => {
-    if (title === 'all') {
-      setProducts(filterproduct);
-    }
-  }
-  const getProducts2 = async () => {
-    try {
-      const productsCollection = collection(db, "woman");
-      const productsSnapshot = await getDocs(productsCollection);
-      const productsData = productsSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      if (sortType === 'price') {
-        console.log("title " + sortType)
-        console.log("order " + sortOrder)
-        productsData.sort((a, b) => {
-          const priceA = a.price || 0; // Default to 0 if price is missing
-          const priceB = b.price || 0;
-          return sortOrder ? priceA - priceB : priceB - priceA;
-        });
-        console.log(iconsort)
-        setProducts(products);
-      }
-      setProducts(productsData);
-    } catch (error) {
-      console.error("Error fetching products: ", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const [filterType, setFilterType] = useState("");
-  const [sizeType, setsizeType] = useState("");
-  const [colorType, setcolorType] = useState("");
+  const [sizeType, setSizeType] = useState("");
+  const [colorType, setColorType] = useState("");
   const [sortType, setSortType] = useState("");
+  const [sortOrder, setSortOrder] = useState(true);
+  const scrollViewRef = useRef(null);
+  const [iconsort, seticonsort] = useState(true);
+  
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const isFocused = useIsFocused();
+  const cards = card(COLORS);
+  const productpages=productpage(COLORS)
+  const smallCards=smallCard(COLORS);
+  const filterr =filter(COLORS);
+  const filters = [{ title: "all" }, { title: "size" }, { title: "color" }];
+  const sizes = [
+    { title: "1-3 MONTHS" },
+    { title: "3-6 MONTHS" },
+    { title: "6-9 MONTHS" },
+    { title: "9-12 MONTHS" },
+    { title: "12-18 MONTHS" },
+    { title: "18-24 MONTHS" },
+    { title: "24-36 MONTHS" },
+    { title: "3/4 Age" },
+    { title: "4/5 Age" },
+    { title: "5/6 Age" },
+  ];
+  const colors = [
+    { title: "beige" },
+    { title: "bisque" },
+    { title: "black" },
+    { title: "blue" },
+    { title: "chocolate" },
+    { title: "fuchsia" },
+    { title: "gray" },
+    { title: "green" },
+    { title: "khaki" },
+    { title: "navy" },
+    { title: "red" },
+    { title: "salmon" },
+    { title: "white" },
+  ];
+  const sorts = [{ title: "price" }, { title: "rate" }, { title: "none" }];
+  const imageWidth = 200;
+
+  useEffect(() => {
+    const getUserId = async () => {
+      const id = await AsyncStorage.getItem("USERID");
+      setUserId(id);
+    };
+    getUserId();
+  }, []);
+
   useEffect(() => {
     const getProducts = async () => {
       try {
@@ -194,28 +114,8 @@ const ProductsListBaby = ({ navigation }) => {
           id: doc.id,
           ...doc.data(),
         }));
-        if (sortType === 'price') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
-          productsData.sort((a, b) => {
-            const priceA = a.price || 0; // Default to 0 if price is missing
-            const priceB = b.price || 0;
-            return sortOrder ? priceA - priceB : priceB - priceA;
-          });
-          console.log(iconsort)
-        } else if (sortType === 'rate') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
-          productsData.sort((a, b) => {
-            const rateA = a.rate || 0; // Default to 0 if price is missing
-            const rateB = b.rate || 0;
-            return sortOrder ? rateA - rateB : rateB - rateA;
-          });
-          console.log(iconsort)
-          setProducts(products);
-        }
         setProducts(productsData);
-        setfilterProduct(productsData);
+        setFilteredProducts(productsData);
       } catch (error) {
         console.error("Error fetching products: ", error);
       } finally {
@@ -223,51 +123,48 @@ const ProductsListBaby = ({ navigation }) => {
       }
     };
     getProducts();
-  }, [sortType]);
-
-  useEffect(() => {
-    const getUserId = async () => {
-      const id = await AsyncStorage.getItem("USERID");
-      setUserId(id);
-      console.log(id);
-    };
-    getUserId();
-  }, []);
-  useEffect(() => {
-    const getUserId = async () => {
-      const id = await AsyncStorage.getItem("USERID");
-      setUserId(id);
-      console.log(id);
-    };
-    getUserId();
   }, []);
 
-  const onAddToFav = async (item, index) => {
-    setIsPressed(!isPressed);
-    console.log(userId);
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
-    const { fav = [] } = userSnap.data() ?? {};
-    let existingItem = fav.find((itm) => itm.id === item.id);
+  useEffect(() => {
+    applyFilters();
+  }, [filterType, sizeType, colorType, sortType, sortOrder]);
 
-    if (existingItem) {
-      existingItem.qty += 1;
-    } else {
-      fav.push({ ...item, qty: 1 });
+  const applyFilters = () => {
+    let updatedProducts = [...products];
+
+    if (filterType === 'size' && sizeType) {
+      updatedProducts = updatedProducts.filter(product => product.sizes && product.sizes.includes(sizeType));
     }
-    await updateDoc(userRef, { fav });
-    getFavItems();
+
+    if (filterType === 'color' && colorType) {
+      updatedProducts = updatedProducts.filter(product => containColor(product, colorType));
+    }
+
+    if (sortType) {
+      if (sortType === 'price') {
+        updatedProducts.sort((a, b) => {
+          const priceA = a.price || 0;
+          const priceB = b.price || 0;
+          return sortOrder ? priceA - priceB : priceB - priceA;
+        });
+      } else if (sortType === 'rate') {
+        updatedProducts.sort((a, b) => {
+          const rateA = a.rate || 0;
+          const rateB = b.rate || 0;
+          return sortOrder ? rateA - rateB : rateB - rateA;
+        });
+      }
+    }
+
+    setFilteredProducts(updatedProducts);
   };
 
-  const imageWidth = 200;
+  const containColor = ({ colors }, query) => {
+    return colors.some(color => color.toLowerCase().includes(query));
+  };
 
   const handleProductPress = (product) => {
-    navigation.navigate("BabyDetails", { product });
-  };
-
-  const handleDotPress = (index) => {
-    scrollViewRef.current.scrollTo({ x: index * imageWidth, animated: true });
-    setActiveIndex(index);
+    navigation.navigate("BabyDetails", { product,COLORS:COLORS });
   };
 
   const handleScroll = (event, productId) => {
@@ -281,25 +178,25 @@ const ProductsListBaby = ({ navigation }) => {
 
   const renderProduct = ({ item }) => (
     <TouchableOpacity onPress={() => handleProductPress(item)}>
-      <View style={card.cardView}>
+      <View style={cards.cardView}>
         <FlatList
           horizontal
           data={item.images}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item: image, index }) => (
-            <Image key={index} source={{ uri: image }} style={card.imagee} />
+            <Image key={index} source={{ uri: image }} style={cards.imagee} />
           )}
           keyExtractor={(image, index) => index.toString()}
           onScroll={(event) => handleScroll(event, item.id)}
         />
-        <View style={card.dotsContainer}>
+        <View style={cards.dotsContainer}>
           {item.images.map((_, index) => (
             <View
               key={index}
               style={[
-                card.dot,
+                cards.dot,
                 index === (activeIndexes[item.id] || 0)
-                  ? card.activeDot
+                  ? cards.activeDot
                   : null,
               ]}
             />
@@ -313,7 +210,7 @@ const ProductsListBaby = ({ navigation }) => {
           }}
         >
           <View style={{ marginTop: 10, flexDirection: "row" }}>
-            <Text style={card.Name} numberOfLines={2} ellipsizeMode="tail">
+            <Text style={cards.Name} numberOfLines={2} ellipsizeMode="tail">
               {item.name}
             </Text>
           </View>
@@ -326,15 +223,15 @@ const ProductsListBaby = ({ navigation }) => {
           {item.offer !== 0 ? (
             <>
               <Text
-                style={card.pricewithoffer}
+                style={cards.pricewithoffer}
               >
                 {item.price} EGP
               </Text>
               <Text
-                style={card.offer}
+                style={cards.offer}
               >
                 🏷️{item.offer}% Discount{" "}
-                <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                <Text style={{ fontSize: 14, fontWeight: "bold", color: COLORS.offerC }}>
                   {Math.floor(
                     item.price - item.price / item.offer
                   )}{" "}
@@ -344,7 +241,7 @@ const ProductsListBaby = ({ navigation }) => {
             </>
           ) : (
             <Text
-              style={card.price}
+              style={cards.price}
             >
               {item.price} EGP
             </Text>
@@ -355,33 +252,33 @@ const ProductsListBaby = ({ navigation }) => {
   );
 
   return (
-    <View style={productpage.container}>
-      <View style={productpage.headerName}>
-        <Text style={productpage.Textt}> AToZ </Text>
+    <View style={productpages.container}>
+      <View style={productpages.headerName}>
+        <Text style={productpages.Textt}> AToZ </Text>
       </View>
-      <Search />
+      <Search COLORS={COLORS}/>
 
-      <View style={smallCard.header}>
+      <View style={smallCards.header}>
         <FlatList
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           data={filterData}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => (
-            <Pressable onPress={() => navigation.navigate(item.name)}>
+            <Pressable onPress={() => navigation.navigate(item.name, COLORS)}>
               <View
                 style={
                   item.name === "BABY"
-                    ? { ...smallCard.smallCardSelected }
-                    : { ...smallCard.smallCard }
+                    ? { ...smallCards.smallCardSelected }
+                    : { ...smallCards.smallCard }
                 }
               >
-                <View style={smallCard.smallCardText}>
+                <View style={smallCards.smallCardText}>
                   <Text
                     style={
                       item.name === "BABY"
-                        ? { ...smallCard.boldText }
-                        : { ...smallCard.regularText }
+                        ? { ...smallCards.boldText }
+                        : { ...smallCards.regularText }
                     }
                   >
                     {item.name}
@@ -393,185 +290,173 @@ const ProductsListBaby = ({ navigation }) => {
         />
       </View>
       <ScrollView nestedScrollEnabled={true}>
-        <View style={filter.containerfs}>
+        <View style={filterr.containerfs}>
           <Pressable
             style={{ flexDirection: "row", }}
           >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
+            <View style={filterr.numbertypecontainer}>
               <Icon
                 name="filter"
                 size={25}
-                color="#343434"
+                color={COLORS.dark}
                 style={{ marginRight: 3 }}
               />
               <SelectDropdown
                 data={filters}
                 onSelect={(selectedItem) => {
                   setFilterType(selectedItem.title);
-                  handleAll(selectedItem.title)
-                  console.log(selectedItem.title);
+                  applyFilters();
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
+                    <View style={filterr.dropdownButtonStyle}>
+                      <Text style={filterr.dropdownButtonTxtStyle}>
                         {(filterType && filterType) || 'filter'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filterr.dropdownButtonArrowStyle} color={COLORS.dark} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filterr.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filterr.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
+                dropdownStyle={filterr.dropdownMenuStyle}
               />
-
-
-
             </View>
             {filterType === 'size' && (
               <SelectDropdown
-                data={size}
+                data={sizes}
                 onSelect={(selectedItem) => {
-                  setsizeType(selectedItem.title);
-                  handleSize(selectedItem.title);
-                  console.log(selectedItem.title);
+                  setSizeType(selectedItem.title);
+                  applyFilters();
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
+                    <View style={filterr.dropdownButtonStyle}>
+                      <Text style={filterr.dropdownButtonTxtStyle}>
                         {(sizeType && sizeType) || 'size'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filterr.dropdownButtonArrowStyle} color={COLORS.dark} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filterr.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filterr.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
+                dropdownStyle={filterr.dropdownMenuStyle}
               />
             )}
             {filterType === 'color' && (
               <SelectDropdown
-                data={color}
+                data={colors}
                 onSelect={(selectedItem) => {
-
-                  setcolorType(selectedItem.title);
-                  handleColor(selectedItem.title);
-                  console.log(selectedItem.title);
+                  setColorType(selectedItem.title);
+                  applyFilters();
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
+                    <View style={filterr.dropdownButtonStyle}>
+                      <Text style={filterr.dropdownButtonTxtStyle}>
                         {(colorType && colorType) || 'color'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filterr.dropdownButtonArrowStyle} color={COLORS.dark} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filterr.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filterr.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
+                dropdownStyle={filterr.dropdownMenuStyle}
               />
             )}
           </Pressable>
           <Pressable
             style={{ flexDirection: "row", marginLeft: 5 }}
           >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
-              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
+            <View style={filterr.numbertypecontainer}>
+              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), applyFilters() }}>
                 <Icon
                   name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
                   size={25}
-                  color="#343434"
+                  color={COLORS.dark}
                   style={{ marginRight: 10 }}
 
                 />
               </Pressable>
               <SelectDropdown
-                data={sort}
+                data={sorts}
                 onSelect={(selectedItem) => {
                   setSortType(selectedItem.title);
                   setSortOrder(true);
                   seticonsort(true);
-                  handlesort(sortType);
-                  console.log(selectedItem.title);
+                  applyFilters();
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
+                    <View style={filterr.dropdownButtonStyle}>
+                      <Text style={filterr.dropdownButtonTxtStyle}>
                         {(sortType && sortType) || 'Sort'}
                       </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filterr.dropdownButtonArrowStyle} color={COLORS.dark} />
                     </View>
                   );
                 }}
                 renderItem={(item, index, isSelected) => {
                   return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    <View style={{ ...filterr.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filterr.dropdownItemTxtStyle}>{item.title}</Text>
                     </View>
                   );
                 }}
                 showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
+                dropdownStyle={filterr.dropdownMenuStyle}
               />
-
-
             </View>
           </Pressable>
         </View>
-        {/* Render "Loading..." if isLoading is true, otherwise render products */}
         {isLoading ? (
           <View>
             <Spinner
               visible={isLoading}
-              customIndicator={<ActivityIndicator size="large" color="black" />}
+              customIndicator={<ActivityIndicator size="large" color={COLORS.dark} />}
             />
           </View>
         ) : (
           <FlatList
             numColumns={2}
-            data={products}
+            data={filteredProducts}
             renderItem={renderProduct}
             keyExtractor={(item) => item.id}
           />
         )}
-        <View style={productpage.bottoms}></View>
+        <View style={productpages.bottoms}></View>
       </ScrollView>
 
-      <BottomNavigator navigation={navigation} userId={userId} />
+      <BottomNavigator navigation={navigation} userId={userId} COLORS={COLORS}/>
     </View>
   );
 };
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const BabyDetails = ({ route, navigation, props }) => {
+  const COLORS =route.params.COLORS
+  console.log(route.params)
+  const productpages =productpage(COLORS)
   // const { product } = route.params;
   // const { product } = route.params ? route.params : { product: {} };
   const { product } = route.params ? route.params : { product: { id: "" } };
@@ -614,7 +499,7 @@ const BabyDetails = ({ route, navigation, props }) => {
   // const categoryName="BABY";
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
-    <Text style={productpage.seeAllText}>
+    <Text style={productpages.seeAllText}>
       See All ({reviews ? reviews.length : 0})
     </Text>;
   };
@@ -657,10 +542,16 @@ const BabyDetails = ({ route, navigation, props }) => {
     getCartItems(userId)
   })
 
+  const [showReview, setShowReview] = useState(false);
   const getCartItems = async (id) => {
     const userRef = doc(db, "users", id);
     const userSnap = await getDoc(userRef);
     const cartCount = userSnap?.data()?.cart?.length ?? 0;
+    const showitem = userSnap?.data()?.HistoryOrder ?? [];
+    const show = showitem.find((item) => item.productId === product_id);
+    if (show) {
+      setShowReview(true);
+    }
 
     setCartCount(cartCount);
   };
@@ -689,21 +580,7 @@ const BabyDetails = ({ route, navigation, props }) => {
     }));
   };
 
-  // const onAddToCart = async (item, index) => {
-  //   console.log(userId);
-  //   const userRef = doc(db, "users", userId);
-  //   const userSnap = await getDoc(userRef);
-  //   const { cart = [] } = userSnap.data() ?? {};
-  //   let existingItem = cart.find((itm) => itm.id === item.id);
 
-  //   if (existingItem) {
-  //     existingItem.qty += 1;
-  //   } else {
-  //     cart.push({ ...item, qty: 1 });
-  //   }
-  //   await updateDoc(userRef, { cart });
-  //   getCartItems();
-  // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + 2);
@@ -737,7 +614,7 @@ const BabyDetails = ({ route, navigation, props }) => {
   };
 
   const handleGoToCart = () => {
-    navigation.navigate("CartScreen", { userId: userId });
+    navigation.navigate("CartScreen", { userId: userId ,COLORS:COLORS });
   };
   const getFavItems = async () => {
     const userRef = doc(db, "users", userId);
@@ -977,677 +854,673 @@ const BabyDetails = ({ route, navigation, props }) => {
   };
 
   return (
-    <View style={productpage.productContainer}>
-      <ScrollView onScroll={handleScroll2}>
-        <View>
-          {/* image */}
-          <FlatList
-            horizontal
-            data={product.images}
-            showsHorizontalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <Image source={{ uri: item }} style={productpage.productImage} />
-            )}
-            keyExtractor={(image, index) => index}
-            onScroll={(event) => handleScroll(event, product.id)}
-          />
-          <View style={productpage.dotsContainerDetails}>
-            {product.images.map((_, index) => (
-              <View
-                key={index}
-                style={[
-                  productpage.dotDetails,
-                  index === (activeIndexes[product.id] || 0)
-                    ? productpage.activeDotDetails
-                    : null,
-                ]}
-              />
-            ))}
-          </View>
-          {/* cart */}
-          <View style={productpage.containerHeart}>
-            <Pressable
-              onPress={() => {
-                navigation.navigate('CartScreen', { userId: userId })
-              }} style={productpage.addToFavBtn}>
-              <Icon name="shopping-cart" size={28} color={COLORS.dark} />
-            </Pressable>
-          </View>
-          <View style={productpage.containercount}>
-            <Pressable
-              onPress={() => {
-                navigation.navigate('CartScreen', { userId: userId })
-              }} style={productpage.countcart}>
-              <Text style={{ color: COLORS.white }}>{cartCount}</Text>
-            </Pressable>
-          </View>
-          <View
-            style={{
-              marginTop: 2,
-              marginBottom: 5,
-              backgroundColor: "white",
-            }}
-          >
-            <View style={{ width: width }}>
+    <View style={productpages.productContainer}>
+    <ScrollView onScroll={handleScroll2}>
+      <View>
+        {/* image */}
+        <FlatList
+          horizontal
+          data={product.images}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <Image source={{ uri: item }} style={productpages.productImage} />
+          )}
+          keyExtractor={(image, index) => index}
+          onScroll={(event) => handleScroll(event, product.id)}
+        />
+        <View style={productpages.dotsContainerDetails}>
+          {product.images.map((_, index) => (
+            <View
+              key={index}
+              style={[
+                productpages.dotDetails,
+                index === (activeIndexes[product.id] || 0)
+                  ? productpages.activeDotDetails
+                  : null,
+              ]}
+            />
+          ))}
+        </View>
+        {/* cart */}
+        <View style={productpages.containerHeart}>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('CartScreen', { userId: userId ,COLORS:COLORS })
+            }} style={productpages.addToFavBtn}>
+            <Icon name="shopping-cart" size={28} color={COLORS.dark} />
+          </Pressable>
+        </View>
+        <View style={productpages.containercount}>
+          <Pressable
+            onPress={() => {
+              navigation.navigate('CartScreen', { userId: userId ,COLORS:COLORS })
+            }} style={productpages.countcart}>
+            <Text style={{ color: COLORS.white }}>{cartCount}</Text>
+          </Pressable>
+        </View>
+        <View
+          style={{
+            marginTop: 2,
+            marginBottom: 5,
+            backgroundColor: COLORS.background,
+          }}
+        >
+          <View style={{ width: width }}>
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <View style={{ width: "60%" }}>
+                {/* product name */}
+                <Text style={productpages.NameD}>{product.name}</Text>
+                {product.offer !== 0 ? (
+                  <>
+                    {/* price with offer */}
+                    <Text
+                      style={productpages.priceO}
+                    >
+                      {product.price} EGP
+                    </Text>
+
+                    <Text
+                      style={{
+                        fontSize: 13,
+                        fontWeight: "bold",
+                        marginHorizontal: 9,
+                        color: COLORS.offerC,
+                      }}
+                    >
+                      🏷️ {product.offer}% Discount{" "}
+                      <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                        {Math.floor(
+                          product.price - product.price / product.offer
+                        )}{" "}
+                        EGP
+                      </Text>
+                    </Text>
+                  </>
+                ) : (
+                  // price
+                  <Text
+                    style={productpages.price}
+                  >
+                    {product.price} EGP
+                  </Text>
+                )}
+              </View>
+              {/* stars */}
               <View
                 style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
+                  width: "40%",
+                  alignItems: 'center',
+                  marginTop: 5,
                 }}
               >
-                <View style={{ width: "60%" }}>
-                  {/* product name */}
-                  <Text style={productpage.NameD}>{product.name}</Text>
-                  {product.offer !== 0 ? (
-                    <>
-                      {/* price with offer */}
-                      <Text
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <Icon
+                      name={star <= rating ? "star" : "star-o"}
+                      size={20}
+                      color={COLORS.dark}
+                    />
+                  ))}
+                  <Text style={{ fontSize: 15 ,color:COLORS.dark}}> ({comments})</Text>
+                  {reviews.length > 0 && (
+                    <TouchableOpacity onPress={handleSeeAllReviews}>
+                      <Text style={{ fontSize: 18, color:COLORS.dark }}>{">"}</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <View>
+            {/* Choose color */}
+            {product.colors.length > 1 && (
+              <View style={productpages.colorsContainer}>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: "bold",
+                    marginLeft: 10,
+                    color:COLORS.dark
+                  }}
+                >
+                  Choose Color:{" "}
+                </Text>
+                <FlatList
+                  horizontal
+                  data={product.colors}
+                  keyExtractor={(color, index) => index}
+                  renderItem={({ item }) => {
+                    let buttonStyle = [
+                      productpages.colorButton,
+                      { backgroundColor: item.toLowerCase() },
+                    ];
+                    if (selectedColor === item) {
+                      if (item.toLowerCase() ==="black") {
+                        buttonStyle.push(productpages.blackButtonStyle);
+                      } else {
+                        buttonStyle.push(productpages.selectedColorButton);
+                      }
+                    }
+                    return (
+                      <TouchableOpacity
+                        style={buttonStyle}
+                        onPress={() => setSelectedColor(item)}
+                      />
+                    );
+                  }}
+                />
+              </View>
+            )}
+            {/* Choose size */}
+            <View
+              style={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: "bold",
+                  marginTop: 5,
+                  marginLeft: 10,
+                  color:COLORS.dark
+                }}
+              >
+                Sizes Options
+              </Text>
+
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <Text style={{ color: COLORS.dark }}>
+                  {" "}
+                  <Image
+                    source={require("../../assets/chart.png")}
+                    style={{ width: 25, height: 25, marginBottom: -8 }}
+                  />
+                  Chart Size{" "}
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: COLORS.dark,
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={{ position: "absolute", top: 20, right: 20 }}
+                  >
+                    <Text style={{ color: COLORS.white, fontSize: 18 }}>✖️</Text>
+                  </TouchableOpacity>
+                  <Image
+                    source={require("../../assets/womanSize.webp")}
+                    style={{
+                      width: "80%",
+                      height: "80%",
+                      resizeMode: "contain",
+                    }}
+                  />
+                </View>
+              </Modal>
+            </View>
+            <View style={productpages.sizesContainer}>
+              <FlatList
+                horizontal
+                data={product.sizes}
+                keyExtractor={(size, index) => index.toString()}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      productpages.sizeButton,
+                      selectedSize === item && productpages.selectedSizeButton,
+                    ]}
+                    onPress={() => setSelectedSize(item)}
+                  >
+                    {selectedSize === item && (
+                      <Icon
+                        name="check"
+                        size={15}
+                        color={COLORS.dark}
                         style={{
-                          fontSize: 18,
-                          fontWeight: "bold",
-                          marginHorizontal: 10,
-                          textDecorationLine: "line-through",
+                          position: "absolute",
+                          top: -5,
+                          right: -5,
+                          backgroundColor: COLORS.white,
                         }}
-                      >
-                        {product.price} EGP
+                      />
+                    )}
+                    <Text style={[productpages.sizeText, productpages.sizeButtonText]}>
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </View>
+          <View style={productpages.line}></View>
+          {/* discribtion */}
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: "bold",
+              marginTop: 5,
+              marginLeft: 10,
+              color:COLORS.dark
+            }}
+          >
+            Product Information
+          </Text>
+          {lines.map((line, index) => (
+            <Text key={index} style={productpages.description}>
+              {line}
+            </Text>
+          ))}
+          {/* rate */}
+          {reviews.length > 0 && (
+            <View style={productpages.container}>
+
+              <View style={{ flexDirection: "row", alignItems: "center", width: '100%' }}>
+
+                <Text
+                  style={{ fontSize: 20, fontWeight: "bold", marginTop: 10, width: '60%',color:COLORS.dark }}
+                >
+                  Evaluation  {rating.toFixed(1)}
+                </Text>
+
+                <TouchableOpacity onPress={handleSeeAllReviews}>
+                  <Text
+                    style={{
+                      textDecorationLine: "underline",
+                      right: 1,
+                      width: '100%',
+                      fontSize: 15,
+                      marginTop: 10,
+                      marginRight: 5,
+                      justifyContent: 'flex-end',
+                      color:COLORS.dark
+                    }}
+                  >
+                    {comments} COMMENT | See All{" "}
+                  </Text>
+                </TouchableOpacity>
+
+              </View>
+              {/* reviews */}
+              <FlatList
+                data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
+                renderItem={({ item, index }) => (
+                  <View style={productpages.reviewContainer}>
+                    <View
+                      style={{ flexDirection: "row", alignItems: "center" }}
+                    ><View style={{ flexDirection: "row", alignItems: "center", width: '80%' }}>
+                        <Text style={productpages.reviewText}>{item.username} </Text>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Icon
+                            name={star <= item.rating ? "star" : "star-o"}
+                            size={17}
+                            color={COLORS.dark}
+                          />
+                        ))}
+                      </View>
+                      <Text style={{ width: '40%', color: COLORS.dark }}>
+                        {item.date}{" "}
                       </Text>
 
-                      <Text
-                        style={{
-                          fontSize: 13,
-                          fontWeight: "bold",
-                          marginHorizontal: 9,
-                          color: "#df2600",
-                        }}
+                    </View>
+                    <Text style={[productpages.reviewText, { marginTop: 15 }]}>
+                      {item.comment}
+                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginTop: 5,
+                        width: '100%',
+                        marginBottom: 5,
+                        justifyContent: 'flex-end'
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() => handleLike(index)}
+                        style={productpages.likeButton}
                       >
-                        🏷️ {product.offer}% Discount{" "}
-                        <Text style={{ fontSize: 14, fontWeight: "bold" }}>
+                        <Icon
+                          name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
+                          size={20}
+                          color={COLORS.dark}
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10,color:COLORS.dark }}>
+                        ({item.like})
+                      </Text>
+                      <TouchableOpacity
+                        onPress={() => handleDislike(index)}
+                        style={productpages.dislikeButton}
+                      >
+                        <Icon
+                          name={
+                            item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
+                          }
+                          size={20}
+                          color={COLORS.dark}
+                        />
+                      </TouchableOpacity>
+                      <Text style={{ marginHorizontal: 10 ,color:COLORS.dark}}>
+                        ({item.disLike})
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>
+          )}
+        </View>
+      </View>
+      {/* add review button */}
+      {showReview &&
+          (
+            <View style={{ backgroundColor: COLORS.white }}>
+              <TouchableOpacity
+                style={productpages.reviewButon}
+                onPress={() =>
+                  navigation.navigate("AddReviewMen", {
+                    product: { id: product_id },
+                    fetchAllReviews,
+                  })
+                }
+              >
+                <Text style={{ color: COLORS.white, fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
+              </TouchableOpacity>
+
+            </View>
+          )
+        }
+    </ScrollView>
+    <View style={productpages.bottomBar}>
+      <View style={productpages.Navbarr}>
+        {/* add to cart button */}
+        <FlatList
+          data={productt}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <TouchableOpacity
+              key={index}
+              activeOpacity={0.8}
+              onPress={() => setSelectedOptionIndex(index)}
+            >
+              {showPrice ? (
+                <View style={productpages.buttonContainer}>
+                  <Text style={productpages.priceText}>
+                    {" "}
+                    {product.offer !== 0 ? (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontWeight: "bold",
+                            marginLeft: 10,
+                            marginRight: 40,
+                            color: "white",
+                            backgroundColor: "#df2600",
+                            width: 90,
+                            height: 22,
+                          }}
+                        >
+                          {product.offer}% Discount{"\n"}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontWeight: "bold",
+                            color: "#df2600",
+                            marginLeft: 14,
+                          }}
+                        >
                           {Math.floor(
                             product.price - product.price / product.offer
                           )}{" "}
                           EGP
                         </Text>
+                      </>
+                    ) : (
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "bold",
+                          marginHorizontal: 10,
+                          marginRight: 45,
+                        }}
+                      >
+                        {product.price} EGP
                       </Text>
-                    </>
-                  ) : (
-                    // price
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: "bold",
-                        marginHorizontal: 10,
+                    )}
+                  </Text>
+
+                  <View style={productpages.container}>
+                    <TouchableOpacity
+                      style={productpages.addToCartBton2}
+                      onPress={() => {
+                        if (product.colors.length !== 1) {
+                          if (selectedColor && selectedSize) {
+                            onAddToCart(
+                              item,
+                              index,
+                              selectedColor,
+                              selectedSize
+                            );
+                          } else {
+                            setModalVisibleCart(true);
+                          }
+                        } else {
+                          if (selectedColor || selectedSize) {
+                            onAddToCart(
+                              item,
+                              index,
+                              selectedColor,
+                              selectedSize
+                            );
+                          } else {
+                            setModalVisibleCart(true);
+                          }
+                        }
                       }}
                     >
-                      {product.price} EGP
-                    </Text>
-                  )}
-                </View>
-                {/* stars */}
-                <View
-                  style={{
-                    width: "40%",
-                    alignItems: 'center',
-                    marginTop: 5,
-                  }}
-                >
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Icon
-                        name={star <= rating ? "star" : "star-o"}
-                        size={20}
-                        color="black"
-                      />
-                    ))}
-                    <Text style={{ fontSize: 15 }}> ({comments})</Text>
-                    {reviews.length > 0 && (
-                      <TouchableOpacity onPress={handleSeeAllReviews}>
-                        <Text style={{ fontSize: 18 }}>{">"}</Text>
-                      </TouchableOpacity>
-                    )}
+                      <Text style={productpages.addToCartButtonText}>
+                        Add to Cart
+                      </Text>
+                    </TouchableOpacity>
+                    {/* add to cart alert */}
+                    <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalVisibleCart}
+                      onRequestClose={() => {
+                        setModalVisibleCart(false);
+                      }}
+                    >
+                      <View style={productpages.modalContainer}>
+                        <View style={productpages.modalContent}>
+                          {product.colors.length !== 1 ? (
+                            selectedColor && selectedSize ? (
+                              <>
+                                <Text style={productpages.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={productpages.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )
+                          ) : selectedColor || selectedSize ? (
+                            <>
+                              <Text style={productpages.modalText}>
+                                Item added to cart!
+                              </Text>
+                              {setShowGoToCartButton(true)}
+                            </>
+                          ) : (
+                            <Text style={productpages.modalText}>
+                              Please select a size and color if available
+                            </Text>
+                          )}
+
+                          <TouchableOpacity
+                            style={productpages.okButton}
+                            onPress={() => {
+                              setShowGoToCartButton(!showGoToCartButton);
+                            }}
+                          >
+                            {showGoToCartButton ? (
+                              <TouchableOpacity
+                                style={productpages.okButton}
+                                onPress={handleGoToCart}
+                              >
+                                <Text style={productpages.okButtonText}>
+                                  go to cart
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity style={productpages.okButton}>
+                                <Text style={productpages.okButtonText}>OK</Text>
+                              </TouchableOpacity>
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </Modal>
                   </View>
                 </View>
-              </View>
-            </View>
-
-            <View>
-              {/* Choose color */}
-              {product.colors.length > 1 && (
-                <View style={productpage.colorsContainer}>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      marginLeft: 10,
-                    }}
-                  >
-                    Choose Color:{" "}
-                  </Text>
-                  <FlatList
-                    horizontal
-                    data={product.colors}
-                    keyExtractor={(color, index) => index}
-                    renderItem={({ item }) => {
-                      let buttonStyle = [
-                        productpage.colorButton,
-                        { backgroundColor: item.toLowerCase() },
-                      ];
-                      if (selectedColor === item) {
-                        console.log("color", item)
-                        if (item.toLowerCase() === "black") {
-                          buttonStyle.push(productpage.blackButtonStyle);
+              ) : (
+                <View style={productpages.buttonContainer}>
+                  <Pressable onPress={() => onAddToFav(item, index)}>
+                    <Icon
+                      name="heart"
+                      size={30}
+                      color={isPressed ? COLORS.dark : "grey"}
+                    />
+                  </Pressable>
+                  <View style={productpages.container}>
+                    <TouchableOpacity
+                      style={productpages.addToCartBton1}
+                      onPress={() => {
+                        if (product.colors.length !== 1) {
+                          if (selectedColor && selectedSize) {
+                            onAddToCart(
+                              item,
+                              index,
+                              selectedColor,
+                              selectedSize
+                            );
+                          } else {
+                            setModalVisibleCart(true);
+                          }
                         } else {
-                          buttonStyle.push(productpage.selectedColorButton);
+                          if (selectedColor || selectedSize) {
+                            onAddToCart(
+                              item,
+                              index,
+                              selectedColor,
+                              selectedSize
+                            );
+                          } else {
+                            setModalVisibleCart(true);
+                          }
                         }
-                      }
-                      return (
-                        <TouchableOpacity
-                          style={buttonStyle}
-                          onPress={() => setSelectedColor(item)}
-                        />
-                      );
-                    }}
-                  />
+                      }}
+                    >
+                      <Text style={productpages.addToCartButtonText}>
+                        Add to Cart
+                      </Text>
+                    </TouchableOpacity>
+                    <Modal
+                      animationType="slide"
+                      transparent={true}
+                      visible={modalVisibleCart}
+                      onRequestClose={() => {
+                        setModalVisibleCart(false);
+                      }}
+                    >
+                      <View style={productpages.modalContainer}>
+                        <View style={productpages.modalContent}>
+                          {product.colors.length !== 1 ? (
+                            selectedColor && selectedSize ? (
+                              <>
+                                <Text style={productpages.modalText}>
+                                  Item added to cart!
+                                </Text>
+                                {setShowGoToCartButton(true)}
+                              </>
+                            ) : (
+                              <Text style={productpages.modalText}>
+                                Please select a size and color if available
+                              </Text>
+                            )
+                          ) : selectedColor || selectedSize ? (
+                            <>
+                              <Text style={productpages.modalText}>
+                                Item added to cart!
+                              </Text>
+                              {setShowGoToCartButton(true)}
+                            </>
+                          ) : (
+                            <Text style={productpages.modalText}>
+                              Please select a size and color if available
+                            </Text>
+                          )}
+
+                          <TouchableOpacity
+                            style={productpages.okButton}
+                            onPress={() => {
+                              setShowGoToCartButton(!showGoToCartButton);
+                            }}
+                          >
+                            {showGoToCartButton ? (
+                              <TouchableOpacity
+                                style={productpages.okButton}
+                                onPress={handleGoToCart}
+                              >
+                                <Text style={productpages.okButtonText}>
+                                  go to cart
+                                </Text>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity style={productpages.okButton}>
+                                <Text style={productpages.okButtonText}>OK</Text>
+                              </TouchableOpacity>
+                            )}
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </Modal>
+                  </View>
                 </View>
               )}
-              {/* Choose size */}
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: "bold",
-                    marginTop: 5,
-                    marginLeft: 10,
-                  }}
-                >
-                  Sizes Options
-                </Text>
 
-                <TouchableOpacity onPress={() => setModalVisible(true)}>
-                  <Text style={{ color: "black" }}>
-                    {" "}
-                    <Image
-                      source={require("../../assets/chart.png")}
-                      style={{ width: 25, height: 25, marginBottom: -8 }}
-                    />
-                    Chart Size{" "}
-                  </Text>
-                </TouchableOpacity>
-                <Modal
-                  animationType="slide"
-                  transparent={true}
-                  visible={modalVisible}
-                  onRequestClose={() => setModalVisible(false)}
-                >
-                  <View
-                    style={{
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)",
-                    }}
-                  >
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={{ position: "absolute", top: 20, right: 20 }}
-                    >
-                      <Text style={{ color: "white", fontSize: 18 }}>✖️</Text>
-                    </TouchableOpacity>
-                    <Image
-                      source={require("../../assets/womanSize.webp")}
-                      style={{
-                        width: "80%",
-                        height: "80%",
-                        resizeMode: "contain",
-                      }}
-                    />
-                  </View>
-                </Modal>
-              </View>
-              <View style={productpage.sizesContainer}>
-                <FlatList
-                  horizontal
-                  data={product.sizes}
-                  keyExtractor={(size, index) => index.toString()}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={[
-                        productpage.sizeButton,
-                        selectedSize === item && productpage.selectedSizeButton,
-                      ]}
-                      onPress={() => setSelectedSize(item)}
-                    >
-                      {selectedSize === item && (
-                        <Icon
-                          name="check"
-                          size={15}
-                          color="black"
-                          style={{
-                            position: "absolute",
-                            top: -5,
-                            right: -5,
-                            backgroundColor: "white",
-                          }}
-                        />
-                      )}
-                      <Text style={[productpage.sizeText, productpage.sizeButtonText]}>
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                />
-              </View>
-            </View>
-            <View style={productpage.line}></View>
-            {/* discribtion */}
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: "bold",
-                marginTop: 5,
-                marginLeft: 10,
-              }}
-            >
-              Product Information
-            </Text>
-            {lines.map((line, index) => (
-              <Text key={index} style={productpage.description}>
-                {line}
-              </Text>
-            ))}
-            {/* rate */}
-            {reviews.length > 0 && (
-              <View style={productpage.container}>
-
-                <View style={{ flexDirection: "row", alignItems: "center", width: '100%' }}>
-
-                  <Text
-                    style={{ fontSize: 20, fontWeight: "bold", marginTop: 10, width: '60%' }}
-                  >
-                    Evaluation  {rating.toFixed(1)}
-                  </Text>
-
-                  <TouchableOpacity onPress={handleSeeAllReviews}>
-                    <Text
-                      style={{
-                        textDecorationLine: "underline",
-                        right: 1,
-                        width: '100%',
-                        fontSize: 15,
-                        marginTop: 10,
-                        marginRight: 5,
-                        justifyContent: 'flex-end'
-                      }}
-                    >
-                      {comments} COMMENT | See All{" "}
-                    </Text>
-                  </TouchableOpacity>
-
-                </View>
-                {/* reviews */}
-                <FlatList
-                  data={reviewsWithLikes.slice(0, numberOfInitialReviews)}
-                  renderItem={({ item, index }) => (
-                    <View style={productpage.reviewContainer}>
-                      <View
-                        style={{ flexDirection: "row", alignItems: "center" }}
-                      ><View style={{ flexDirection: "row", alignItems: "center", width: '80%' }}>
-                          <Text style={productpage.reviewText}>{item.username} </Text>
-                          {[1, 2, 3, 4, 5].map((star) => (
-                            <Icon
-                              name={star <= item.rating ? "star" : "star-o"}
-                              size={17}
-                              color="black"
-                            />
-                          ))}
-                        </View>
-                        <Text style={{ width: '40%', color: "black" }}>
-                          {item.date}{" "}
-                        </Text>
-
-                      </View>
-                      <Text style={[productpage.reviewText, { marginTop: 15 }]}>
-                        {item.comment}
-                      </Text>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          marginTop: 5,
-                          width: '100%',
-                          marginBottom: 5,
-                          justifyContent: 'flex-end'
-                        }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => handleLike(index)}
-                          style={productpage.likeButton}
-                        >
-                          <Icon
-                            name={item.like === 1 ? "thumbs-up" : "thumbs-o-up"}
-                            size={20}
-                            color="black"
-                          />
-                        </TouchableOpacity>
-                        <Text style={{ marginHorizontal: 10 }}>
-                          ({item.like})
-                        </Text>
-                        <TouchableOpacity
-                          onPress={() => handleDislike(index)}
-                          style={productpage.dislikeButton}
-                        >
-                          <Icon
-                            name={
-                              item.disLike === 1 ? "thumbs-down" : "thumbs-o-down"
-                            }
-                            size={20}
-                            color="black"
-                          />
-                        </TouchableOpacity>
-                        <Text style={{ marginHorizontal: 10 }}>
-                          ({item.disLike})
-                        </Text>
-                      </View>
-                    </View>
-                  )}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </View>
-            )}
-          </View>
-        </View>
-        {/* add review button */}
-        <View style={{ backgroundColor: COLORS.white }}>
-          {
-            <TouchableOpacity
-              style={productpage.reviewButon}
-              onPress={() =>
-                navigation.navigate("AddReviewMen", {
-                  product: { id: product_id },
-                  fetchAllReviews,
-                })
-              }
-            >
-              <Text style={{ color: 'white', fontWeight: "bold", fontSize: 15 }}>Add a Review</Text>
+              <View></View>
             </TouchableOpacity>
-          }
-        </View>
-
-      </ScrollView>
-      <View style={productpage.bottomBar}>
-        <View style={productpage.Navbarr}>
-          {/* add to cart button */}
-          <FlatList
-            data={productt}
-            keyExtractor={(item) => item.id}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                key={index}
-                activeOpacity={0.8}
-                onPress={() => setSelectedOptionIndex(index)}
-              >
-                {showPrice ? (
-                  <View style={productpage.buttonContainer}>
-                    <Text style={productpage.priceText}>
-                      {" "}
-                      {product.offer !== 0 ? (
-                        <>
-                          <Text
-                            style={{
-                              fontSize: 12,
-                              fontWeight: "bold",
-                              marginLeft: 10,
-                              marginRight: 40,
-                              color: "white",
-                              backgroundColor: "#df2600",
-                              width: 90,
-                              height: 22,
-                            }}
-                          >
-                            {product.offer}% Discount{"\n"}
-                          </Text>
-                          <Text
-                            style={{
-                              fontSize: 16,
-                              fontWeight: "bold",
-                              color: "#df2600",
-                              marginLeft: 14,
-                            }}
-                          >
-                            {Math.floor(
-                              product.price - product.price / product.offer
-                            )}{" "}
-                            EGP
-                          </Text>
-                        </>
-                      ) : (
-                        <Text
-                          style={{
-                            fontSize: 18,
-                            fontWeight: "bold",
-                            marginHorizontal: 10,
-                            marginRight: 45,
-                          }}
-                        >
-                          {product.price} EGP
-                        </Text>
-                      )}
-                    </Text>
-
-                    <View style={productpage.container}>
-                      <TouchableOpacity
-                        style={productpage.addToCartBton2}
-                        onPress={() => {
-                          if (product.colors.length !== 1) {
-                            if (selectedColor && selectedSize) {
-                              onAddToCart(
-                                item,
-                                index,
-                                selectedColor,
-                                selectedSize
-                              );
-                            } else {
-                              setModalVisibleCart(true);
-                            }
-                          } else {
-                            if (selectedColor || selectedSize) {
-                              onAddToCart(
-                                item,
-                                index,
-                                selectedColor,
-                                selectedSize
-                              );
-                            } else {
-                              setModalVisibleCart(true);
-                            }
-                          }
-                        }}
-                      >
-                        <Text style={productpage.addToCartButtonText}>
-                          Add to Cart
-                        </Text>
-                      </TouchableOpacity>
-                      {/* add to cart alert */}
-                      <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisibleCart}
-                        onRequestClose={() => {
-                          setModalVisibleCart(false);
-                        }}
-                      >
-                        <View style={productpage.modalContainer}>
-                          <View style={productpage.modalContent}>
-                            {product.colors.length !== 1 ? (
-                              selectedColor && selectedSize ? (
-                                <>
-                                  <Text style={productpage.modalText}>
-                                    Item added to cart!
-                                  </Text>
-                                  {setShowGoToCartButton(true)}
-                                </>
-                              ) : (
-                                <Text style={productpage.modalText}>
-                                  Please select a size and color if available
-                                </Text>
-                              )
-                            ) : selectedColor || selectedSize ? (
-                              <>
-                                <Text style={productpage.modalText}>
-                                  Item added to cart!
-                                </Text>
-                                {setShowGoToCartButton(true)}
-                              </>
-                            ) : (
-                              <Text style={productpage.modalText}>
-                                Please select a size and color if available
-                              </Text>
-                            )}
-
-                            <TouchableOpacity
-                              style={productpage.okButton}
-                              onPress={() => {
-                                setShowGoToCartButton(!showGoToCartButton);
-                              }}
-                            >
-                              {showGoToCartButton ? (
-                                <TouchableOpacity
-                                  style={productpage.okButton}
-                                  onPress={handleGoToCart}
-                                >
-                                  <Text style={productpage.okButtonText}>
-                                    go to cart
-                                  </Text>
-                                </TouchableOpacity>
-                              ) : (
-                                <TouchableOpacity style={productpage.okButton}>
-                                  <Text style={productpage.okButtonText}>OK</Text>
-                                </TouchableOpacity>
-                              )}
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </Modal>
-                    </View>
-                  </View>
-                ) : (
-                  <View style={productpage.buttonContainer}>
-                    <Pressable onPress={() => onAddToFav(item, index)}>
-                      <Icon
-                        name="heart"
-                        size={30}
-                        color={isPressed ? "black" : "grey"}
-                      />
-                    </Pressable>
-                    <View style={productpage.container}>
-                      <TouchableOpacity
-                        style={productpage.addToCartBton1}
-                        onPress={() => {
-                          if (product.colors.length !== 1) {
-                            if (selectedColor && selectedSize) {
-                              onAddToCart(
-                                item,
-                                index,
-                                selectedColor,
-                                selectedSize
-                              );
-                            } else {
-                              setModalVisibleCart(true);
-                            }
-                          } else {
-                            if (selectedColor || selectedSize) {
-                              onAddToCart(
-                                item,
-                                index,
-                                selectedColor,
-                                selectedSize
-                              );
-                            } else {
-                              setModalVisibleCart(true);
-                            }
-                          }
-                        }}
-                      >
-                        <Text style={productpage.addToCartButtonText}>
-                          Add to Cart
-                        </Text>
-                      </TouchableOpacity>
-                      <Modal
-                        animationType="slide"
-                        transparent={true}
-                        visible={modalVisibleCart}
-                        onRequestClose={() => {
-                          setModalVisibleCart(false);
-                        }}
-                      >
-                        <View style={productpage.modalContainer}>
-                          <View style={productpage.modalContent}>
-                            {product.colors.length !== 1 ? (
-                              selectedColor && selectedSize ? (
-                                <>
-                                  <Text style={productpage.modalText}>
-                                    Item added to cart!
-                                  </Text>
-                                  {setShowGoToCartButton(true)}
-                                </>
-                              ) : (
-                                <Text style={productpage.modalText}>
-                                  Please select a size and color if available
-                                </Text>
-                              )
-                            ) : selectedColor || selectedSize ? (
-                              <>
-                                <Text style={productpage.modalText}>
-                                  Item added to cart!
-                                </Text>
-                                {setShowGoToCartButton(true)}
-                              </>
-                            ) : (
-                              <Text style={productpage.modalText}>
-                                Please select a size and color if available
-                              </Text>
-                            )}
-
-                            <TouchableOpacity
-                              style={productpage.okButton}
-                              onPress={() => {
-                                setShowGoToCartButton(!showGoToCartButton);
-                              }}
-                            >
-                              {showGoToCartButton ? (
-                                <TouchableOpacity
-                                  style={productpage.okButton}
-                                  onPress={handleGoToCart}
-                                >
-                                  <Text style={productpage.okButtonText}>
-                                    go to cart
-                                  </Text>
-                                </TouchableOpacity>
-                              ) : (
-                                <TouchableOpacity style={productpage.okButton}>
-                                  <Text style={productpage.okButtonText}>OK</Text>
-                                </TouchableOpacity>
-                              )}
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </Modal>
-                    </View>
-                  </View>
-                )}
-
-                <View></View>
-              </TouchableOpacity>
-            )}
-          />
-        </View>
+          )}
+        />
       </View>
     </View>
-  );
+  </View>
+);
 };
 
 export { ProductsListBaby, BabyDetails };

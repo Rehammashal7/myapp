@@ -18,14 +18,14 @@ import {
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { PayPalButtons } from "@paypal/react-paypal-js";
 
-import COLORS from "../Consts/Color";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useIsFocused, useRoute } from "@react-navigation/native";
 import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ScrollView } from "react-native";
-
+import theme from '../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const { width } = Dimensions.get("screen");
 const cardwidth = width / 2;
 

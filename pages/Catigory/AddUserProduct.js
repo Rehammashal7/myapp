@@ -3,10 +3,10 @@ import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, StyleSheet 
 import { collection, addDoc } from 'firebase/firestore';
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { auth, db, storage } from "../../firebase";
-import COLORS from '../../Consts/Color';
 import { launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import theme from '../../Consts/Color';
+const COLORS =theme.LIGHT_COLORS;
 const AddUserProduct = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
