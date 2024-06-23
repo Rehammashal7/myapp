@@ -30,7 +30,7 @@ const AddUserProduct = () => {
     const getUserId = async () => {
         const id = await AsyncStorage.getItem('USERID');
         setUserId(id);
-        console.log(id);
+        
     };
     getUserId();
 
@@ -68,7 +68,7 @@ const AddUserProduct = () => {
       } if (link4 != '') {
         imageUrls.push(link4)
       }
-      console.log(imageUrls)
+      
     }
     if (selectedItem) {
       await addDoc(collection(db, 'recycle'), {
@@ -87,10 +87,8 @@ const AddUserProduct = () => {
         recycleProduct:true,
         sold:false,
       });
-      console.log("Product added successfully.");
-    } else {
-      console.log("Please select a category.");
-    }
+    
+    } 
 
     setName('');
     setDescription('');

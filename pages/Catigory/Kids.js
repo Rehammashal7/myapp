@@ -87,7 +87,7 @@ const ProductsListKids = ({ navigation }) => {
 
     const filterSize = filterproduct.filter(product => containsize(product, title))
     setProducts(filterSize);
-    console.log(filterSize)
+   
   }
   useEffect(() => {
     handleSize()
@@ -96,27 +96,19 @@ const ProductsListKids = ({ navigation }) => {
 
     const filterColor = filterproduct.filter(product => containColor(product, title))
     setProducts(filterColor);
-    console.log(filterColor)
+    
   }
   useEffect(() => {
     handleColor()
   }, [])
   const containsize = ({ sizes }, query) => {
-    console.log(sizes);
-    console.log(query);
-    // Convert the query to lowercase for case-insensitive comparison
+     
     const lowerCaseQuery = query;
-    console.log(sizes.some(size => size.includes(lowerCaseQuery)))
-    // Use the some method to check if any color in the list includes the query
     return sizes.some(size => size.includes(lowerCaseQuery));
   };
   const containColor = ({ colors }, query) => {
-    console.log(colors);
-
-    // Convert the query to lowercase for case-insensitive comparison
-    const lowerCaseQuery = query;
-
-    // Use the some method to check if any color in the list includes the query
+   
+    const lowerCaseQuery = query.toLowerCase();
     return colors.some(color => color.includes(lowerCaseQuery));
   };
   const sort = [
@@ -133,7 +125,6 @@ const ProductsListKids = ({ navigation }) => {
         const priceB = b.price || 0;
         return !sortOrder ? priceA - priceB : priceB - priceA;
       });
-      console.log(iconsort)
       setProducts(products);
     } else if (title === 'rate') {
       products.sort((a, b) => {
@@ -141,7 +132,6 @@ const ProductsListKids = ({ navigation }) => {
         const rateB = b.rate || 0;
         return !sortOrder ? rateA - rateB : rateB - rateA;
       });
-      console.log(iconsort)
       setProducts(products);
     } else {
       setProducts(filterproduct);
@@ -161,24 +151,18 @@ const ProductsListKids = ({ navigation }) => {
         ...doc.data(),
       }));
       if (sortType === 'price') {
-        console.log("title " + sortType)
-        console.log("order " + sortOrder)
         productsData.sort((a, b) => {
           const priceA = a.price || 0; // Default to 0 if price is missing
           const priceB = b.price || 0;
           return sortOrder ? priceA - priceB : priceB - priceA;
         });
-        console.log(iconsort)
         setProducts(products);
       } else if (sortType === 'rate') {
-        console.log("title " + sortType)
-        console.log("order " + sortOrder)
         productsData.sort((a, b) => {
           const rateA = a.rate || 0; // Default to 0 if price is missing
           const rateB = b.rate || 0;
           return sortOrder ? rateA - rateB : rateB - rateA;
         });
-        console.log(iconsort)
         setProducts(products);
       } setfilterProduct(productsData);
       setProducts(productsData);
@@ -202,23 +186,17 @@ const ProductsListKids = ({ navigation }) => {
           ...doc.data(),
         }));
         if (sortType === 'price') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
           productsData.sort((a, b) => {
             const priceA = a.price || 0; // Default to 0 if price is missing
             const priceB = b.price || 0;
             return sortOrder ? priceA - priceB : priceB - priceA;
           });
-          console.log(iconsort)
         } else if (sortType === 'rate') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
           productsData.sort((a, b) => {
             const rateA = a.rate || 0; // Default to 0 if price is missing
             const rateB = b.rate || 0;
             return sortOrder ? rateA - rateB : rateB - rateA;
           });
-          console.log(iconsort)
           setProducts(products);
         }
         setProducts(productsData);
@@ -236,7 +214,6 @@ const ProductsListKids = ({ navigation }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
     };
     getUserId();
   }, []);
@@ -244,14 +221,12 @@ const ProductsListKids = ({ navigation }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
     };
     getUserId();
   }, []);
 
   const onAddToFav = async (item, index) => {
     setIsPressed(!isPressed);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
@@ -361,6 +336,154 @@ const ProductsListKids = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  const renderHeader=()=>(
+    <View style={filter.containerfs}>
+          <Pressable
+            style={{ flexDirection: "row", }}
+          >
+            <View style={filter.numbertypecontainer}>
+              <Icon
+                name="filter"
+                size={25}
+                color="#343434"
+                style={{ marginRight: 3 }}
+              />
+              <SelectDropdown
+                data={filters}
+                onSelect={(selectedItem) => {
+                  setFilterType(selectedItem.title);
+                  handleAll(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
+                        {(filterType && filterType) || 'filter'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={filter.dropdownMenuStyle}
+              />
+
+
+
+            </View>
+            {filterType === 'size' && (
+              <SelectDropdown
+                data={size}
+                onSelect={(selectedItem) => {
+                  setsizeType(selectedItem.title);
+                  handleSize(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
+                        {(sizeType && sizeType) || 'size'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={filter.dropdownMenuStyle}
+              />
+            )}
+            {filterType === 'color' && (
+              <SelectDropdown
+                data={color}
+                onSelect={(selectedItem) => {
+
+                  setcolorType(selectedItem.title);
+                  handleColor(selectedItem.title);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
+                        {(colorType && colorType) || 'color'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={filter.dropdownMenuStyle}
+              />
+            )}
+          </Pressable>
+          <Pressable
+            style={{ flexDirection: "row", marginLeft: 5 }}
+          >
+            <View style={filter.numbertypecontainer}>
+              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
+                <Icon
+                  name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
+                  size={25}
+                  color="#343434"
+                  style={{ marginRight: 10 }}
+
+                />
+              </Pressable>
+              <SelectDropdown
+                data={sort}
+                onSelect={(selectedItem) => {
+                  setSortType(selectedItem.title);
+                  setSortOrder(true);
+                  seticonsort(true);
+                  handlesort(sortType);
+                }}
+                renderButton={(selectedItem, isOpened) => {
+                  return (
+                    <View style={filter.dropdownButtonStyle}>
+                      <Text style={filter.dropdownButtonTxtStyle}>
+                        {(sortType && sortType) || 'Sort'}
+                      </Text>
+                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+                    </View>
+                  );
+                }}
+                renderItem={(item, index, isSelected) => {
+                  return (
+                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+                    </View>
+                  );
+                }}
+                showsVerticalScrollIndicator={false}
+                dropdownStyle={filter.dropdownMenuStyle}
+              />
+
+
+            </View>
+          </Pressable>
+        </View>
+  );
+
   return (
     <View style={productpage.container}>
       <View style={productpage.headerName}>
@@ -399,161 +522,6 @@ const ProductsListKids = ({ navigation }) => {
           )}
         />
       </View>
-      <ScrollView nestedScrollEnabled={true}>
-        <View style={filter.containerfs}>
-          <Pressable
-            style={{ flexDirection: "row", }}
-          >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
-              <Icon
-                name="filter"
-                size={25}
-                color="#343434"
-                style={{ marginRight: 3 }}
-              />
-              <SelectDropdown
-                data={filters}
-                onSelect={(selectedItem) => {
-                  setFilterType(selectedItem.title);
-                  handleAll(selectedItem.title)
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(filterType && filterType) || 'filter'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-
-
-
-            </View>
-            {filterType === 'size' && (
-              <SelectDropdown
-                data={size}
-                onSelect={(selectedItem) => {
-                  setsizeType(selectedItem.title);
-                  handleSize(selectedItem.title);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(sizeType && sizeType) || 'size'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-            )}
-            {filterType === 'color' && (
-              <SelectDropdown
-                data={color}
-                onSelect={(selectedItem) => {
-
-                  setcolorType(selectedItem.title);
-                  handleColor(selectedItem.title);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(colorType && colorType) || 'color'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-            )}
-          </Pressable>
-          <Pressable
-            style={{ flexDirection: "row", marginLeft: 5 }}
-          >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
-              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
-                <Icon
-                  name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
-                  size={25}
-                  color="#343434"
-                  style={{ marginRight: 10 }}
-
-                />
-              </Pressable>
-              <SelectDropdown
-                data={sort}
-                onSelect={(selectedItem) => {
-                  setSortType(selectedItem.title);
-                  setSortOrder(true);
-                  seticonsort(true);
-                  handlesort(sortType);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(sortType && sortType) || 'Sort'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-
-
-            </View>
-          </Pressable>
-        </View>
-        {/* Render "Loading..." if isLoading is true, otherwise render products */}
         {isLoading ? (
           <View>
             <Spinner
@@ -567,10 +535,10 @@ const ProductsListKids = ({ navigation }) => {
             data={products}
             renderItem={renderProduct}
             keyExtractor={(item) => item.id}
+            ListHeaderComponent={renderHeader}
           />
         )}
         <View style={productpage.bottoms}></View>
-      </ScrollView>
 
       <BottomNavigator navigation={navigation} userId={userId} />
     </View>
@@ -579,51 +547,29 @@ const ProductsListKids = ({ navigation }) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const KidsDetails = ({ route, navigation }) => {
-  // const { product } = route.params;
-  // const { product } = route.params ? route.params : { product: {} };
   const { product } = route.params ? route.params : { product: {} };
-  console.log('oroifeo', product);
   const product_id = product.id;
-  // const [products, setProducts] = React.useState('');
   const [productt, setProductt] = React.useState([]);
-
-  const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
-  const [selectedfav, setSelectedfav] = React.useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
-  //const navigation = useNavigation();
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
 
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
-  // const productId = Produnt_id;
-  // const productId = product?.id;
-  console.log("Product ID:", product_id);
-  const [showReviews, setShowReviews] = useState(false);
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
-  const [like, setLike] = useState([0]);
-  const [disLike, setDislikes] = useState([0]);
   const [reviews, setReviews] = useState([]);
   const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
-  const productId = product.id;
-
-
-  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
-  const scrollViewRef = useRef(null);
   const [activeIndexes, setActiveIndexes] = useState({});
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [showPrice, setShowPrice] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [modalVisibleCart, setModalVisibleCart] = useState(false);
-
-  const [errorMessage, setErrorMessage] = useState("");
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
-  const categoryName = "Kids";
+
   const handleGoToCart = () => {
     navigation.navigate("CartScreen", { userId: userId });
   };
@@ -636,7 +582,6 @@ const KidsDetails = ({ route, navigation }) => {
   useEffect(() => {
     const fetchItem = async (product_id) => {
       const documentSnapshot = await getDoc(doc(db, "kids", product_id));
-      console.log("product ID: ", documentSnapshot.id, documentSnapshot.data());
       let tempData = [];
       tempData.push({
         id: documentSnapshot.id,
@@ -651,10 +596,8 @@ const KidsDetails = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    console.log("noo " + hasCheckedOut);
     if (hasCheckedOut) {
       setHasCheckedOut(true);
-      console.log("yess " + hasCheckedOut);
     }
   }, []);
 
@@ -662,7 +605,6 @@ const KidsDetails = ({ route, navigation }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
       getCartItems(id)
     };
     getUserId();
@@ -706,26 +648,10 @@ const KidsDetails = ({ route, navigation }) => {
     }));
   };
 
-  // const onAddToCart = async (item, index) => {
-  //   console.log(userId);
-  //   const userRef = doc(db, "users", userId);
-  //   const userSnap = await getDoc(userRef);
-  //   const { cart = [] } = userSnap.data() ?? {};
-  //   let existingItem = cart.find((itm) => itm.id === item.id);
-
-  //   if (existingItem) {
-  //     existingItem.qty += 1;
-  //   } else {
-  //     cart.push({ ...item, qty: 1 });
-  //   }
-  //   await updateDoc(userRef, { cart });
-  //   getCartItems();
-  // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + 2);
     newDate.setDate(newDate.getDate() + 2);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { cart = [] } = userSnap.data() ?? {};
@@ -759,7 +685,6 @@ const KidsDetails = ({ route, navigation }) => {
   };
   const onAddToFav = async (item, index) => {
     setIsPressed(!isPressed);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
@@ -787,18 +712,6 @@ const KidsDetails = ({ route, navigation }) => {
   useEffect(() => {
     handelHeart(product);
   }, [handelHeart]);
- 
-  useEffect(() => {
-    console.log(isPressed);
-  }, [isPressed]);
-
-
-  const [Newprice, setNewprice] = useState(product.price);
-
-  const handlePrice = (pl) => {
-    const price = Newprice + pl;
-    setNewprice(price);
-  };
 
   const wordsPerLine = 7;
   const words = product.description?.split(" ");
@@ -816,9 +729,6 @@ const KidsDetails = ({ route, navigation }) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
     const screenHeight = Dimensions.get("window").height;
     const scrollThreshold = screenHeight * 0.75;
-    console.log(scrollPosition);
-
-    console.log(scrollThreshold);
     if (scrollPosition >= 210) {
       setShowPrice(true);
     } else {
@@ -932,14 +842,13 @@ const KidsDetails = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    console.log("iam in recently use effect ");
+  
     saveRecentlyVisited(product.id, product.name, product.categoryName, product.images, product.colors, product.description, product.offer, product.price, product.sizes);
-    // console.log("iam get data ");
-    console.log("produt id", product_id);
+
   }, []);
 
   const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-    console.log("I am in save visit");
+  
     try {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userDoc = await getDoc(userRef);
@@ -964,7 +873,6 @@ const KidsDetails = ({ route, navigation }) => {
               ...userData.recentlyVisited
             ];
           } else {
-            console.log("Product already exists in recentlyVisited");
             updatedRecentlyVisited = [...userData.recentlyVisited];
           }
         } else {
@@ -982,12 +890,8 @@ const KidsDetails = ({ route, navigation }) => {
         }
         if (updatedRecentlyVisited.length > 10) {
           updatedRecentlyVisited.splice(10);
-          console.log("More than 10 items, removing the oldest ones.");
         }
         await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-        console.log("Data added to recentlyVisited successfully");
-      } else {
-        console.log("User document not found");
       }
     } catch (error) {
       console.error('Error', error);
@@ -1155,7 +1059,6 @@ const KidsDetails = ({ route, navigation }) => {
                         { backgroundColor: item.toLowerCase() },
                       ];
                       if (selectedColor === item) {
-                        console.log("color", item)
                         if (item.toLowerCase() === "black") {
                           buttonStyle.push(productpage.blackButtonStyle);
                         } else {

@@ -90,7 +90,7 @@ const ProductsListBaby = ({ navigation }) => {
 
     const filterSize = filterproduct.filter(product => containsize(product, title))
     setProducts(filterSize);
-    console.log(filterSize)
+    
   }
   useEffect(() => {
     handleSize()
@@ -99,25 +99,19 @@ const ProductsListBaby = ({ navigation }) => {
 
     const filterColor = filterproduct.filter(product => containColor(product, title))
     setProducts(filterColor);
-    console.log(filterColor)
+  
   }
   useEffect(() => {
     handleColor()
   }, [])
   const containsize = ({ sizes }, query) => {
-    console.log(sizes);
-    console.log(query);
-    // Convert the query to lowercase for case-insensitive comparison
+    
     const lowerCaseQuery = query;
     console.log(sizes.some(size => size.includes(lowerCaseQuery)))
-    // Use the some method to check if any color in the list includes the query
     return sizes.some(size => size.includes(lowerCaseQuery));
   };
   const containColor = ({ colors }, query) => {
-    console.log(colors);
-
-    // Convert the query to lowercase for case-insensitive comparison
-    const lowerCaseQuery = query;
+    const lowerCaseQuery = query.toLowerCase();
 
     // Use the some method to check if any color in the list includes the query
     return colors.some(color => color.includes(lowerCaseQuery));
@@ -136,7 +130,7 @@ const ProductsListBaby = ({ navigation }) => {
         const priceB = b.price || 0;
         return !sortOrder ? priceA - priceB : priceB - priceA;
       });
-      console.log(iconsort)
+      
       setProducts(products);
     } else if (title === 'rate') {
       products.sort((a, b) => {
@@ -144,7 +138,7 @@ const ProductsListBaby = ({ navigation }) => {
         const rateB = b.rate || 0;
         return !sortOrder ? rateA - rateB : rateB - rateA;
       });
-      console.log(iconsort)
+     
       setProducts(products);
     } else {
       setProducts(filterproduct);
@@ -164,14 +158,11 @@ const ProductsListBaby = ({ navigation }) => {
         ...doc.data(),
       }));
       if (sortType === 'price') {
-        console.log("title " + sortType)
-        console.log("order " + sortOrder)
         productsData.sort((a, b) => {
           const priceA = a.price || 0; // Default to 0 if price is missing
           const priceB = b.price || 0;
           return sortOrder ? priceA - priceB : priceB - priceA;
         });
-        console.log(iconsort)
         setProducts(products);
       }
       setProducts(productsData);
@@ -195,23 +186,17 @@ const ProductsListBaby = ({ navigation }) => {
           ...doc.data(),
         }));
         if (sortType === 'price') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
           productsData.sort((a, b) => {
             const priceA = a.price || 0; // Default to 0 if price is missing
             const priceB = b.price || 0;
             return sortOrder ? priceA - priceB : priceB - priceA;
           });
-          console.log(iconsort)
         } else if (sortType === 'rate') {
-          console.log("title " + sortType)
-          console.log("order " + sortOrder)
           productsData.sort((a, b) => {
             const rateA = a.rate || 0; // Default to 0 if price is missing
             const rateB = b.rate || 0;
             return sortOrder ? rateA - rateB : rateB - rateA;
           });
-          console.log(iconsort)
           setProducts(products);
         }
         setProducts(productsData);
@@ -229,7 +214,6 @@ const ProductsListBaby = ({ navigation }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
     };
     getUserId();
   }, []);
@@ -237,14 +221,12 @@ const ProductsListBaby = ({ navigation }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
     };
     getUserId();
   }, []);
 
   const onAddToFav = async (item, index) => {
     setIsPressed(!isPressed);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
@@ -354,46 +336,8 @@ const ProductsListBaby = ({ navigation }) => {
     </TouchableOpacity>
   );
 
-  return (
-    <View style={productpage.container}>
-      <View style={productpage.headerName}>
-        <Text style={productpage.Textt}> AToZ </Text>
-      </View>
-      <Search />
-
-      <View style={smallCard.header}>
-        <FlatList
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          data={filterData}
-          keyExtractor={(item) => item.id}
-          renderItem={({ item, index }) => (
-            <Pressable onPress={() => navigation.navigate(item.name)}>
-              <View
-                style={
-                  item.name === "BABY"
-                    ? { ...smallCard.smallCardSelected }
-                    : { ...smallCard.smallCard }
-                }
-              >
-                <View style={smallCard.smallCardText}>
-                  <Text
-                    style={
-                      item.name === "BABY"
-                        ? { ...smallCard.boldText }
-                        : { ...smallCard.regularText }
-                    }
-                  >
-                    {item.name}
-                  </Text>
-                </View>
-              </View>
-            </Pressable>
-          )}
-        />
-      </View>
-      <ScrollView nestedScrollEnabled={true}>
-        <View style={filter.containerfs}>
+  const renderHeader =()=>(
+    <View style={filter.containerfs}>
           <Pressable
             style={{ flexDirection: "row", }}
           >
@@ -411,7 +355,6 @@ const ProductsListBaby = ({ navigation }) => {
                 onSelect={(selectedItem) => {
                   setFilterType(selectedItem.title);
                   handleAll(selectedItem.title)
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -443,7 +386,6 @@ const ProductsListBaby = ({ navigation }) => {
                 onSelect={(selectedItem) => {
                   setsizeType(selectedItem.title);
                   handleSize(selectedItem.title);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -473,7 +415,6 @@ const ProductsListBaby = ({ navigation }) => {
 
                   setcolorType(selectedItem.title);
                   handleColor(selectedItem.title);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -519,7 +460,6 @@ const ProductsListBaby = ({ navigation }) => {
                   setSortOrder(true);
                   seticonsort(true);
                   handlesort(sortType);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -546,7 +486,46 @@ const ProductsListBaby = ({ navigation }) => {
             </View>
           </Pressable>
         </View>
-        {/* Render "Loading..." if isLoading is true, otherwise render products */}
+  );
+
+  return (
+    <View style={productpage.container}>
+      <View style={productpage.headerName}>
+        <Text style={productpage.Textt}> AToZ </Text>
+      </View>
+      <Search />
+
+      <View style={smallCard.header}>
+        <FlatList
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          data={filterData}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item, index }) => (
+            <Pressable onPress={() => navigation.navigate(item.name)}>
+              <View
+                style={
+                  item.name === "BABY"
+                    ? { ...smallCard.smallCardSelected }
+                    : { ...smallCard.smallCard }
+                }
+              >
+                <View style={smallCard.smallCardText}>
+                  <Text
+                    style={
+                      item.name === "BABY"
+                        ? { ...smallCard.boldText }
+                        : { ...smallCard.regularText }
+                    }
+                  >
+                    {item.name}
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+          )}
+        />
+      </View>
         {isLoading ? (
           <View>
             <Spinner
@@ -560,10 +539,10 @@ const ProductsListBaby = ({ navigation }) => {
             data={products}
             renderItem={renderProduct}
             keyExtractor={(item) => item.id}
+            ListHeaderComponent={renderHeader}
           />
         )}
         <View style={productpage.bottoms}></View>
-      </ScrollView>
 
       <BottomNavigator navigation={navigation} userId={userId} />
     </View>
@@ -572,46 +551,27 @@ const ProductsListBaby = ({ navigation }) => {
 ////////////////////////////////////////////////////////////////////////////////////////////
 
 const BabyDetails = ({ route, navigation, props }) => {
-  // const { product } = route.params;
-  // const { product } = route.params ? route.params : { product: {} };
   const { product } = route.params ? route.params : { product: { id: "" } };
-
-  // const [products, setProducts] = React.useState('');
   const [productt, setProductt] = React.useState([]);
-  // const {name, description,} = props.product;
-
-  const [selectedSizeIndex, setSelectedSizeIndex] = React.useState(0);
-  const [selectedfav, setSelectedfav] = React.useState(0);
   const [selectedOptionIndex, setSelectedOptionIndex] = React.useState(0);
   const [cartCount, setCartCount] = useState(0);
-  //const navigation = useNavigation();
   const [hasCheckedOut, setHasCheckedOut] = useState(false);
-
   const [userId, setUserId] = useState("");
   const isFocused = useIsFocused();
   const product_id = product.id;
-  const [showReviews, setShowReviews] = useState(false);
   const [comments, setComment] = useState(0);
   const [rating, setRating] = useState(0);
-  const [like, setLike] = useState([0]);
-  const [disLike, setDislikes] = useState([0]);
   const [reviews, setReviews] = useState([]);
   const [reviewsWithLikes, setReviewsWithLikes] = useState([]);
-
-  const [isPaymentCompleted, setPaymentCompleted] = useState(false);
-  const scrollViewRef = useRef(null);
   const [activeIndexes, setActiveIndexes] = useState({});
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [showPrice, setShowPrice] = useState(false);
-  const [showAllReviews, setShowAllReviews] = useState(false);
   const [modalVisibleCart, setModalVisibleCart] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
   const [showGoToCartButton, setShowGoToCartButton] = useState(false);
 
   const numberOfInitialReviews = 3;
-  // const categoryName="BABY";
   const handleSeeAllReviews = () => {
     navigation.navigate("AllReviewsPage", { reviews });
     <Text style={productpage.seeAllText}>
@@ -621,7 +581,6 @@ const BabyDetails = ({ route, navigation, props }) => {
   useEffect(() => {
     const fetchItem = async (product_id) => {
       const documentSnapshot = await getDoc(doc(db, "baby", product_id));
-      console.log("product ID: ", documentSnapshot.id, documentSnapshot.data());
       let tempData = [];
       tempData.push({
         id: documentSnapshot.id,
@@ -636,10 +595,8 @@ const BabyDetails = ({ route, navigation, props }) => {
   }, []);
 
   useEffect(() => {
-    console.log("noo " + hasCheckedOut);
     if (hasCheckedOut) {
       setHasCheckedOut(true);
-      console.log("yess " + hasCheckedOut);
     }
   }, []);
 
@@ -647,7 +604,6 @@ const BabyDetails = ({ route, navigation, props }) => {
     const getUserId = async () => {
       const id = await AsyncStorage.getItem("USERID");
       setUserId(id);
-      console.log(id);
       getCartItems(id)
     };
     getUserId();
@@ -689,25 +645,9 @@ const BabyDetails = ({ route, navigation, props }) => {
     }));
   };
 
-  // const onAddToCart = async (item, index) => {
-  //   console.log(userId);
-  //   const userRef = doc(db, "users", userId);
-  //   const userSnap = await getDoc(userRef);
-  //   const { cart = [] } = userSnap.data() ?? {};
-  //   let existingItem = cart.find((itm) => itm.id === item.id);
-
-  //   if (existingItem) {
-  //     existingItem.qty += 1;
-  //   } else {
-  //     cart.push({ ...item, qty: 1 });
-  //   }
-  //   await updateDoc(userRef, { cart });
-  //   getCartItems();
-  // };
   const onAddToCart = async (item, index, selectedColor, selectedSize) => {
     const newDate = new Date();
     newDate.setDate(newDate.getDate() + 2);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { cart = [] } = userSnap.data() ?? {};
@@ -749,7 +689,6 @@ const BabyDetails = ({ route, navigation, props }) => {
   };
   const onAddToFav = async (item, index) => {
     setIsPressed(!isPressed);
-    console.log(userId);
     const userRef = doc(db, "users", userId);
     const userSnap = await getDoc(userRef);
     const { fav = [] } = userSnap.data() ?? {};
@@ -777,7 +716,6 @@ const BabyDetails = ({ route, navigation, props }) => {
     handelHeart(product);
   }, [handelHeart]);
   useEffect(() => {
-    console.log(isPressed);
   }, [isPressed]);
 
   const [Newprice, setNewprice] = useState(product.price);
@@ -803,9 +741,6 @@ const BabyDetails = ({ route, navigation, props }) => {
     const scrollPosition = event.nativeEvent.contentOffset.y;
     const screenHeight = Dimensions.get("window").height;
     const scrollThreshold = screenHeight * 0.75;
-    console.log(scrollPosition);
-
-    console.log(scrollThreshold);
     if (scrollPosition >= 210) {
       setShowPrice(true);
     } else {
@@ -827,7 +762,7 @@ const BabyDetails = ({ route, navigation, props }) => {
         flagAdmin = true;
       }
       setReviews(productData.reviews || []);
-      // loadLikesAndDislikes(reviews);
+    
 
       if (productData.reviews && productData.reviews.length > 0) {
         const averageRating =
@@ -917,14 +852,12 @@ const BabyDetails = ({ route, navigation, props }) => {
   };
 
   useEffect(() => {
-    console.log("iam in recently use effect ");
     saveRecentlyVisited(product.id, product.name, product.categoryName, product.images, product.colors, product.description, product.offer, product.price, product.sizes);
-    // console.log("iam get data ");
-    console.log("produt id", product_id);
+
   }, []);
 
   const saveRecentlyVisited = async (id, name, categoryName, images, colors, description, offer, price, sizes) => {
-    console.log("I am in save visit");
+
     try {
       const userRef = doc(db, "users", auth.currentUser.uid);
       const userDoc = await getDoc(userRef);
@@ -949,7 +882,6 @@ const BabyDetails = ({ route, navigation, props }) => {
               ...userData.recentlyVisited
             ];
           } else {
-            console.log("Product already exists in recentlyVisited");
             updatedRecentlyVisited = [...userData.recentlyVisited];
           }
         } else {
@@ -967,10 +899,8 @@ const BabyDetails = ({ route, navigation, props }) => {
         }
         if (updatedRecentlyVisited.length > 10) {
           updatedRecentlyVisited.splice(10);
-          console.log("More than 10 items, removing the oldest ones.");
         }
         await updateDoc(userRef, { recentlyVisited: updatedRecentlyVisited });
-        console.log("Data added to recentlyVisited successfully");
       } else {
         console.log("User document not found");
       }
@@ -1135,7 +1065,6 @@ const BabyDetails = ({ route, navigation, props }) => {
                         { backgroundColor: item.toLowerCase() },
                       ];
                       if (selectedColor === item) {
-                        console.log("color", item)
                         if (item.toLowerCase() === "black") {
                           buttonStyle.push(productpage.blackButtonStyle);
                         } else {

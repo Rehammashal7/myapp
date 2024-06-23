@@ -115,7 +115,7 @@ const Favorite = ({ navigation }) => {
         <Text style={[styles.Texts, { textAlign: 'center' }]}>Favorite</Text>
       </View>
       <Search />
-      <ScrollView nestedScrollEnabled={true}>
+      
         <FlatList
           numColumns={2}
           data={favList}
@@ -199,7 +199,7 @@ const Favorite = ({ navigation }) => {
           }}
         />
         <View style={styles.bottoms}></View>
-      </ScrollView>
+     
       <BottomNavigator item="fav" navigation={navigation} userId={userId} />
     </View>
   );

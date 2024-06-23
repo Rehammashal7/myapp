@@ -78,7 +78,6 @@ const Profile = ({ navigation }) => {
     useEffect(() => {
       const unsub = onAuthStateChanged(auth, user => setCurrentUser(user));
       return unsub;
-      console.log("iam in useAuth useEffect");
     }, []);
 
     return currentUser;
@@ -86,7 +85,6 @@ const Profile = ({ navigation }) => {
   useEffect(() => {
     if (getData) {
       getUserData();
-      console.log("iam in useEffect 2");
     }
     else {
       console.log("data not found")
@@ -99,11 +97,9 @@ const Profile = ({ navigation }) => {
     if (currentUser) {
 
       setMode("loggedIn");
-      console.log("iam in useEffect 3");
 
     } else {
       setMode("unlogginUser");
-      console.log("iam in useEffect 3");
 
     }
   }, [currentUser]);
@@ -184,7 +180,6 @@ const Profile = ({ navigation }) => {
       setBouns((data.boun || 0));
       setGetData(false);
       setWallet(data.walet);
-      console.log("getdata done");
 
     }
   };

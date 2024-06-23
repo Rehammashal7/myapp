@@ -45,24 +45,19 @@ const Search = () => {
     }, [isempty])
 
     const contains = ({ name, colors }, query) => {
-        console.log(name, colors);
+      
         return name.toLowerCase().includes(query.toLowerCase());
     };
     const containtype= ({ type }, query) => {
-        console.log(type);
+       
         return type.toLowerCase().includes(query.toLowerCase());
     };
     const containcategory = ({ categoryName }, query) => {
-        console.log(categoryName);
+        
         return categoryName.toLowerCase().includes(query.toLowerCase());
     };
     const containColor = ({ colors }, query) => {
-        console.log(colors);
-
-        // Convert the query to lowercase for case-insensitive comparison
         const lowerCaseQuery = query.toLowerCase();
-
-        // Use the some method to check if any color in the list includes the query
         return colors.some(color => color.includes(lowerCaseQuery));
     };
     const getsearchItems = async () => {
@@ -189,7 +184,7 @@ const Search = () => {
                     || containtype(product, text)
                 );
                 filteredData[collectionName] = filteredCollection;
-                console.log('F', filteredCollection);
+                
 
             });
             setData(filteredData);

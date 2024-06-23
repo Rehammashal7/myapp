@@ -74,28 +74,6 @@ const Checkout = ({ navigation }) => {
     setCartList(userSnap.get("cart"));
   };
 
-  // useEffect(() => {
-  //   const script = document.createElement('script');
-  //   script.src = `https://www.paypal.com/sdk/js?client-id=AWY10CyVpqD5JFq5o5KelET49ca14WVmpcHn6kF7mxkdwEB1oYjcULi4_hEBrENkcapwEBtXg6-UITYd`;
-  //   script.addEventListener('load', () => {
-
-  //     window.paypal.Buttons().render('#paypal-button');
-
-  //   },);
-  //   document.body.appendChild(script);
-  // }, []);
-  // const createOrder = (data, actions) => {
-  //   return actions.order.create({
-  //     purchase_units: [
-  //       {
-  //         amount: {
-  //           currency_code: 'USD',
-  //           value: amount,
-  //         },
-  //       },
-  //     ],
-  //   });
-  // };
   const onApprove = (data, actions) => {
     return actions.order.capture().then((details) => {
       firebase
@@ -114,9 +92,8 @@ const Checkout = ({ navigation }) => {
         });
     });
   };
-  const onError = (err) => {
-    setError(err.message);
-  };
+
+
   const [points, setpoints] = useState(0);
   const getbouns = async () => {
     const userRef = doc(db, 'users', userId);
@@ -135,8 +112,6 @@ const Checkout = ({ navigation }) => {
     if (offer < 0) {
       offer = 0
     }
-    console.log(points);
-    console.log(offer);
     return offer;
   }
   const getTotalOfers = () => {
@@ -198,35 +173,10 @@ const Checkout = ({ navigation }) => {
   useEffect(() => {
     deliveryprice();
   }, [deliveryprice]);
-  // const updateProductCount = async (productName) => {
-  //   try {
-  //     const docRef = firestore().collection('productCounts').doc('counts');
-  //     await docRef.update({
-  //       [productName]: firestore.FieldValue.increment(1)
-  //     });
-  //     console.log(`Count for ${productName} updated successfully.`);
-  //   } catch (error) {
-  //     console.error(`Error updating count for ${productName}:`, error);
-  //   }
-  // };
-
-  //   const updateProductCount = async (categoryName, productName) => {
-  //     try {
-  //         // Perform database operation to update product count based on category
-  //         // For example:
-  //         const docRef = firestore().collection('productCounts').doc('counts');
-  //         await docRef.update({
-  //             [categoryName]: firestore.FieldValue.increment(1)
-  //         });
-
-  //         console.log(`Count for product ${productName} in category ${categoryName} updated successfully.`);
-  //     } catch (error) {
-  //         console.error(`Error updating count for product ${productName} in category ${categoryName}:`, error);
-  //     }
-  // };
+  
 
   const handleCheckout = async () => {
-    console.log("Button pressed");
+    
     try {
       const usersRef = collection(db, "users");
       const querySnapshot = await getDocs(usersRef);
@@ -237,7 +187,7 @@ const Checkout = ({ navigation }) => {
           cartList.forEach(async (cartItem) => {
            
             if (cartItem.data.categoryName == 'WOMAN') {
-             // console.log(cartItem.data.categoryName)
+          
               const currentcount = userData.woman || 0;
               const newwoman = currentcount + 1;
               const userRef = doc(db, "users", userDoc.id);
@@ -266,11 +216,6 @@ const Checkout = ({ navigation }) => {
             }
 
           });
-
-          // const currentcount = userData.cou || 0;
-          // const newCount = currentcount + 1;
-          // const userRef = doc(db, "users", userDoc.id);
-          // await updateDoc(userRef, { cou: newCount });
 
         }
       }
@@ -307,8 +252,6 @@ const Checkout = ({ navigation }) => {
         delivered: false,
       });
 
-      console.log('Purchased products saved to Firestore successfully');
-
       navigation.navigate('checkout');
     } catch (error) {
       console.error("Error saving purchased products to Firestore:", error);
@@ -317,69 +260,6 @@ const Checkout = ({ navigation }) => {
 
   };
 
-  // const handleCheckout = async () => {
-  //   try {
-  //     // Prepare an array to hold all purchased items
-  //     const purchasedItems = [];
-
-  //     // Loop through cartList to collect data for each item
-  //     cartList.forEach((item) => {
-  //       const purchaseData = {
-  //         userId:userId,
-  //         productId: item.id,
-  //         quantity: item.qty,
-  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
-  //         imageUrl: item.data.images,
-  //         name: item.data.name,
-  //         description: item.data.description,
-  //         category: item.data.categoryName,
-  //         delivered: false,
-  //       };
-  //       purchasedItems.push(purchaseData);
-  //     });
-
-  //     // Create a reference to the purchased products collection for the user
-  //     const userPurchasedProductsRef = doc(db, 'userPurchasedProducts', userId);
-
-  //     // Set the aggregated purchased items data as a single document for the user
-  //     await setDoc(userPurchasedProductsRef, { items: purchasedItems, timestamp: new Date() });
-
-  //     console.log('Purchased products saved to Firestore successfully');
-  //     // After successful checkout, navigate to the checkout screen or perform other actions
-  //     navigation.navigate('checkout');
-  //   } catch (error) {
-  //     console.error('Error saving purchased products to Firestore:', error);
-  //   }
-  // };
-
-  // const handleCheckout = async () => {
-  //   try {
-  //     // Loop through the products and add them to the purchasedProducts collection
-  //     cartList.forEach(async (item) => {
-  //       const purchaseData = {
-  //         userId: userId,
-  //         productId: item.id,
-  //          quantity: item.qty,
-  //         totalPrice: (item.qty || 0) * (item.data.price || 0),
-  //          timestamp: new Date(),
-  //         imageUrl: item.data.images,
-  //         name: item.data.name,
-  //        description: item.data.description,
-  //        category:item.data.categoryName,
-  //         delivered: false,
-
-  //       };
-  //       const purchasedProductRef = doc(db, 'purchasedProducts', `${userId}_${item.id}`);
-  //       await setDoc(purchasedProductRef, purchaseData);
-  //     });
-
-  //     console.log('Purchased products saved to Firestore successfully');
-  //     // After successful checkout, you can navigate to the checkout screen or do any other necessary action
-  //     navigation.navigate('checkout');
-  //   } catch (error) {
-  //     console.error('Error saving purchased products to Firestore:', error);
-  //   }
-  // };
   const deleteAllItems = async () => {
     try {
       const userRef = doc(db, "users", userId);
@@ -391,21 +271,17 @@ const Checkout = ({ navigation }) => {
   };
   const updatewallet = async () => {
     try {
-      // استرجاع قيمة المحفظة من قاعدة البيانات
+     
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
       const walletAmount = userSnap.data().walet || 0;
 
-      // حساب القيمة التي يجب خصمها من المحفظة
       const totalAmountToDeduct = (getTotal() + delprice - getTotalOfers()).toFixed(2);
 
-      // التحقق من أن قيمة المحفظة كافية لإتمام الدفع
       if (walletAmount >= totalAmountToDeduct) {
-        // تحديث قيمة المحفظة بعد الخصم
+       
         const updatedAmount = walletAmount - totalAmountToDeduct;
         await updateDoc(userRef, { walet: updatedAmount });
-
-        console.log("Wallet value updated successfully");
         
         alert("You can recover the amount in 24 hours only");
 
@@ -420,9 +296,9 @@ const Checkout = ({ navigation }) => {
   const handleRecycleWallet =async()=>{
     
     cartList.forEach(async (item)=>{
-      console.log(item.data.recycleProduct)
+     
       if(item.data.recycleProduct===true){
-        console.log('recycle')
+       
         const userRef = doc(db, "users", item.data.userId);
       const userSnap = await getDoc(userRef);
       const walletAmount = userSnap.data().walet || 0;
@@ -450,7 +326,6 @@ const Checkout = ({ navigation }) => {
 
       
       }else {
-        console.log('not recycle')
         handleWallerAdmin();
       }
     })
@@ -476,7 +351,7 @@ const Checkout = ({ navigation }) => {
   };
 
   const AddOrderHistory = async () => {
-    console.log("Executing AddOrderHistory function...");
+   
     try {
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
@@ -485,7 +360,7 @@ const Checkout = ({ navigation }) => {
         const currentDate = new Date();
         const formattedDate = currentDate.toISOString();
         const addressIndex = userOrders.length;
-        console.log("addresssssIndex :", addressIndex);
+        
         cartList.forEach((cartItem, index) => {
           const newOrder = {
             index: addressIndex + index,
@@ -505,7 +380,7 @@ const Checkout = ({ navigation }) => {
         });
 
         await updateDoc(userRef, { HistoryOrder: userOrders });
-        console.log("Order history updated successfully");
+        
       } else {
         console.log("User does not exist!");
       }
@@ -520,8 +395,6 @@ const Checkout = ({ navigation }) => {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
 
-      console.log("Current Bonus Points:", userData.boun);
-
       let currentPoints = userData.boun || 0;
       if (point) {
         const minespoints = getpoint();
@@ -534,29 +407,11 @@ const Checkout = ({ navigation }) => {
       const newPoints = Math.ceil(currentPoints + (getTotal() * 0.1));
 
       await updateDoc(userRef, { boun: newPoints });
-      console.log("Bonus points increased by 10.");
     } catch (error) {
       console.error("Error increasing bonus points:", error);
     }
   };
 
-
-  // useEffect(() => {
-  //   const fetchCheckoutCount = async () => {
-  //     try {
-  //       const userRef = doc(db, "users", userId);
-  //       const userSnap = await getDoc(userRef);
-  //       const userData = userSnap.data();
-
-  //       const count = userData.cou || 0;
-  //       setCurrentCount(count);
-  //     } catch (error) {
-  //       console.error("Error fetching checkout count:", error);
-  //     }
-  //   };
-
-  //   fetchCheckoutCount();
-  // }, [userId]);
   return (
 
     <View style={styles.container}>

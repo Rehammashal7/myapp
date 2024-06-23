@@ -27,13 +27,10 @@ const UserRecycleProduct = ({ navigation }) => {
         getOrders();
         setisSold(RecycleProduct.sold);
         setisAccept(RecycleProduct.isAccept);
-        console.log(RecycleProduct);
-        console.log(RecycleProduct.sold);
     }, [isFocused]);
 
     const getOrders = async () => {
         try {
-            // استرجاع بيانات المستخدم
             const userId = await AsyncStorage.getItem("USERID");
             const productsCollection = collection(db, "recycle");
             const productsSnapshot = await getDocs(productsCollection);
@@ -45,20 +42,17 @@ const UserRecycleProduct = ({ navigation }) => {
 
             setRecycleProduct(productsData);
 
-            console.log(productsData);
         } catch (error) {
             console.error("Error fetching orders:", error);
         }
     };
 
     const formatDate = (timestamp) => {
-        // Check if the timestamp is a Firebase Timestamp
         if (timestamp && timestamp.seconds && timestamp.nanoseconds) {
-            // Convert Firebase Timestamp to JavaScript Date
+           
             const date = new Date(
                 timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000
             );
-            // Check if the parsedDate is a valid date
             if (!isNaN(date.getTime())) {
                 return date.toLocaleDateString();
             }

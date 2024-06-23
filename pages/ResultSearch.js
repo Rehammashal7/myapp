@@ -66,11 +66,11 @@ const ProductPage = ({ route, navigation }) => {
     if(title!='All'){
     const filterSize = filterproduct.filter(product => containcategory(product, title))
     setAllproduct(filterSize);
-    console.log(filterSize)
+    
     }else {setAllproduct(filterproduct);}
   }
   const containcategory = ({ categoryName }, query) => {
-    console.log(categoryName);
+    
     return categoryName.toLowerCase().includes(query);
 };
 useEffect(() => {
@@ -80,7 +80,7 @@ useEffect(() => {
 
     const filterSize = filterproduct.filter(product => containsize(product, title))
     setAllproduct(filterSize);
-    console.log(filterSize)
+    
   }
   useEffect(() => {
     handleSize()
@@ -89,28 +89,18 @@ useEffect(() => {
 
     const filterColor = filterproduct.filter(product => containColor(product, title))
     setAllproduct(filterColor);
-    console.log(filterColor)
+    
   }
   useEffect(() => {
     handleColor()
   }, [])
   const containsize = ({ sizes }, query) => {
-    console.log(sizes);
-    console.log(query);
-    // Convert the query to lowercase for case-insensitive comparison
     const lowerCaseQuery = query;
-    console.log(sizes.some(size => size.includes(lowerCaseQuery)))
-    // Use the some method to check if any color in the list includes the query
     return sizes.some(size => size.includes(lowerCaseQuery));
   };
   const containColor = ({ colors }, query) => {
-    console.log(colors);
-
-    // Convert the query to lowercase for case-insensitive comparison
-    const lowerCaseQuery = query;
-
-    // Use the some method to check if any color in the list includes the query
-    return colors.some(color => color.includes(lowerCaseQuery));
+   const lowerCaseQuery = query.toLowerCase();
+return colors.some(color => color.includes(lowerCaseQuery));
   };
   const sort = [
     { title: 'price' },
@@ -126,7 +116,6 @@ useEffect(() => {
         const priceB = b.price || 0;
         return !sortOrder ? priceA - priceB : priceB - priceA;
       });
-      console.log(iconsort)
       setAllproduct(Allproduct);
     } else if (title === 'rate') {
       Allproduct.sort((a, b) => {
@@ -134,7 +123,6 @@ useEffect(() => {
         const rateB = b.rate || 0;
         return !sortOrder ? rateA - rateB : rateB - rateA;
       });
-      console.log(iconsort)
       setAllproduct(Allproduct);
     } else {
       setAllproduct(filterproduct);
@@ -160,8 +148,6 @@ useEffect(() => {
     searchData.baby.map((item) => all.push(item));
     setAllproduct(all);
     setfilterProduct(all);
-    console.log(all)
-    console.log(Allproduct)
   }, [isFocused]);
 
   const handleProductPress = async (product, Category) => {
@@ -294,34 +280,7 @@ useEffect(() => {
       </View>
 
       <ScrollView>
-        {/* <View style={styles.container2}> */}
-          {/* <View style={styles.headcontener}>
-            <Text style={styles.heading}>{'Categories : ' + selectedCategory}</Text>
-            {selectedCategory === 'All' && (<Text style={[styles.itemcount]}>{"items count : " + numOfProduct}</Text>)}
-            {selectedCategory === 'Woman' && (<Text style={[styles.itemcount]}>{"items count : " + numOfProductWoman}</Text>)}
-            {selectedCategory === 'Men' && (<Text style={[styles.itemcount]}>{"items count : " + numOfProductMen}</Text>)}
-            {selectedCategory === 'Kids' && (<Text style={[styles.itemcount]}>{"items count : " + numOfProductKids}</Text>)}
-            {selectedCategory === 'Baby' && (<Text style={[styles.itemcount]}>{"items count : " + numOfProductBaby}</Text>)}
-          </View>
-          <View style={styles.checkboxContainer}>
-            {['All', 'Woman', 'Men', 'Kids', 'Baby'].map((category) => (
-              <TouchableOpacity
-                key={category}
-                style={selectedCategory === category ? styles.selectedcategoryButton : styles.categoryButton}
-                onPress={() => handleCategorySelect(category)}
-              >
-                <Text
-                  style={[
-                    styles.categoryLabel,
-                    selectedCategory === category && styles.selectedCategory,
-                  ]}
-                >
-                  {category}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View> */}
+       
         <View style={styles.containerfs}>
           <Pressable
             style={{ flexDirection: "row", }}
@@ -372,7 +331,6 @@ useEffect(() => {
                 onSelect={(selectedItem) => {
                   setsizeType(selectedItem.title);
                   handleSize(selectedItem.title);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -402,7 +360,6 @@ useEffect(() => {
 
                   setcolorType(selectedItem.title);
                   handleColor(selectedItem.title);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -432,7 +389,6 @@ useEffect(() => {
 
                   setType(selectedItem.title);
                   handletype(selectedItem.title);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -478,7 +434,6 @@ useEffect(() => {
                   setSortOrder(true);
                   seticonsort(true);
                   handlesort(sortType);
-                  console.log(selectedItem.title);
                 }}
                 renderButton={(selectedItem, isOpened) => {
                   return (
@@ -505,46 +460,7 @@ useEffect(() => {
             </View>
           </Pressable>
         </View>
-        {/* <View style={styles.containerItem}>
-          {selectedCategory === 'Woman' ? (
-            <FlatList
-              numColumns={2}
-              data={searchData.woman}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-            />
-          ) : null}
-        </View>
-        <View style={styles.containerItem}>
-          {selectedCategory === 'Men' ? (
-            <FlatList
-              numColumns={2}
-              data={searchData.men}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-            />
-          ) : null}
-        </View>
-        <View style={styles.containerItem}>
-          {selectedCategory === 'Kids' ? (
-            <FlatList
-              numColumns={2}
-              data={searchData.kids}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-            />
-          ) : null}
-        </View>
-        <View style={styles.containerItem}>
-          {selectedCategory === 'Baby' ? (
-            <FlatList
-              numColumns={2}
-              data={searchData.baby}
-              keyExtractor={(item) => item.id.toString()}
-              renderItem={renderItem}
-            />
-          ) : null}
-        </View> */}
+        
         <View style={styles.containerItem}>
          
             <FlatList

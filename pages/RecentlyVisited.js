@@ -46,7 +46,6 @@ const RecentlyVisited = ({ navigation }) => {
     useEffect(() => {
       const unsub = onAuthStateChanged(auth, (user) => setCurrentUser(user));
       return unsub;
-      console.log("iam in useAuth useEffect");
     }, []);
 
     return currentUser;
@@ -58,7 +57,7 @@ const RecentlyVisited = ({ navigation }) => {
         const userDoc = await getDoc(userRef);
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          console.log("iheihdxliowjdxlemwsjpodkewpd",userData);
+         ;
           if (userData.recentlyVisited) {
             let updatedRecentlyVisited = [...userData.recentlyVisited];
             if (updatedRecentlyVisited.length > 10) {

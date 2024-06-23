@@ -351,6 +351,162 @@ const ProductsListMen = ({ navigation }) => {
     </TouchableOpacity>
   );
 
+  const renderHeader=()=>(
+    <View style={filter.containerfs}>
+    <Pressable
+      style={{ flexDirection: "row", }}
+    >
+
+      {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
+      <View style={filter.numbertypecontainer}>
+        <Icon
+          name="filter"
+          size={25}
+          color="#343434"
+          style={{ marginRight: 3 }}
+        />
+        <SelectDropdown
+          data={filters}
+          onSelect={(selectedItem) => {
+            setFilterType(selectedItem.title);
+            handleAll(selectedItem.title)
+            console.log(selectedItem.title);
+          }}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={filter.dropdownButtonStyle}>
+                <Text style={filter.dropdownButtonTxtStyle}>
+                  {(filterType && filterType) || 'filter'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={filter.dropdownMenuStyle}
+        />
+
+
+
+      </View>
+      {filterType === 'size' && (
+        <SelectDropdown
+          data={size}
+          onSelect={(selectedItem) => {
+            setsizeType(selectedItem.title);
+            handleSize(selectedItem.title);
+            console.log(selectedItem.title);
+          }}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={filter.dropdownButtonStyle}>
+                <Text style={filter.dropdownButtonTxtStyle}>
+                  {(sizeType && sizeType) || 'size'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={filter.dropdownMenuStyle}
+        />
+      )}
+      {filterType === 'color' && (
+        <SelectDropdown
+          data={color}
+          onSelect={(selectedItem) => {
+
+            setcolorType(selectedItem.title);
+            handleColor(selectedItem.title);
+            console.log(selectedItem.title);
+          }}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={filter.dropdownButtonStyle}>
+                <Text style={filter.dropdownButtonTxtStyle}>
+                  {(colorType && colorType) || 'color'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={filter.dropdownMenuStyle}
+        />
+      )}
+    </Pressable>
+    <Pressable
+      style={{ flexDirection: "row", marginLeft: 5 }}
+    >
+
+      {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
+      <View style={filter.numbertypecontainer}>
+        <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
+          <Icon
+            name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
+            size={25}
+            color="#343434"
+            style={{ marginRight: 10 }}
+
+          />
+        </Pressable>
+        <SelectDropdown
+          data={sort}
+          onSelect={(selectedItem) => {
+            setSortType(selectedItem.title);
+            setSortOrder(true);
+            seticonsort(true);
+            handlesort(sortType);
+            console.log(selectedItem.title);
+          }}
+          renderButton={(selectedItem, isOpened) => {
+            return (
+              <View style={filter.dropdownButtonStyle}>
+                <Text style={filter.dropdownButtonTxtStyle}>
+                  {(sortType && sortType) || 'Sort'}
+                </Text>
+                <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
+              </View>
+            );
+          }}
+          renderItem={(item, index, isSelected) => {
+            return (
+              <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
+                <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
+              </View>
+            );
+          }}
+          showsVerticalScrollIndicator={false}
+          dropdownStyle={filter.dropdownMenuStyle}
+        />
+
+
+      </View>
+    </Pressable>
+  </View>
+  );
+
   return (
     <View style={productpage.container}>
       <View style={productpage.headerName}>
@@ -389,161 +545,6 @@ const ProductsListMen = ({ navigation }) => {
           )}
         />
       </View>
-      <ScrollView nestedScrollEnabled={true}>
-        <View style={filter.containerfs}>
-          <Pressable
-            style={{ flexDirection: "row", }}
-          >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
-              <Icon
-                name="filter"
-                size={25}
-                color="#343434"
-                style={{ marginRight: 3 }}
-              />
-              <SelectDropdown
-                data={filters}
-                onSelect={(selectedItem) => {
-                  setFilterType(selectedItem.title);
-                  handleAll(selectedItem.title)
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(filterType && filterType) || 'filter'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-
-
-
-            </View>
-            {filterType === 'size' && (
-              <SelectDropdown
-                data={size}
-                onSelect={(selectedItem) => {
-                  setsizeType(selectedItem.title);
-                  handleSize(selectedItem.title);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(sizeType && sizeType) || 'size'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-            )}
-            {filterType === 'color' && (
-              <SelectDropdown
-                data={color}
-                onSelect={(selectedItem) => {
-
-                  setcolorType(selectedItem.title);
-                  handleColor(selectedItem.title);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(colorType && colorType) || 'color'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-            )}
-          </Pressable>
-          <Pressable
-            style={{ flexDirection: "row", marginLeft: 5 }}
-          >
-
-            {/* <Text style={{fontWeight:'bold',fontSize:18}}>filter</Text> */}
-            <View style={filter.numbertypecontainer}>
-              <Pressable onPress={() => { seticonsort(!iconsort), setSortOrder(!iconsort), handlesort(sortType) }}>
-                <Icon
-                  name={iconsort ? "sort-alpha-asc" : "sort-alpha-desc"}
-                  size={25}
-                  color="#343434"
-                  style={{ marginRight: 10 }}
-
-                />
-              </Pressable>
-              <SelectDropdown
-                data={sort}
-                onSelect={(selectedItem) => {
-                  setSortType(selectedItem.title);
-                  setSortOrder(true);
-                  seticonsort(true);
-                  handlesort(sortType);
-                  console.log(selectedItem.title);
-                }}
-                renderButton={(selectedItem, isOpened) => {
-                  return (
-                    <View style={filter.dropdownButtonStyle}>
-                      <Text style={filter.dropdownButtonTxtStyle}>
-                        {(sortType && sortType) || 'Sort'}
-                      </Text>
-                      <Icon name={isOpened ? 'chevron-up' : 'chevron-down'} style={filter.dropdownButtonArrowStyle} />
-                    </View>
-                  );
-                }}
-                renderItem={(item, index, isSelected) => {
-                  return (
-                    <View style={{ ...filter.dropdownItemStyle, ...(isSelected && { backgroundColor: '#D2D9DF' }) }}>
-                      <Text style={filter.dropdownItemTxtStyle}>{item.title}</Text>
-                    </View>
-                  );
-                }}
-                showsVerticalScrollIndicator={false}
-                dropdownStyle={filter.dropdownMenuStyle}
-              />
-
-
-            </View>
-          </Pressable>
-        </View>
-        {/* Render "Loading..." if isLoading is true, otherwise render products */}
         {isLoading ? (
           <View>
             <Spinner
@@ -557,10 +558,11 @@ const ProductsListMen = ({ navigation }) => {
             data={products}
             renderItem={renderProduct}
             keyExtractor={(item) => item.id}
+            ListHeaderComponent={renderHeader}
           />
         )}
         <View style={productpage.bottoms}></View>
-      </ScrollView>
+ 
 
       <BottomNavigator navigation={navigation} userId={userId} />
     </View>

@@ -165,7 +165,9 @@
 // //       sizes: ['6-9 MONTHS','9-12 MONTHS','12-18 MONTHS','18-24 MONTHS','3/4 Age','4/5 Age'], 
 // //       colors: [''],
 // //       price:899,
-// //       offer:0
+// //       offer:0,
+// //       type:"girl",
+// //       
 // //     },
 // // {//5
 // //   categoryName:'BABY',
@@ -628,6 +630,7 @@
 
 //   // const products = [
 //   //   {//1
+//   //     categoryName:"WOMAN",
 //   //     name: 'Afra x DeFacto Biker Jean Jacket',
 //   //     description: 'Main Fabric Content : Cotton 100%',
 //   //        images: ['https://dfcdn.defacto.com.tr/7/C1419AX_24SM_NM28_01_01.jpg',
@@ -641,6 +644,7 @@
 //   //   },]
 //   // const products = [
 //   //   {//1
+//   //     categoryName:"WOMAN",
 //   //     name: 'Afra x DeFacto Biker Jean Jacket',
 //   //     description: 'Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/C1419AX_24SM_NM28_01_01.jpg',
@@ -653,6 +657,7 @@
 //   //     offer:10
 //   //   },
 //   //   {//2
+//   //     categoryName:"WOMAN",
 //   //     name: 'Half Turtleneck Long Sleeve Dress',
 //   //     description: 'Model Measurements:Height: 1.78Bust: 83Waist: 62Hips: 90 Main Fabric Content : Polyamide 11%,Viscose 89% ',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/Z0500AZ_23SM_BK27_02_03.jpg',
@@ -666,6 +671,7 @@
 //   //     offer:20
 //   //   },
 //   //   {//3
+//   //     categoryName:"WOMAN",
 //   //     name: 'Relax Fit Long Sleeve Tunic',
 //   //     description: 'Model Measurements:Height: 1.74Bust: 84Waist: 60Hips: 90 Main Fabric Content : Cotton 93%,Linen 7%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/B9835AX_24SP_BG759_01_02.jpg',
@@ -675,9 +681,12 @@
 //   //     sizes: [ 'S', 'M','L'], 
 //   //     colors: [''],
 //   //     price:1499,
-//   //     offer:30
+//   //     offer:30,
+//  //      season:"winter",
+//  //      type:"t-shirt"
 //   //   },
 //   //   {//4
+//   //     categoryName:"WOMAN",
 //   //     name: 'Oversize Fit P.Cezanne Licensed Crew Neck Printed Short Sleeve T-Shirt',
 //   //     description: 'Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/C3775AX_24SM_BK81_01_01.jpg',
@@ -691,6 +700,7 @@
 //   //     offer:20
 //   //   },
 //   //   {//5
+//   //     categoryName:"WOMAN",
 //   //     name: 'Lina Comfort Fit High Comfortable Fit Slim Leg Jeans',
 //   //     description: 'Model Measurements:Height: 1.75Bust: 82Waist: 60Hips: 89 Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/Z6556AZ_23SP_NM40_02_02.jpg',
@@ -703,6 +713,7 @@
 //   //     offer:10
 //   //   },
 //   //   {//6
+//   //     categoryName:"WOMAN",
 //   //     name: 'Wide Leg High Waist Long Gabardine Cargo Pants',
 //   //     description: 'Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/C2666AX_24SP_BN539_01_01.jpg',
@@ -712,9 +723,10 @@
 //   //     sizes: ['XS', 'S', 'M','L'], 
 //   //     colors: [''],
 //   //     price:1699,
-//   //     offer:10
+//   //     offer:10,
 //   //   },
 //   //   {//7
+//   //     categoryName:"WOMAN",
 //   //     name: 'Palazzo Linen Blend Trousers',
 //   //     description: 'Model Measurements:Height: 1.74Bust: 84Waist: 60Hips: 90 Main Fabric Content : Cotton 40%,Viscose 53%,Linen 7%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/B7503AX_24SP_BG404_01_02.jpg',
@@ -724,9 +736,12 @@
 //   //     sizes: ['XS', 'S', 'M','L','XL'], 
 //   //     colors: [''],
 //   //     price:1299,
-//   //     offer:20
+//   //     offer:20,
+//  //      season:"summer",
+//  //      type:"t-shirt"
 //   //   },
 //   //   {//8
+//   //     categoryName:"WOMAN",
 //   //     name: 'High Waist Linen Look Trousers with Jogger Pockets',
 //   //     description: 'Model Measurements:Height: 1.81Bust: 87Waist: 65Hips: 91  Main Fabric Content : Polyamide 15%,Viscose 85%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/R0433AZ_23AU_BG159_02_01.jpg',
@@ -736,9 +751,12 @@
 //   //     sizes: ['XS', 'S', 'M','L','XL'], 
 //   //     colors: ['Beige','Black','Mint'],
 //   //     price:899,
-//   //     offer:15
+//   //     offer:15,
+//  //      season:"summer",
+//  //      type:"trousers"
 //   //   },
 //   //   {//9
+//   //     categoryName:"WOMAN",
 //   //     name: 'Crop Jean Shirt',
 //   //     description: 'Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/B8265AX_24SP_NM85_01_01.jpg',
@@ -751,6 +769,7 @@
 //   //     offer:20
 //   //   },
 //   //   {//10
+//   //     categoryName:"WOMAN",
 //   //     name: 'Wrap Collar Striped Linen Look Butterfly Sleeve Midi Short Sleeve Dress',
 //   //     description: 'Model Measurements:Height: 1.68 Main Fabric Content : Cotton 100%',
 //   //     images: ['https://dfcdn.defacto.com.tr/7/A6460AX_23SM_BG737_05_02.jpg',
@@ -761,6 +780,235 @@
 //   //     colors: [''],
 //   //     price:1299,
 //   //     offer:10
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'FLYING MACHINE WOMEN',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://cdn17.nnnow.com/web-images/large/styles/DBUXHG5CE3P/1674036983228/1.jpg',
+//   //      'https://cdn09.nnnow.com/web-images/large/styles/DBUXHG5CE3P/1674036983223/2.jpg',
+//   //      'https://cdn03.nnnow.com/web-images/large/styles/DBUXHG5CE3P/1674036983226/3.jpg',
+//   //      'https://cdn19.nnnow.com/web-images/large/styles/DBUXHG5CE3P/1674036983215/5.jpg'],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: [''],
+//   //     price:1230,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"trousers"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Women's Casual Pants Bundle of 2',
+//   //     description: 'Discover unparalleled comfort and style with The Pant Project's Women's Casual Pants Bundle of 2, featuring our best-selling casual designs',
+//   //     images: 
+//   //     ['https://pantproject.com/cdn/shop/products/womenswear0177_db0cf15e-93cd-47f4-b7a2-f7914be51699.jpg?v=1669977379',
+//   //      'https://pantproject.com/cdn/shop/products/womenswear0032_80919cee-d9c9-423e-ad9d-7ea950c57968.jpg?v=1669977379',
+//   //      'https://pantproject.com/cdn/shop/products/womenswear0141_3774a294-59b4-4b12-9b0b-5ce6f16be6c4.jpg?v=1669977379',
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: [''],
+//   //     price:499,
+//   //     offer:0,
+//  //      season:"spring",
+//  //      type:"trousers"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Black Wide Leg Trousers',
+//   //     description: 'Fabric: GeorgetteComposition: 100% PolyesterFit: Comfort FitClosure: Zipper Closure',
+//   //     images: 
+//   //     ['https://www.sassafras.in/cdn/shop/products/SFPANT5041-1_800x.jpg?v=1666355024',
+//   //      'https://www.sassafras.in/cdn/shop/products/SFPANT5041-3_800x.jpg?v=1666355029',
+//   //      'https://www.sassafras.in/cdn/shop/products/SFPANT5041-5_800x.jpg?v=1666355037',
+//   //      'https://www.sassafras.in/cdn/shop/products/SFPANT5041-6_800x.jpg?v=1666355043'],
+//   //     sizes: ['XS', 'S', 'M','L','XL'], 
+//   //     colors: [''],
+//   //     price:599,
+//   //     offer:0,
+//  //      season:"full",
+//  //      type:"trousers"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Skirt Ladies Long Skirt Small Floral Korean Style',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://i5.walmartimages.com/asr/f2460aaf-44ff-4a62-a73c-bb0ccaf21e86.669bdfcb8e0c44bee5cdc7202459d388.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF',
+//   //      'https://i5.walmartimages.com/asr/9d339126-fabb-4304-aaca-9a45a8b63df8.519c2da23d602ae3a6d3ea055442a491.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF',
+//   //      'https://i5.walmartimages.com/asr/1bb3795e-d1de-40dd-8a32-76e61fe29bd4.3c1325a5f88532436316c3bdf50328a4.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF',
+//   //      'https://i5.walmartimages.com/asr/ec22d60f-836d-474a-9683-97bb63f71c34.172f82e0762c528b74feab5fe4949c3b.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF'],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: [''],
+//   //     price:250,
+//   //     offer:0,
+//  //      season:"fall",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Wide-leg Pants Women',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://eg.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/06/078704/1.jpg?8492',
+//   //      'https://eg.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/06/078704/6.jpg?8492',
+//   //      'https://eg.jumia.is/unsafe/fit-in/680x680/filters:fill(white)/product/06/078704/5.jpg?8492',],
+//   //     sizes: ['XS', 'S', 'M','L','XL'], 
+//   //     colors: ['beige','black','dark red'],
+//   //     price:799,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"trousers"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'INNSUN FASHION Women,s Western Flared Skirts',
+//   //     description: 'Fabric : Cotton BlendPattern : Solid',
+//   //     images: 
+//   //     ['https://images.meesho.com/images/products/278283910/kwpww_512.jpg',
+//   //      'https://images.meesho.com/images/products/278283910/ly1rs_512.jpg',
+//   //      'https://images.meesho.com/images/products/278283908/0brtt_512.jpg',
+//   //      'https://images.meesho.com/images/products/278283908/or2eu_512.jpg'],
+//   //     sizes: ['XS', 'S', 'M','L','XL'], 
+//   //     colors: ['black','pastel pink'],
+//   //     price:450,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Yellow Tiered Dress',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://www.jovifashion.com/upload/product/cdr1820775_638171521494543071.jpg',
+//   //      'https://www.jovifashion.com/upload/product/cdr1820775_6a50e4ce-e092-4493-856f-4828a804c6f4.jpg',],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: [''],
+//   //     price:550,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"dress"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Fashionable Fabulous Women Western Skirts',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://images.meesho.com/images/products/379677562/ptytv_512.webp',
+//   //      'https://images.meesho.com/images/products/379677563/afy3v_512.webp'],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: ['red','yellow'],
+//   //     price:280,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Women Rib Pencil Skirt',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://www.sassafras.in/cdn/shop/products/SFSKRT30303-3_800x.jpg?v=1684764581',
+//   //      'https://www.sassafras.in/cdn/shop/products/SFSKRT30303-5_800x.jpg?v=1684764581',
+//   //      'https://www.sassafras.in/cdn/shop/products/SFSKRT30304-3_800x.jpg?v=1684764594',
+//   //      'https://www.sassafras.in/cdn/shop/files/SFSKRT30304-7_b76632b2-d51c-4b4c-8e1a-a538e9c9c711_800x.jpg?v=1685012706'],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: ['black','beige'],
+//   //     price:659,
+//   //     offer:10,
+//  //      season:"fall",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'One piece Women Dress',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://5.imimg.com/data5/SELLER/Default/2023/4/303601282/DE/BG/EO/58398864/blue-one-piece-women-dress-500x500.jpg',
+//   //      'https://5.imimg.com/data5/SELLER/Default/2023/4/303569997/GX/LY/JK/58398864/01--1000x1000.jpg',
+//   //      'https://5.imimg.com/data5/SELLER/Default/2023/4/303570135/DX/SW/LX/58398864/04--1000x1000.jpg',
+//   //      'https://5.imimg.com/data5/SELLER/Default/2023/4/303600803/BU/IY/TB/58398864/blue-one-piece-women-dress-1000x1000.jpg'],
+//   //     sizes: ['S','L','XL'], 
+//   //     colors: [''],
+//   //     price:500,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"dress"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Women's Skirt - Wine',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://www-konga-com-res.cloudinary.com/w_auto,f_auto,fl_lossy,dpr_auto,q_auto/media/catalog/product/P/T/205867_1696246242.jpg',
+//   //      'https://www-konga-com-res.cloudinary.com/w_auto,f_auto,fl_lossy,dpr_auto,q_auto/media/catalog/product/V/V/205867_1696246276.jpg',
+//   //      'https://www-konga-com-res.cloudinary.com/w_auto,f_auto,fl_lossy,dpr_auto,q_auto/media/catalog/product/T/S/205867_1696246261.jpg'],
+//   //     sizes: ['XS', 'S', 'M','L'], 
+//   //     colors: [''],
+//   //     price:750,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Afibi Women's High Waist Skirt Tie Front A-Line Flowy Long Maxi Skirts with Pockets',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://m.media-amazon.com/images/I/6157DdCQKbL._AC_SX522_.jpg',
+//   //      'https://m.media-amazon.com/images/I/71nD-hATJ1L._AC_SY550_.jpg',
+//   //      'https://m.media-amazon.com/images/I/61vfQxhp1FL._AC_SY550_.jpg',
+//   //      'https://m.media-amazon.com/images/I/71oLCbVUdtL._AC_SY550_.jpg'],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: ['black','brown','purple'],
+//   //     price:650,
+//   //     offer:0,
+//  //      season:"fall",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Subtle Sweetness Black Floral Print Tiered Maxi Skirt',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://www.lulus.com/images/product/xlarge/7590181_1556396.jpg?w=560&hdpi=1',
+//   //      'https://www.lulus.com/images/product/xlarge/7590201_1556396.jpg?w=560&hdpi=1',],
+//   //     sizes: ['XS', 'S', 'M','L','XL','XXL'], 
+//   //     colors: [''],
+//   //     price:840,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Long Maxi skirt work outfit',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://i.etsystatic.com/5609612/r/il/42fac1/2822292485/il_794xN.2822292485_oyom.jpg',
+//   //      'https://i.etsystatic.com/5609612/r/il/6e35e4/2822292055/il_794xN.2822292055_2obv.jpg',
+//   //      'https://i.etsystatic.com/5609612/r/il/ececeb/2822292323/il_794xN.2822292323_tl8j.jpg',],
+//   //     sizes: ['XS', 'S', 'M','L','XL'], 
+//   //     colors: [''],
+//   //     price:480,
+//   //     offer:0,
+//  //      season:"spring",
+//  //      type:"skirt"
+//   //   },
+//   //   {//10
+//   //     categoryName:"WOMAN",
+//   //     name: 'Women's Summer Casual Dress',
+//   //     description: '100% PolyesterMachine wash',
+//   //     images: 
+//   //     ['https://m.media-amazon.com/images/I/81j17qZnQrL._AC_SX466_.jpg',
+//   //      'https://m.media-amazon.com/images/I/81j17qZnQrL._AC_SX466_.jpg',
+//   //      'https://m.media-amazon.com/images/I/81j17qZnQrL._AC_SX466_.jpg'],
+//   //     sizes: ['XS', 'S', 'M','L','XL'], 
+//   //     colors: [''],
+//   //     price:860,
+//   //     offer:0,
+//  //      season:"summer",
+//  //      type:"dress"
 //   //   },
 //   // ];
 

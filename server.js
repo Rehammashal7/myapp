@@ -1,23 +1,4 @@
-// const express = require('express');
-// const { createProxyMiddleware } = require('http-proxy-middleware');
-// const cors = require('cors');
 
-// const app = express();
-// const PORT = process.env.PORT || 5000;
-
-// app.use(cors());
-
-// app.use('/dialogflow', createProxyMiddleware({
-//   target: 'https://api.api.ai',
-//   changeOrigin: true,
-//   pathRewrite: {
-//     '^/dialogflow': '/v1/query?v=20150910',
-//   },
-// }));
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
 var host = process.env.HOST || '0.0.0.0';
 var port = process.env.PORT || 8080;
 

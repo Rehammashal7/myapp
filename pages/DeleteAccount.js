@@ -38,7 +38,6 @@ const DeleteAccount = ({ navigation }) => {
 
       if (credentials.user) {
         await deleteUser(user);
-        console.log("Account deleted successfully.");
         navigation.navigate("Home");
       } else {
         Alert.alert("Incorrect Password", "Please enter the correct password.");

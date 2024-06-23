@@ -45,7 +45,6 @@ const CancelOrder = ({ navigation }) => {
       const userOrders = userData.cancelOrder || [];
 
       setOrderList(userOrders);
-      console.log(userOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }

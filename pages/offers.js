@@ -12,7 +12,7 @@ const cardwidth = width / 2;
 
 const Offer = ({ route, navigation }) => {
     const offerData = route.params;
-    console.log(offerData)
+  
     const [indexCheck, setIndexCheck] = useState("0")
     const [activeIndexes, setActiveIndexes] = useState({});
 

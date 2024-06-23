@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
   NavContainer: {
     position: 'absolute',
     alignItems: 'center',
-    bottom: 1,
+    bottom: 0,
     borderBottomLeftRadius: 15,
     borderBottomRightRadius: 15,
   },

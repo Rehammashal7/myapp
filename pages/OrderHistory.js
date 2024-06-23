@@ -24,7 +24,7 @@ const OrderHistory = ({navigation}) => {
 
   const getOrders = async () => {
     try {
-      // استرجاع بيانات المستخدم
+      
       const userId = await AsyncStorage.getItem("USERID");
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
@@ -33,7 +33,7 @@ const OrderHistory = ({navigation}) => {
       const userOrders = userData.orders || [];
 
       setOrderList(userOrders);
-      console.log(userOrders);
+     
     } catch (error) {
       console.error("Error fetching orders:", error);
     }

@@ -38,7 +38,6 @@ const CartScreen = ({ navigation }) => {
   useEffect(() => {
     getCartItems();
     recommended()
-    //console.log(userId);
   }, [isFocused]);
   const [activeIndexes, setActiveIndexes] = useState({});
   const imageWidth = width;
@@ -56,13 +55,10 @@ const CartScreen = ({ navigation }) => {
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
 
-      console.log('Current Bonus Points:', userData.boun);
-
       const currentPoints = userData.boun || 0;
       const newPoints = currentPoints + 10;
 
       await updateDoc(userRef, { boun: newPoints });
-      console.log('Bonus points increased by 10.');
     } catch (error) {
       console.error('Error increasing bonus points:', error);
     }
@@ -85,10 +81,9 @@ const CartScreen = ({ navigation }) => {
   const [indices, setindices] = useState([]);
 
   useEffect(() => {
-    console.log(Recomendproduct);
     recommended();
     setindices(Array.from({ length: cartList.length }, (_, index) => index));
-    console.log("length", indices);
+
   }, [cartList]);
 
   const [Recomendproduct, setRecomendproduct] = useState([])
@@ -100,25 +95,13 @@ const CartScreen = ({ navigation }) => {
       const Name = cartList.map(item => item.data.name);
 
       setCollection(categories);
-      console.log("Category Names:", categories);
-
-      console.log("Types:", types);
       setType(types);
-
-      // Fetch recommended products for each category and type
       const recommendedProductsPromises = categories.map((item, index) =>
         getRecommendProduct(item, types[index], prices[index], Name)
       );
-
-
-      // Wait for all fetches to complete
       const recommendedProducts = await Promise.all(recommendedProductsPromises);
-      // const recommendedProducts2 = Name.map((item, index) =>
-      //   recommendedProducts.filter(product =>  product.name != item)
-      // );
-      const allRecommendedProducts = recommendedProducts.flat();
 
-      // Use a Set to remove duplicates based on product ID
+      const allRecommendedProducts = recommendedProducts.flat();
       const uniqueProducts = [];
       const productIds = new Set();
 
@@ -130,16 +113,12 @@ const CartScreen = ({ navigation }) => {
       });
 
       setRecomendproduct(uniqueProducts);
-      console.log("Recommended Products:", uniqueProducts);
-      console.log(Recomendproduct);
     } catch (error) {
       console.error("Error fetching recommended products: ", error);
     }
   };
 
   const getRecommendProduct = async (item, types, prices, Names) => {
-    console.log("Category Name:", item);
-    console.log("Type:", types);
 
     const collectname = item.toLowerCase();
     try {
@@ -149,8 +128,6 @@ const CartScreen = ({ navigation }) => {
         id: doc.id,
         ...doc.data(),
       }));
-
-      console.log("Filtered Products:", productsData);
 
       let filteredProducts = [];
       if (types === 't-shirt') {
@@ -166,7 +143,6 @@ const CartScreen = ({ navigation }) => {
       }
       const filteredProducts2 = filteredProducts.filter(product => !Names.includes(product.name));
 
-      console.log("Filtered Products2:", filteredProducts2);
       const uniqueProducts = [];
       const productIds = new Set();
 
@@ -177,7 +153,6 @@ const CartScreen = ({ navigation }) => {
         }
       });
 
-      console.log("Unique Filtered Products:", uniqueProducts);
       return uniqueProducts;
     } catch (error) {
       console.error("Error fetching products: ", error);
@@ -210,7 +185,7 @@ const CartScreen = ({ navigation }) => {
       const existingItem = tempCart[existingItemIndex];
       existingItem.qty += 1;
       tempCart[existingItemIndex] = existingItem;
-      console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
+
     } else {
       tempCart.push({ ...item, qty: 1 });
     }
@@ -222,7 +197,6 @@ const CartScreen = ({ navigation }) => {
 
   const handleCheckout = async () => {
     try {
-      // Loop through the products and add them to the purchasedProducts collection
       cartList.forEach(async (item) => {
         const purchaseData = {
           userId: userId,
@@ -239,8 +213,6 @@ const CartScreen = ({ navigation }) => {
         await setDoc(purchasedProductRef, purchaseData);
       });
 
-      console.log('Purchased products saved to Firestore successfully');
-      // After successful checkout, you can navigate to the checkout screen or do any other necessary action
       navigation.navigate('checkout');
     } catch (error) {
       console.error('Error saving purchased products to Firestore:', error);
@@ -259,7 +231,6 @@ const CartScreen = ({ navigation }) => {
     if (existingItem) {
       if (existingItem.qty > 1) {
         existingItem.qty -= 1;
-        console.log(`Quantity for item with ID ${item.id} is now ${existingItem.qty}`);
 
       } else {
         cart.splice(cart.indexOf(existingItem), 1);
@@ -275,7 +246,6 @@ const CartScreen = ({ navigation }) => {
 
 
   const deleteItem = async (index) => {
-    //const userId = await AsyncStorage.getItem('USERID');
     const userRef = doc(db, 'users', userId);
     const userSnap = await getDoc(userRef);
     let tempCart = userSnap.data().cart;
@@ -288,7 +258,7 @@ const CartScreen = ({ navigation }) => {
     try {
       const userRef = doc(db, 'users', userId);
       await updateDoc(userRef, { cart: [] });
-      getCartItems(); // Refresh the cart items after deletion
+      getCartItems();
     } catch (error) {
       console.error('Error deleting all items:', error);
     }
@@ -320,38 +290,6 @@ const CartScreen = ({ navigation }) => {
     });
     return total;
   };
-
-  const AddOrderHistory = async () => {
-    console.log('Executing AddOrderHistory function...');
-
-    try {
-      const userRef = doc(db, 'users', userId);
-      const userSnap = await getDoc(userRef);
-      const currentDate = new Date();
-      const formattedDate = currentDate.toISOString();
-
-      const userOrders = userSnap.data()?.orders || [];
-
-      cartList.forEach((cartItem) => {
-        const newOrder = {
-          productId: cartItem.id,
-          productName: cartItem.data.name,
-          quantity: cartItem.qty,
-          imageUrl: cartItem.data.imageUrl,
-          totalPrice: (cartItem.qty || 0) * (cartItem.data.price || 0),
-          timestamp: new Date(),
-        };
-
-        userOrders.push(newOrder);
-      });
-
-      await updateDoc(userRef, { orders: userOrders });
-
-      console.log('Order history updated successfully');
-    } catch (error) {
-      console.error('Error updating order history:', error);
-    }
-  };
   const [IconName, setIconName] = useState(false);
   const [IconName2, setIconName2] = useState(false);
   const formatDate = (timestamp) => {
@@ -364,9 +302,6 @@ const CartScreen = ({ navigation }) => {
       if (!isNaN(newDate.getTime())) {
         return newDate.toLocaleDateString();
       }
-      console.log(timestamp);
-
-      console.log(newDate);
       const year = newDate.getFullYear();
       const month = String(newDate.getMonth() + 1).padStart(2, '0'); // Adding 1 to month because months are zero-indexed
       const day = String(newDate.getDate()).padStart(2, '0');
@@ -381,8 +316,6 @@ const CartScreen = ({ navigation }) => {
     if (offer < 0) {
       offer = 0
     }
-    console.log(points);
-    console.log(offer);
     return offer;
   }
   const handleProductPress = async (product, Category) => {
@@ -494,13 +427,9 @@ const CartScreen = ({ navigation }) => {
         </TouchableOpacity>
         <FlatList
           data={cartList}
-
           renderItem={({ item, index }) => {
             return (
-
               <View style={styles.container}>
-
-
                 <View style={styles.cardView}>
                   <Pressable onPress={() => deleteItem(index)} style={[styles.iconBehave, { marginLeft: 5 }]}>
                     <Icon name='trash-outline' size={25} color={COLORS.dark} style={styles.iconBehave} />
@@ -661,13 +590,7 @@ const CartScreen = ({ navigation }) => {
                 data={Recomendproduct}
                 showsHorizontalScrollIndicator={false}
                 renderItem={renderProduct}
-
               />
-
-              {/* <TouchableOpacity onPress={() => navigation.navigate('offer', products)} style={styles.discoverButton}>
-                            <Text style={styles.discoverText}>{'See All >>'}</Text>
-                        </TouchableOpacity> */}
-
             </ScrollView>
           </View>)}
 
@@ -684,9 +607,6 @@ const CartScreen = ({ navigation }) => {
 
             onPress={() => {
               navigation.navigate("checkout", { userId: userId });
-              // AddOrderHistory();
-              // handleSomeAction();
-
               handleCheckout();
             }}>
             <Text style={{ color: '#fff' }}>Checkout</Text>

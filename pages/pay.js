@@ -7,9 +7,7 @@ const { width } = Dimensions.get('screen');
 const cardwidth = width / 2;
 
 const Pay = ({ navigation }) => {
-    useEffect(() => {
-        console.log('pay')
-    }, []);
+    
     return (
         <View style={styles.container}>
             <Text style={{ color: COLORS.dark, fontWeight: '600', fontSize: 20, textAlign: 'center' }}>

@@ -46,11 +46,9 @@ const HistoryOrder = ({ navigation }) => {
       const userRef = doc(db, "users", userId);
       const userSnap = await getDoc(userRef);
       const userData = userSnap.data();
-      console.log(userData);
       const userOrders = userData.HistoryOrder || [];
 
       setOrderList(userOrders);
-      console.log(userOrders);
     } catch (error) {
       console.error("Error fetching orders:", error);
     }
@@ -100,7 +98,6 @@ const HistoryOrder = ({ navigation }) => {
 
       if (userDocSnap.exists()) {
         const userData = userDocSnap.data();
-        console.log("userData", userData);
         const currentWalletAmount = userData.walet || 0; // القيمة الحالية للمحفظة
         const refundedAmount = parseFloat(
           userData.HistoryOrder[index].totalPrice
@@ -108,7 +105,6 @@ const HistoryOrder = ({ navigation }) => {
 
         const updatedWalletAmount = currentWalletAmount + refundedAmount; // قيمة المحفظة المحدثة
         await updateDoc(userDocRef, { walet: updatedWalletAmount });
-        console.log("Wallet value updated after refund:", updatedWalletAmount);
         const cancelOrders = userData.cancelOrder || [];
         const currentOrders = userData.HistoryOrder || [];
         const selectedProduct = currentOrders[index];
@@ -138,8 +134,6 @@ const HistoryOrder = ({ navigation }) => {
       console.error("Error deleting Order:", error);
     }
   };
-
-  console.log(OrderList);
 
   return (
     <View style={styles.container}>

@@ -16,7 +16,6 @@ const [disLike, setDislikes] = useState([0]);
   useEffect(() => {
     const { reviews } = route.params;
     setReviews(reviews);
-    console.log(reviews)
     loadLikesAndDislikes(reviews);
   }, [route.params]);
   
@@ -35,9 +34,7 @@ const [disLike, setDislikes] = useState([0]);
       );
       
       setReviewsWithLikes(updatedReviews);
-      setReviews(updatedReviews)
-  
-      console.log(updatedReviews);
+      setReviews(updatedReviews);
     } catch (error) {
       console.log('Error loading likes and dislikes:', error);
     }
