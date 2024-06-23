@@ -133,8 +133,6 @@ const profile = ({ navigation }) => {
       setPhotoURL(result.uri);
 
     }
-
-
   };
 
 

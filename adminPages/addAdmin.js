@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet , Dimensions} from 'react-native';
 import {  createUserWithEmailAndPassword , signInWithPopup,
   GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";  
   import COLORS from '../Consts/Color';
@@ -62,6 +62,7 @@ return(
         placeholder="Email"
         style={styles.input}
       />
+      
       <TextInput
        value={password}
        onChangeText={setPassword}
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FBFAFF',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 20,
     },
     heading:{
         color: "black",
@@ -94,6 +96,7 @@ const styles = StyleSheet.create({
         marginBottom :10 ,
 
     },
+    
     NavContainer: {
         position:'absolute',
         alignItems:'center',
@@ -118,25 +121,26 @@ const styles = StyleSheet.create({
     
       input: {
         backgroundColor: '#FFFFFF',
-        width: '100%',
-        padding: 10,
+        width: Dimensions.get('window').width * 0.9,
+        padding: 8,
         borderRadius: 10,
         marginBottom: 20,
         backgroundColor:'#D3D3D3'
       },
       buttonlogin: {
-        backgroundColor: '#131A2C',
-        borderRadius: 10,
-        padding: 10,
-        width: '100%',
-        alignItems: 'center',
-        marginTop:10,
+        width: Dimensions.get('window').width * 0.9,
+    //width: 380,
+    //marginLeft: 5,
+    backgroundColor: "black",
+    padding: 10,
+    marginTop: 10,
+    alignItems: "center",
       },
      
       buttonText: {
-        color: '#FFDE9B',
+        color: "white",
+        fontWeight: "bold",
         fontSize: 18,
-        fontWeight: 'bold',
       },
 });
 

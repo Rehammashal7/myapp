@@ -38,15 +38,16 @@ const HomeScreen = ({ navigation }) => {
   const [piedata,setpiedata] = useState({
  
     data: [  {
-     name: "LOST",
+      name: "Orders",
+      population: 0,
+      color: "#F00",
+      legendFontColor: "#7F7F7F",
+      legendFontSize: 15
+    },
+    {
+     name: "Cancels",
      population: 0,
      color: "rgb(0, 0, 255)",
-     legendFontColor: "#7F7F7F",
-     legendFontSize: 15
-   },{
-     name: "WALLET",
-     population: 0,
-     color: "#F00",
      legendFontColor: "#7F7F7F",
      legendFontSize: 15
    },]
@@ -89,41 +90,58 @@ const cancelfun = async () => {
  try {
    const usersRef = collection(db, "users");
    const querySnapshot = await getDocs(usersRef);
-   let lost = 0;
-   let lwalet=0;
-   
+  //  let lost = 0;
+  //  let lwalet=0;
+   let cancelOrderCount = 0;
+   let userOrderCount = 0;
+
    for (const userDoc of querySnapshot.docs) {
      const userData = userDoc.data();
      const cancelOrder = userData.cancelOrder?? {};
-     
+     const userOrders = userData.HistoryOrder || [];
+     console.log(userOrders);
+
      console.log(cancelOrder);
      if (cancelOrder.length > 0) {
-       cancelOrder.map((item) => {
-         lost = lost + item.totalPrice * 0.2 ;
-       })
-       console.log(lost);
-       console.log(lwalet);
+      //  cancelOrder.map((item) => {
+      //    lost = lost + item.totalPrice * 0.2 ;
+      //  })
+      cancelOrderCount += cancelOrder.length;
+
+      //  console.log(lost);
+      //  console.log(lwalet);
+       console.log(cancelOrderCount);
+       console.log(userOrderCount);
+      
      }
+
+     if (userOrders.length > 0) {
+      userOrderCount += userOrders.length;
+
+      console.log(cancelOrderCount);
+      console.log(userOrderCount);
+    }
+
      if (userData.isAdmin) {
            const userRef = doc(db, "users", userDoc.id);
            const userSnap = await getDoc(userRef);
            const userData = userSnap.data();
-           await updateDoc(userRef, { lost: lost });
-           lwalet = userData.walet;
-           console.log(lwalet);
+           //await updateDoc(userRef, { lost: lost });
+           //lwalet = userData.walet;
+           //console.log(lwalet);
          }     
    }
-   console.log(lwalet);
+   //console.log(lwalet);
    const newData = {
        data: [{  
-         name: "WALLET",
-         population: lwalet,
+         name: "Orders",
+         population: userOrderCount,
          color: "rgb(0, 0, 255)",
          legendFontColor: "#7F7F7F",
          legendFontSize: 15
        },{
-         name: "LOST",
-         population: lost,
+         name: "Cancels",
+         population: cancelOrderCount,
          color: "#F00",
          legendFontColor: "#7F7F7F",
          legendFontSize: 15
@@ -341,7 +359,7 @@ return (
 
       </View>
       <View style={styles.chartpieContainer}>
-      <Text style={styles.stylishText}> Profits and Loss </Text>
+      <Text style={styles.stylishText}> Orders and Cancels </Text>
       <PieChart
   data={piedata.data}
   width={Dimensions.get("window").width * 0.9}

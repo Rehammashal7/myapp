@@ -251,8 +251,7 @@ if (docSnap.exists()) {
       {mode === 'edit' && (
         <>
         <View style={styles.field}>
-        <Feather name="file" color="#333333" size={20} />
-       <input type="file" onChange={handleChange} />
+       <TextInput type="file" onChange={handleChange} />
         </View>
      
           <View style={styles.field}>
@@ -296,11 +295,7 @@ if (docSnap.exists()) {
           {/* <Button title="Save" onPress={handleSave} /> */}
         </>
       )}
-
-
-<View style={styles.containerButton}><TouchableOpacity style={styles.logoutButton} onPress={handleLogOut}>
-        <Text style={styles.buttonTextLoggout}>Logout</Text>
-      </TouchableOpacity></View>        
+  
 
       <BottomNavigator item="adminprofile" navigation={navigation} />
     
