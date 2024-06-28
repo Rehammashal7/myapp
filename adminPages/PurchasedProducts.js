@@ -7,7 +7,7 @@ const { width } = Dimensions.get('window');
 
 const PurchasedProductsScreen = ({ navigation }) => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
-  const [activeTab, setActiveTab] = useState('waiting'); 
+  //const [activeTab, setActiveTab] = useState('waiting'); 
   useEffect(() => {
     fetchPurchasedProducts();
   }, []);
@@ -18,37 +18,49 @@ const PurchasedProductsScreen = ({ navigation }) => {
     try {
       const querySnapshot = await getDocs(collection(db, 'userPurchasedProducts'));
       const data = querySnapshot.docs.map(doc => ({ ...doc.data(), id: doc.id }));
-      setPurchasedProducts(data);
+
+      const sortedData = data.sort((a, b) => b.timestamp.toDate() - a.timestamp.toDate());
+            // setPurchasedProducts(sortedData);
+
+      //setPurchasedProducts(data);
+      setPurchasedProducts(prevProducts => [...prevProducts, ...sortedData]);
     } catch (error) {
       console.error('Error fetching purchased products:', error);
     }
   };
 
-  const toggleTab = (tab) => {
-    setActiveTab(tab);
-  };
+  // const toggleTab = (tab) => {
 
-  const handleMarkAsDone = async (itemId) => {
-    try {
-      const purchasedProductRef = doc(db, 'userPurchasedProducts', itemId);
-      await updateDoc(purchasedProductRef, { delivered: true });
+  //   setActiveTab(tab);
+  // };
 
-      setPurchasedProducts(prevProducts =>
-        prevProducts.filter(product => product.id !== itemId)
-      );
+  // const handleMarkAsDone = async (itemId) => {
+  //   try {
+  //     const purchasedProductRef = doc(db, 'userPurchasedProducts', itemId);
+  //     await updateDoc(purchasedProductRef, { delivered: true });
 
-      console.log('Item marked as delivered:', itemId);
-    } catch (error) {
-      console.error('Error marking item as delivered:', error);
-    }
-  };
+  //     // setPurchasedProducts(prevProducts =>
+  //     //   prevProducts.filter(product => product.id !== itemId)
+  //     // );
+
+  //     setPurchasedProducts(prevProducts =>
+  //       prevProducts.map(product => 
+  //         product.id === itemId ? { ...product, delivered: true } : product
+  //       )
+  //     );
+
+  //     console.log('Item marked as delivered:', itemId);
+  //   } catch (error) {
+  //     console.error('Error marking item as delivered:', error);
+  //   }
+  // };
 
   const calculateTotalPrice = (items) => {
     return items.reduce((total, item) => total + (item.totalPrice || 0), 0);
   };
 
   const renderItem = ({ item }) => {
-    const { userId, items, timestamp, delivered } = item;
+    const {  items, timestamp } = item;
     const totalPrice = calculateTotalPrice(items);
 
     return (
@@ -61,11 +73,11 @@ const PurchasedProductsScreen = ({ navigation }) => {
           <Text style={styles.itemText}>Number of Items: {items.length}</Text>
           <Text style={styles.itemText}>Order Time: {timestamp.toDate().toLocaleString()}</Text>
           <Text style={styles.itemText}>Total Price: ${totalPrice.toFixed(2)}</Text>
-          {!delivered && (
+          {/* {!delivered && (
             <TouchableOpacity style={styles.doneButton} onPress={() => handleMarkAsDone(item.id)}>
               <Text style={styles.doneButtonText}>Delivered</Text>
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
       </TouchableOpacity>
     );
@@ -73,7 +85,7 @@ const PurchasedProductsScreen = ({ navigation }) => {
   
   return (
     <View style={styles.container}>
-      <View style={styles.tabContainer}>
+      {/* <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[
             styles.tabButton,
@@ -98,14 +110,14 @@ const PurchasedProductsScreen = ({ navigation }) => {
             Waiting List
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <FlatList
-        data={activeTab === 'waiting' ? purchasedProducts.filter(item => !item.delivered) : purchasedProducts.filter(item => item.delivered)}
+        data={ purchasedProducts } //? purchasedProducts.filter(item => !item.delivered) : purchasedProducts.filter(item => item.delivered)
         keyExtractor={item => item.id}
         renderItem={renderItem}
         contentContainerStyle={styles.flatListContent}
-        ListEmptyComponent={<Text style={styles.emptyText}>No items in {activeTab === 'waiting' ? 'Waiting List' : 'Delivered'}</Text>}
+        ListEmptyComponent={<Text style={styles.emptyText}>No items in Delevered</Text>} //{activeTab === 'waiting' ? 'Waiting List' : 'Delivered'}
       />
     </View>
   );
